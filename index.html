@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Tests Physiques - U18F</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -107,7 +108,11 @@
     </style>
 </head>
 <body>
-
+<div class="excel-loader">
+        <label>📁 Charger Excel :</label>
+        <input type="file" id="excelFile" accept=".xlsx,.xls" />
+        <button id="reloadBtn">🔄 Recharger les données</button>
+    </div>
 <div class="header">
     <div class="logo">🏉</div>
     <div>
@@ -696,3 +701,117 @@ const DATA = {
                     "10m (s)": 2.07, "20m (s)": 3.65, "25m (s)": 4.55, "50m (s)": 8.64
                 },
                 "Novembre":  { "Poids (kg)": 63.7, "Yo-yo level 1": 920, "10m (s)": 1.89, "20m (s)": 3.37, "25m (s)":
+.excel-loader {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    background: rgba(26, 26, 46, 0.8);
+    border-radius: 8px;
+    border: 1px solid rgba(233, 69, 96, 0.3);
+    margin-bottom: 30px;
+}
+
+.excel-loader label {
+    font-weight: 600;
+    color: #a0a0c0;
+}
+
+.excel-loader input[type="file"] {
+    padding: 10px;
+    background: #1a1a2e;
+    border: 2px solid #2a2a4e;
+    border-radius: 8px;
+    color: #e0e0e0;
+    cursor: pointer;
+}
+
+.excel-loader button {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #e94560 0%, #ff6b9d 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.excel-loader button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(233, 69, 96, 0.4);
+}
+
+#dashboard {
+    margin-top: 20px;
+}
+    let PLAYERS_DATA = {};
+let ALL_SESSIONS = [];
+
+function processSheetData(jsonData, sheetName) {
+    if (!jsonData || jsonData.length === 0) return;
+
+    jsonData.forEach(row => {
+        const playerName = row['Nom'] || row['nom'] || Object.values(row)[0];
+        if (!playerName) return;
+
+        if (!PLAYERS_DATA[playerName]) {
+            PLAYERS_DATA[playerName] = { sessions: {} };
+        }
+
+        PLAYERS_DATA[playerName].sessions[sheetName] = row;
+        if (!ALL_SESSIONS.includes(sheetName)) {
+            ALL_SESSIONS.push(sheetName);
+        }
+    });
+}
+
+function displayPlayerData(playerName, sessionName, sessionData) {
+    const dashboard = document.getElementById('dashboard');
+    let html = `<h2>👤 ${playerName}</h2>`;
+    
+    Object.entries(sessionData).forEach(([key, value]) => {
+        if (value) {
+            html += `<p><strong>${key}:</strong> ${value}</p>`;
+        }
+    });
+
+    dashboard.innerHTML = html;
+}
+
+document.getElementById('excelFile').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        try {
+            const data = new Uint8Array(event.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+
+            PLAYERS_DATA = {};
+            ALL_SESSIONS = [];
+
+            workbook.SheetNames.forEach(sheetName => {
+                const worksheet = workbook.Sheets[sheetName];
+                const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                processSheetData(jsonData, sheetName);
+            });
+
+            console.log("✅ Excel chargé !");
+            alert('✅ Fichier chargé ! ' + Object.keys(PLAYERS_DATA).length + ' joueuses trouvées');
+        } catch (error) {
+            console.error("❌ Erreur :", error);
+            alert('❌ Erreur : fichier Excel invalide');
+        }
+    };
+    reader.readAsArrayBuffer(file);
+});
+
+document.getElementById('reloadBtn').addEventListener('click', function() {
+    const fileInput = document.getElementById('excelFile');
+    if (fileInput.files[0]) {
+        fileInput.dispatchEvent(new Event('change'));
+    } else {
+        alert('📁 Charge d\'abord un fichier Excel');
+    }
+});
