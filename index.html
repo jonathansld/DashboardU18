@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Tests Physiques - U18F</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f0f1a; color: #fff; min-height: 100vh; }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a2e, #0f3460);
+            padding: 30px 40px;
+            border-bottom: 2px solid #e94560;
+            display: flex; align-items: center; gap: 20px;
+        }
+        .header-logo { font-size: 3rem; }
+        .header-text h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; }
+        .header-text p { color: #a0a0c0; font-size: 0.9rem; margin-top: 4px; }
+
+        .selectors-section {
+            background: #1a1a2e; padding: 25px 40px;
+            display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap;
+            border-bottom: 1px solid #2a2a4e;
+        }
+        .selector-group { display: flex; flex-direction: column; gap: 8px; }
+        .selector-group label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; color: #a0a0c0; font-weight: 600; }
+        .selector-group select {
+            background: #0f0f1a; border: 1px solid #2a2a4e; color: #fff;
+            padding: 10px 40px 10px 15px; border-radius: 8px; font-size: 1rem;
+            cursor: pointer; min-width: 200px; appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a0a0c0' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 12px center;
+            transition: border-color 0.3s;
+        }
+        .selector-group select:hover, .selector-group select:focus { border-color: #e94560; outline: none; }
+
+        .main-content { padding: 30px 40px; }
+
+        .player-header {
+            background: linear-gradient(135deg, #1a1a2e, #0f3460);
+            border-radius: 16px; padding: 25px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 30px; border: 1px solid #2a2a4e;
+        }
+        .player-name { font-size: 2rem; font-weight: 700; }
+        .player-poste {
+            background: #e94560; color: #fff;
+            padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;
+        }
+        .player-meta { color: #a0a0c0; font-size: 0.9rem; margin-top: 6px; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 30px; }
+        .stat-card {
+            background: #1a1a2e; border-radius: 12px; padding: 20px;
+            border: 1px solid #2a2a4e; transition: transform 0.2s, border-color 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-3px); border-color: #e94560; }
+        .stat-label { font-size: 0.75rem; color: #a0a0c0; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .stat-value { font-size: 1.6rem; font-weight: 700; color: #fff; }
+        .stat-unit { font-size: 0.9rem; color: #a0a0c0; margin-left: 4px; }
+        .stat-evo { font-size: 0.8rem; margin-top: 8px; }
+        .evo-pos { color: #4caf50; } .evo-neg { color: #e94560; } .evo-neu { color: #a0a0c0; }
+
+        .section-title {
+            font-size: 1.1rem; font-weight: 600; color: #a0a0c0;
+            text-transform: uppercase; letter-spacing: 2px;
+            margin: 30px 0 16px; padding-bottom: 8px;
+            border-bottom: 1px solid #2a2a4e;
+        }
+
+        .charts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 24px; margin-bottom: 30px; }
+        .chart-card { background: #1a1a2e; border-radius: 16px; padding: 24px; border: 1px solid #2a2a4e; }
+        .chart-card h3 { font-size: 0.9rem; color: #a0a0c0; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+
+        .evo-table-wrapper { background: #1a1a2e; border-radius: 16px; padding: 24px; border: 1px solid #2a2a4e; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 10px 14px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #a0a0c0; border-bottom: 1px solid #2a2a4e; }
+        td { padding: 10px 14px; font-size: 0.9rem; border-bottom: 1px solid #1a1a2e; }
+        tr:hover td { background: #0f0f1a; }
+
+        .pill { padding: 3px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; }
+        .pill-pos { background: #1a3a1a; color: #4caf50; }
+        .pill-neg { background: #3a1a1a; color: #e94560; }
+        .pill-neu { background: #2a2a3e; color: #a0a0c0; }
+
+        .welcome {
+            text-align: center; padding: 80px 40px;
+            color: #a0a0c0;
+        }
+        .welcome h2 { font-size: 2rem; margin-bottom: 12px; color: #fff; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-logo">🏉</div>
+    <div class="header-text">
+        <h1>DASHBOARD PHYSIQUE — U18F</h1>
+        <p>Suivi des performances individuelles · Saison 2024-2025</p>
+    </div>
+</div>
+
+<div class="selectors-section">
+    <div class="selector-group">
+        <label>👤 Joueuse</label>
+        <select id="selectPlayer">
+            <option value="">— Sélectionner une joueuse —</option>
+        </select>
+    </div>
+    <div class="selector-group">
+        <label>📅 Session</label>
+        <select id="selectSession">
+            <option value="all">Toutes les sessions</option>
+            <option value="septembre">Septembre</option>
+            <option value="novembre">Novembre</option>
+            <option value="janvier">Janvier</option>
+        </select>
+    </div>
+</div>
+
+<div class="main-content" id="mainContent">
+    <div class="welcome">
+        <h2>👋 Bienvenue</h2>
+        <p>Sélectionne une joueuse pour afficher son tableau de bord personnalisé</p>
+    </div>
+</div>
+
+<script>
+// ================================================
+// DONNÉES
+// ================================================
+const DATA = {
+  "Inès Blanc": {
+    poste: "1re Ligne",
+    sessions: {
+      septembre: { poids: 68, taille: 168, detente: 28, sprint10: 2.05, sprint30: 5.12, vma: 13.5, gainage: 95, pompes: 18, squatjump: 24 },
+      novembre:  { poids: 67, taille: 168, detente: 30, sprint10: 2.01, sprint30: 5.05, vma: 13.8, gainage: 105, pompes: 20, squatjump: 26 },
+      janvier:   { poids: 67, taille: 168, detente: 32, sprint10: 1.98, sprint30: 4.98, vma: 14.0, gainage: 110, pompes: 22, squatjump: 28 }
+    }
+  },
+  "Léa Martin": {
+    poste: "2e Ligne",
+    sessions: {
+      septembre: { poids: 72, taille: 175, detente: 32, sprint10: 1.98, sprint30: 4.95, vma: 14.2, gainage: 110, pompes: 22, squatjump: 30 },
+      novembre:  { poids: 71, taille: 175, detente: 35, sprint10: 1.94, sprint30: 4.88, vma: 14.5, gainage: 120, pompes: 24, squatjump: 32 },
+      janvier:   { poids: 70, taille: 175, detente: 37, sprint10: 1.91, sprint30: 4.80, vma: 14.8, gainage: 125, pompes: 26, squatjump: 35 }
+    }
+  },
+  "Camille Dupont": {
+    poste: "3e Ligne",
+    sessions: {
+      septembre: { poids: 65, taille: 170, detente: 35, sprint10: 1.92, sprint30: 4.80, vma: 15.0, gainage: 120, pompes: 25, squatjump: 32 },
+      novembre:  { poids: 64, taille: 170, detente: 38, sprint10: 1.88, sprint30: 4.72, vma: 15.3, gainage: 130, pompes: 27, squatjump: 35 },
+      janvier:   { poids: 64, taille: 170, detente: 40, sprint10: 1.85, sprint30: 4.65, vma: 15.5, gainage: 135, pompes: 30, squatjump: 38 }
+    }
+  },
+  "Manon Leroy": {
+    poste: "Demi de mêlée",
+    sessions: {
+      septembre: { poids: 58, taille: 162, detente: 30, sprint10: 1.88, sprint30: 4.70, vma: 15.5, gainage: 115, pompes: 20, squatjump: 28 },
+      novembre:  { poids: 57, taille: 162, detente: 33, sprint10: 1.84, sprint30: 4.62, vma: 15.8, gainage: 125, pompes: 22, squatjump: 30 },
+      janvier:   { poids: 57, taille: 162, detente: 35, sprint10: 1.81, sprint30: 4.55, vma: 16.0, gainage: 130, pompes: 24, squatjump: 33 }
+    }
+  },
+  "Sarah Petit": {
+    poste: "Ailier",
+    sessions: {
+      septembre: { poids: 60, taille: 165, detente: 38, sprint10: 1.82, sprint30: 4.55, vma: 16.0, gainage: 125, pompes: 22, squatjump: 35 },
+      novembre:  { poids: 59, taille: 165, detente: 41, sprint10: 1.78, sprint30: 4.47, vma: 16.3, gainage: 135, pompes: 24, squatjump: 37 },
+      janvier:   { poids: 59, taille: 165, detente: 43, sprint10: 1.75, sprint30: 4.40, vma: 16.5, gainage: 140, pompes: 26, squatjump: 40 }
+    }
+  },
+  "Julie Thomas": {
+    poste: "Centre",
+    sessions: {
+      septembre: { poids: 63, taille: 167, detente: 36, sprint10: 1.85, sprint30: 4.62, vma: 15.8, gainage: 118, pompes: 21, squatjump: 33 },
+      novembre:  { poids: 62, taille: 167, detente: 39, sprint10: 1.81, sprint30: 4.54, vma: 16.1, gainage: 128, pompes: 23, squatjump: 36 },
+      janvier:   { poids: 62, taille: 167, detente: 41, sprint10: 1.78, sprint30: 4.47, vma: 16.3, gainage: 133, pompes: 25, squatjump: 38 }
+    }
+  }
+};
+
+const SESSIONS = ["septembre", "novembre", "janvier"];
+const SESSION_LABELS = { septembre: "Septembre", novembre: "Novembre", janvier: "Janvier" };
+
+const TESTS_CONFIG = {
+  "Morphologie": [
+    { key: "poids", label: "Poids", unit: "kg", lower_is_better: false },
+    { key: "taille", label: "Taille", unit: "cm", lower_is_better: false }
+  ],
+  "Explosivité": [
+    { key: "detente", label: "Détente verticale", unit: "cm", lower_is_better: false },
+    { key: "squatjump", label: "Squat Jump", unit: "cm", lower_is_better: false }
+  ],
+  "Vitesse": [
+    { key: "sprint10", label: "Sprint 10m", unit: "s", lower_is_better: true },
+    { key: "sprint30", label: "Sprint 30m", unit: "s", lower_is_better: true }
+  ],
+  "Endurance & Force": [
+    { key: "vma", label: "VMA", unit: "km/h", lower_is_better: false },
+    { key: "gainage", label: "Gainage", unit: "s", lower_is_better: false },
+    { key: "pompes", label: "Pompes", unit: "reps", lower_is_better: false }
+  ]
+};
+
+const CHART_COLORS = ["#e94560", "#4fc3f7", "#81c784", "#ffb74d", "#ce93d8", "#f06292"];
+
+// ================================================
+// INIT
+// ================================================
+window.onload = function() {
+    const sel = document.getElementById('selectPlayer');
+    Object.keys(DATA).sort().forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name;
+        sel.appendChild(opt);
+    });
+    sel.addEventListener('change', render);
+    document.getElementById('selectSession').addEventListener('change', render);
+};
+
+let chartInstances = {};
+
+function render() {
+    const playerName = document.getElementById('selectPlayer').value;
+    const sessionSel = document.getElementById('selectSession').value;
+    if (!playerName) return;
+
+    const athlete = DATA[playerName];
+    const sessionsToShow = sessionSel === 'all' ? SESSIONS : [sessionSel];
+
+    const main = document.getElementById('mainContent');
+    main.innerHTML = '';
+
+    // Player header
+    const ph = document.createElement('div');
+    ph.className = 'player-header';
+    ph.innerHTML = `
+        <div>
+            <div class="player-name">${playerName}</div>
+            <div class="player-meta">Poste : <span class="player-poste">${athlete.poste}</span></div>
+        </div>
+        <div style="text-align:right;color:#a0a0c0;font-size:0.9rem">
+            ${sessionsToShow.map(s => SESSION_LABELS[s]).join(' · ')}
+        </div>`;
+    main.appendChild(ph);
+
+    // Stats cards
+    renderStats(main, athlete, sessionsToShow);
+
+    // Charts
+    const chartTitle = document.createElement('div');
+    chartTitle.className = 'section-title';
+    chartTitle.textContent = '📈 Évolution dans le temps';
+    main.appendChild(chartTitle);
+
+    const chartsGrid = document.createElement('div');
+    chartsGrid.className = 'charts-grid';
+    main.appendChild(chartsGrid);
+
+    chartInstances = {};
+    renderCharts(chartsGrid, athlete, sessionsToShow);
+
+    // Evo table
+    const tableTitle = document.createElement('div');
+    tableTitle.className = 'section-title';
+    tableTitle.textContent = '📊 Tableau comparatif détaillé';
+    main.appendChild(tableTitle);
+
+    const tableWrapper = document.createElement('div');
+    tableWrapper.className = 'evo-table-wrapper';
+    tableWrapper.innerHTML = `
+        <table>
+            <thead>
+                <tr>
+                    <th>Test</th>
+                    ${sessionsToShow.map(s => `<th>${SESSION_LABELS[s]}</th>`).join('')}
+                    <th>Évolution totale</th>
+                </tr>
+            </thead>
+            <tbody id="evoTableBody"></tbody>
+        </table>`;
+    main.appendChild(tableWrapper);
+    renderEvoTable(athlete, sessionsToShow);
+}
+
+// ================================================
+// STATS CARDS
+// ================================================
+function renderStats(container, athlete, sessionsToShow) {
+    const lastSession = sessionsToShow[sessionsToShow.length - 1];
+    const prevSession = sessionsToShow.length > 1 ? sessionsToShow[sessionsToShow.length - 2] : null;
+
+    Object.entries(TESTS_CONFIG).forEach(([category, tests]) => {
+        const title = document.createElement('div');
+        title.className = 'section-title';
+        title.textContent = category;
+        container.appendChild(title);
+
+        const grid = document.createElement('div');
+        grid.className = 'stats-grid';
+
+        tests.forEach(test => {
+            const val = athlete.sessions[lastSession]?.[test.key];
+            if (val == null) return;
+
+            const prevVal = prevSession ? athlete.sessions[prevSession]?.[test.key] : null;
+            let evoHtml = '';
+            if (prevVal != null) {
+                const diff = val - prevVal;
+                const pct = ((diff / prevVal) * 100).toFixed(1);
+                const positive = test.lower_is_better ? diff < 0 : diff > 0;
+                const cls = diff === 0 ? 'evo-neu' : positive ? 'evo-pos' : 'evo-neg';
+                const arrow = diff > 0 ? '▲' : diff < 0 ? '▼' : '—';
+                evoHtml = `<div class="stat-evo ${cls}">${arrow} ${diff > 0 ? '+' : ''}${pct}% vs session précédente</div>`;
+            }
+
+            const card = document.createElement('div');
+            card.className = 'stat-card';
+            card.innerHTML = `
+                <div class="stat-label">${test.label}</div>
+                <div><span class="stat-value">${val}</span><span class="stat-unit">${test.unit}</span></div>
+                ${evoHtml}`;
+            grid.appendChild(card);
+        });
+        container.appendChild(grid);
+    });
+}
+
+// ================================================
+// CHARTS
+// ================================================
+function renderCharts(container, athlete, sessionsToShow) {
+    if (sessionsToShow.length < 2) {
+        container.innerHTML = '<p style="color:#a0a0c0;padding:20px">Sélectionne plusieurs sessions pour voir l\'évolution</p>';
+        return;
+    }
+
+    const labels = sessionsToShow.map(s => SESSION_LABELS[s]);
+    const allTests = Object.values(TESTS_CONFIG).flat();
+
+    allTests.forEach((test, i) => {
+        const values = sessionsToShow.map(s => athlete.sessions[s]?.[test.key] ?? null);
+        if (values.every(v => v == null)) return;
+
+        const card = document.createElement('div');
+        card.className = 'chart-card';
+        const canvasId = `chart_${test.key}`;
+        card.innerHTML = `<h3>${test.label} (${test.unit})</h3><canvas id="${canvasId}"></canvas>`;
+        container.appendChild(card);
+
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        chartInstances[canvasId] = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [{
+                    label: test.label,
+                    data: values,
+                    borderColor: CHART_COLORS[i % CHART_COLORS.length],
+                    backgroundColor: CHART_COLORS[i % CHART_COLORS.length] + '22',
+                    borderWidth: 3,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { color: '#a0a0c0' }, grid: { color: '#2a2a4e' } },
+                    y: { ticks: { color: '#a0a0c0' }, grid: { color: '#2a2a4e' } }
+                }
+            }
+        });
+    });
+}
+
+// ================================================
+// EVO TABLE
+// ================================================
+function renderEvoTable(athlete, sessionsToShow) {
+    const tbody = document.getElementById('evoTableBody');
+    tbody.innerHTML = '';
+    const allTests = Object.values(TESTS_CONFIG).flat();
+
+    allTests.forEach(test => {
+        const values = sessionsToShow.map(s => athlete.sessions[s]?.[test.key] ?? null);
+        if (values.every(v => v == null)) return;
+
+        const firstVal = values.find(v => v != null);
+        const lastVal = [...values].reverse().find(v => v != null);
+
+        let evoTotal = '';
+        if (firstVal != null && lastVal != null) {
+            const diff = lastVal - firstVal;
+            const pct = ((diff / firstVal) * 100).toFixed(1);
+            const positive = test.lower_is_better ? diff < 0 : diff > 0;
+            const cls = diff === 0 ? 'pill-neu' : positive ? 'pill-pos' : 'pill-neg';
+            const arrow = diff > 0 ? '▲' : diff < 0 ? '▼' : '—';
+            evoTotal = `<span class="pill ${cls}">${arrow} ${diff > 0 ? '+' : ''}${pct}%</span>`;
+        }
+
+        const cells = sessionsToShow.map((s, i) => {
+            const val = athlete.sessions[s]?.[test.key] ?? null;
+            const prev = i > 0 ? (athlete.sessions[sessionsToShow[i-1]]?.[test.key] ?? null) : null;
+            if (val == null) return `<td style="color:#3a3a5e">—</td>`;
+
+            let badge = '';
+            if (prev != null) {
+                const diff = val - prev;
+                const pct = ((diff / prev) * 100).toFixed(1);
+                const positive = test.lower_is_better ? diff < 0 : diff > 0;
+                const cls = diff === 0 ? 'pill-neu' : positive ? 'pill-pos' : 'pill-neg';
+                const arrow = diff > 0 ? '▲' : '▼';
+                badge = ` <span class="pill ${cls}" style="font-size:0.7rem">${arrow}${diff > 0 ? '+' : ''}${pct}%</span>`;
+            }
+            return `<td>${val} ${test.unit}${badge}</td>`;
+        });
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td style="color:#a0a0c0;font-size:0.85rem">${test.label}</td>${cells.join('')}<td>${evoTotal}</td>`;
+        tbody.appendChild(tr);
+    });
+}
+</script>
+</body>
+</html>
