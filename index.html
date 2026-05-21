@@ -305,7 +305,6 @@ window.addEventListener('DOMContentLoaded', () => {
 // ============================================================
 function render() {
   const name = document.getElementById('sel-player').value;
-  const sessionFilter = document.getElementById('sel-session').value;
 
   if (!name) {
     document.getElementById('welcome').style.display = 'block';
@@ -321,53 +320,82 @@ function render() {
   document.getElementById('ph-info').textContent = `Poste : ${player.poste}`;
   document.getElementById('ph-badges').innerHTML = `<span class="badge">${player.poste}</span>`;
 
-  // Sessions présentes ordonnées
+  // ✅ Toutes les sessions où la joueuse a au moins une donnée
   const sessions = SESSION_ORDER.filter(s => player.sessions[s]);
 
-  // Collecter toutes les métriques
+  // ✅ Collecter TOUTES les métriques jamais mesurées
   const allMetrics = new Set();
   sessions.forEach(s => Object.keys(player.sessions[s]).forEach(m => allMetrics.add(m)));
   const metrics = [...allMetrics];
 
-  // STATS CARDS
+  // ============================================================
+  // 📊 STATS CARDS — % évolution PREMIÈRE → DERNIÈRE session
+  //     Cellules vides = 0
+  // ============================================================
   const statsHTML = metrics.map(m => {
-    const values = sessions.map(s => player.sessions[s][m]).filter(v => v !== undefined && v !== 0);
-    if (values.length === 0) return '';
-    const last = values[values.length-1];
-    const first = values[0];
+    // ✅ Récupère la valeur de CHAQUE session — vide = 0
+    const values = sessions.map(s => {
+      const v = player.sessions[s][m];
+      return (v === undefined || v === null) ? 0 : v;
+    });
+
+    const first = values[0];                   // 1re session
+    const last  = values[values.length - 1];   // dernière session (Mai si présente)
+
+    // Calcul du % d'évolution
     let evo = '';
-    if (values.length > 1 && first !== 0) {
-      const diff = last - first;
-      const pct = (diff/first*100).toFixed(1);
-      const better = LOWER_IS_BETTER.includes(m) ? diff < 0 : diff > 0;
-      const cls = diff === 0 ? 'neu' : (better ? 'pos' : 'neg');
-      const arrow = diff === 0 ? '→' : (diff > 0 ? '▲' : '▼');
-      evo = `<div class="evo ${cls}">${arrow} ${pct}%</div>`;
+    if (sessions.length > 1) {
+      let pct, diff = last - first;
+
+      if (first === 0 && last === 0) {
+        evo = `<div class="evo neu">→ 0%</div>`;
+      } else if (first === 0) {
+        // De 0 à une valeur = nouvelle perf
+        const better = !LOWER_IS_BETTER.includes(m);
+        evo = `<div class="evo ${better ? 'pos' : 'neg'}">▲ NEW</div>`;
+      } else {
+        pct = (diff / first * 100).toFixed(1);
+        const better = LOWER_IS_BETTER.includes(m) ? diff < 0 : diff > 0;
+        const cls = diff === 0 ? 'neu' : (better ? 'pos' : 'neg');
+        const arrow = diff === 0 ? '→' : (diff > 0 ? '▲' : '▼');
+        evo = `<div class="evo ${cls}">${arrow} ${pct}%</div>`;
+      }
     }
+
     return `<div class="stat-card">
       <div class="label">${m}</div>
       <div class="value">${last}</div>
-      <div class="unit">${METRIC_UNITS[m]||''}</div>
+      <div class="unit">${METRIC_UNITS[m] || ''}</div>
       ${evo}
     </div>`;
   }).join('');
   document.getElementById('stats-grid').innerHTML = statsHTML || '<p style="color:#a0a0c0">Aucune donnée</p>';
 
-  // CHARTS
+  // ============================================================
+  // 📈 GRAPHIQUES — cellules vides = 0
+  // ============================================================
   charts.forEach(c => c.destroy());
   charts = [];
   const chartsContainer = document.getElementById('charts-grid');
   chartsContainer.innerHTML = '';
 
   metrics.forEach(m => {
-    const values = sessions.map(s => player.sessions[s][m] ?? null);
-    const valid = values.filter(v => v !== null && v !== 0);
-    if (valid.length < 2) return;
+    // ✅ Cellules vides = 0
+    const values = sessions.map(s => {
+      const v = player.sessions[s][m];
+      return (v === undefined || v === null) ? 0 : v;
+    });
+
+    // Pas de graphique si une seule session
+    if (sessions.length < 2) return;
 
     const card = document.createElement('div');
     card.className = 'chart-card';
-    card.innerHTML = `<h3>${m} (${METRIC_UNITS[m]||''})</h3><canvas></canvas>`;
+    card.innerHTML = `<h3>${m} (${METRIC_UNITS[m] || ''})</h3><canvas></canvas>`;
     chartsContainer.appendChild(card);
+
+    // Graduations + décimales pour les sprints
+    const isSprint = ["10m","20m","25m","30m","40m","50m"].includes(m);
 
     const ctx = card.querySelector('canvas').getContext('2d');
     charts.push(new Chart(ctx, {
@@ -381,36 +409,68 @@ function render() {
           backgroundColor: 'rgba(233,69,96,0.2)',
           borderWidth: 3,
           tension: 0.3,
-          pointRadius: 5,
-          pointBackgroundColor: '#fff'
+          pointRadius: 6,
+          pointBackgroundColor: '#fff',
+          fill: true
         }]
       },
       options: {
         responsive: true,
-        plugins: { legend: { labels: { color: '#a0a0c0' } } },
+        plugins: {
+          legend: { labels: { color: '#a0a0c0' } },
+          tooltip: {
+            callbacks: {
+              label: ctx => `${ctx.parsed.y} ${METRIC_UNITS[m] || ''}`
+            }
+          }
+        },
         scales: {
           x: { ticks: { color: '#a0a0c0' }, grid: { color: '#2a2a4e' } },
-          y: { ticks: { color: '#a0a0c0' }, grid: { color: '#2a2a4e' } }
+          y: {
+            ticks: {
+              color: '#a0a0c0',
+              callback: v => isSprint ? v.toFixed(2) : v
+            },
+            grid: { color: '#2a2a4e' }
+          }
         }
       }
     }));
   });
 
-  // TABLE
+  // ============================================================
+  // 📋 TABLEAU — cellules vides affichées comme 0
+  // ============================================================
   let tableHTML = '<table><thead><tr><th>Métrique</th>';
   sessions.forEach(s => tableHTML += `<th>${s}</th>`);
-  tableHTML += '</tr></thead><tbody>';
+  tableHTML += '<th>Évolution</th></tr></thead><tbody>';
+
   metrics.forEach(m => {
     tableHTML += `<tr><td><strong>${m}</strong></td>`;
-    sessions.forEach(s => {
+    const values = sessions.map(s => {
       const v = player.sessions[s][m];
-      tableHTML += `<td>${v !== undefined ? v : '—'}</td>`;
+      return (v === undefined || v === null) ? 0 : v;
     });
-    tableHTML += '</tr>';
+    values.forEach(v => tableHTML += `<td>${v}</td>`);
+
+    // Évolution dans le tableau
+    const first = values[0], last = values[values.length - 1];
+    let evoCell = '—';
+    if (sessions.length > 1 && first !== 0) {
+      const diff = last - first;
+      const pct = (diff / first * 100).toFixed(1);
+      const better = LOWER_IS_BETTER.includes(m) ? diff < 0 : diff > 0;
+      const cls = diff === 0 ? 'neu' : (better ? 'pos' : 'neg');
+      const arrow = diff === 0 ? '→' : (diff > 0 ? '▲' : '▼');
+      evoCell = `<span class="${cls}">${arrow} ${pct}%</span>`;
+    }
+    tableHTML += `<td>${evoCell}</td></tr>`;
   });
+
   tableHTML += '</tbody></table>';
   document.getElementById('history-table').innerHTML = tableHTML;
 }
+
 </script>
 
 </body>
