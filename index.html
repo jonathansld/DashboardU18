@@ -1,578 +1,919 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard U18F</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#0d1117;--card:#161b22;--card2:#1c2128;--border:#30363d;
-  --accent:#e94560;--blue:#0f3460;--gold:#f5a623;
-  --ok:#2ea043;--ko:#da3633;--txt:#e6edf3;--muted:#8b949e;
-}
-body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
-.header{background:linear-gradient(135deg,var(--card),var(--blue));padding:14px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--accent);position:sticky;top:0;z-index:100;flex-wrap:wrap;gap:10px}
-.htitle h1{font-size:1.2rem;font-weight:700}
-.htitle p{font-size:.72rem;color:var(--muted)}
-.hlogo{font-size:1.8rem;margin-right:10px}
-.hleft{display:flex;align-items:center}
-.pselector{display:flex;gap:5px;flex-wrap:wrap}
-.pbtn{padding:5px 13px;border:2px solid var(--border);background:transparent;color:var(--muted);border-radius:20px;cursor:pointer;font-size:.78rem;transition:all .2s}
-.pbtn.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
-.pbtn:hover:not(.active){border-color:var(--accent);color:var(--txt)}
-nav{background:var(--card);padding:0 22px;display:flex;gap:3px;border-bottom:1px solid var(--border);overflow-x:auto}
-.nbtn{padding:12px 16px;background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:.82rem;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap}
-.nbtn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
-.nbtn:hover:not(.active){color:var(--txt)}
-.main{padding:20px}
-.page{display:none}.page.active{display:block}
-.dpage{display:none}.dpage.active{display:block}
-.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
-.scard{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;transition:transform .2s}
-.scard:hover{transform:translateY(-2px)}
-.scard .v{font-size:1.7rem;font-weight:700;color:var(--accent)}
-.scard .l{font-size:.72rem;color:var(--muted);margin-top:3px}
-.stitle{font-size:.95rem;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.stitle::after{content:'';flex:1;height:1px;background:var(--border)}
-.fbar{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
-.fbtn{padding:4px 11px;border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:14px;cursor:pointer;font-size:.75rem;transition:all .2s}
-.fbtn.active{background:var(--blue);border-color:var(--blue);color:#fff}
-.sinput{padding:5px 12px;background:var(--card2);border:1px solid var(--border);border-radius:14px;color:var(--txt);font-size:.8rem;outline:none;min-width:160px}
-.sinput:focus{border-color:var(--accent)}
-.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
-.pcard{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:16px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
-.pcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent)}
-.pcard:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 6px 18px rgba(233,69,96,.18)}
-.pavatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;color:#fff;flex-shrink:0}
-.phead{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.pname{font-weight:600;font-size:.9rem}
-.pbadge{display:inline-block;font-size:.65rem;background:rgba(15,52,96,.5);color:#7db8f7;border:1px solid var(--blue);padding:2px 6px;border-radius:8px;margin-top:2px}
-.pminis{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
-.pm{text-align:center;background:rgba(255,255,255,.03);border-radius:5px;padding:5px 3px}
-.pm .v{font-size:.85rem;font-weight:600;color:var(--gold)}
-.pm .l{font-size:.6rem;color:var(--muted);margin-top:1px}
-.twrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:.8rem}
-th{background:var(--card2);color:var(--muted);padding:8px 10px;text-align:left;font-weight:600;border-bottom:2px solid var(--border);white-space:nowrap}
-td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);white-space:nowrap}
-tr:hover td{background:rgba(255,255,255,.02)}
-.r1{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:.72rem;font-weight:700;background:rgba(255,215,0,.15);color:#ffd700}
-.r2{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:.72rem;font-weight:700;background:rgba(192,192,192,.15);color:#c0c0c0}
-.r3{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:.72rem;font-weight:700;background:rgba(205,127,50,.15);color:#cd7f32}
-.rn{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:.72rem;color:var(--muted)}
-.cbox{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px}
-.cbox canvas{max-height:260px}
-.crow{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-bottom:20px}
-.bbtn{display:inline-flex;align-items:center;gap:7px;background:var(--card2);border:1px solid var(--border);color:var(--txt);padding:6px 14px;border-radius:18px;cursor:pointer;font-size:.8rem;margin-bottom:16px;transition:all .2s}
-.bbtn:hover{border-color:var(--accent);color:var(--accent)}
-.dhero{background:linear-gradient(135deg,var(--blue),var(--card));border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;display:flex;align-items:center;gap:16px}
-.davatar{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--gold));display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;color:#fff;flex-shrink:0}
-.dinfo h2{font-size:1.4rem;font-weight:700}
-.dinfo p{color:var(--muted);font-size:.82rem;margin-top:3px}
-.dtabs{display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap}
-.dtab{padding:7px 16px;border:2px solid var(--border);background:transparent;color:var(--muted);border-radius:18px;cursor:pointer;font-size:.8rem;transition:all .2s}
-.dtab.active{border-color:var(--accent);color:var(--accent);background:rgba(233,69,96,.07);font-weight:600}
-.dcont{display:none}.dcont.active{display:block}
-.egrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
-.dp{color:var(--ok);font-size:.72rem;font-weight:600}
-.dn{color:var(--ko);font-size:.72rem;font-weight:600}
-.d0{color:var(--muted);font-size:.72rem}
-.vtgl{display:flex;gap:6px;margin-bottom:12px}
-.vbtn{padding:5px 12px;border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:14px;cursor:pointer;font-size:.75rem;transition:all .2s}
-.vbtn.active{background:var(--blue);border-color:var(--blue);color:#fff}
-.psec{margin-bottom:22px}
-.psec-h{background:linear-gradient(90deg,rgba(15,52,96,.8),transparent);padding:7px 12px;border-radius:7px;font-weight:600;font-size:.87rem;margin-bottom:8px;border-left:3px solid var(--accent)}
-.nd{color:var(--muted);font-style:italic;font-size:.8rem}
-@media(max-width:768px){.crow{grid-template-columns:1fr}.egrid{grid-template-columns:1fr}.main{padding:12px}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard U18F</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0d1117;
+            --card: #161b22;
+            --card2: #1c2128;
+            --border: #30363d;
+            --accent: #e94560;
+            --blue: #0f3460;
+            --gold: #f5a623;
+            --txt: #e6edf3;
+            --muted: #8b949e;
+        }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--txt);
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, var(--card), var(--blue));
+            padding: 14px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid var(--accent);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .htitle h1 { font-size: 1.2rem; font-weight: 700; }
+        .htitle p { font-size: 0.72rem; color: var(--muted); }
+        .hlogo { font-size: 1.8rem; margin-right: 10px; }
+        .hleft { display: flex; align-items: center; }
+        .pselector {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .pbtn {
+            padding: 5px 13px;
+            border: 2px solid var(--border);
+            background: transparent;
+            color: var(--muted);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.78rem;
+            transition: all 0.2s;
+        }
+        .pbtn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+            font-weight: 600;
+        }
+        .pbtn:hover:not(.active) {
+            border-color: var(--accent);
+            color: var(--txt);
+        }
+        nav {
+            background: var(--card);
+            padding: 0 22px;
+            display: flex;
+            gap: 3px;
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+        }
+        .nbtn {
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 0.9rem;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .nbtn:hover { color: var(--txt); }
+        .nbtn.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+        .main {
+            padding: 22px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+        .ptitle {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--accent);
+        }
+        .pfilters {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .pfilters input {
+            padding: 8px 12px;
+            background: var(--card2);
+            border: 1px solid var(--border);
+            color: var(--txt);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        .pfbtn {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .pfbtn:hover { border-color: var(--accent); color: var(--txt); }
+        .pfbtn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+        .pgrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        .pcard {
+            background: var(--card2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .pcard:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(233, 69, 96, 0.2);
+        }
+        .phead {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .pavatar {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        .pname { font-weight: 600; font-size: 0.95rem; }
+        .pbadge { font-size: 0.75rem; color: var(--muted); }
+        .pminis {
+            display: flex;
+            gap: 8px;
+        }
+        .pm {
+            flex: 1;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px;
+            text-align: center;
+        }
+        .pm .v { font-weight: 700; font-size: 1.2rem; color: var(--accent); }
+        .pm .l { font-size: 0.7rem; color: var(--muted); margin-top: 4px; }
+        .twrap {
+            background: var(--card2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        thead {
+            background: var(--card);
+            border-bottom: 2px solid var(--border);
+        }
+        th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--accent);
+        }
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        tbody tr:hover {
+            background: rgba(233, 69, 96, 0.05);
+        }
+        .vviews {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .vvbtn {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .vvbtn.active {
+            background: var(--blue);
+            border-color: var(--blue);
+            color: #fff;
+        }
+        .psec {
+            margin-bottom: 20px;
+        }
+        .psec-h {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--gold);
+        }
+        .sgrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .stat {
+            background: var(--card2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+        .stat-v { font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+        .stat-l { font-size: 0.8rem; color: var(--muted); margin-top: 6px; }
+        #detailModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            overflow-y: auto;
+            display: none;
+        }
+        #detailModal.show {
+            display: block;
+        }
+        #detailModal > div {
+            background: var(--card);
+            max-width: 700px;
+            margin: 40px auto;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 24px;
+        }
+        #detailModal h2 { color: var(--accent); margin-bottom: 6px; }
+        #detailModal h3 { color: var(--muted); font-size: 0.9rem; margin-bottom: 16px; }
+        #detailModal h4 { color: var(--gold); margin-top: 16px; margin-bottom: 8px; font-size: 0.95rem; }
+        .detsec table { margin-bottom: 16px; }
+        .close-btn { float: right; font-size: 24px; cursor: pointer; color: var(--accent); }
+        .close-btn:hover { color: var(--gold); }
+    </style>
 </head>
 <body>
-<div class="header">
-  <div class="hleft">
-    <span class="hlogo">🏉</span>
-    <div class="htitle"><h1>Performance U18F</h1><p>Saison 2025–2026</p></div>
-  </div>
-  <div class="pselector" id="pselector">
-    <button class="pbtn active" onclick="setPeriod('septembre')">Septembre</button>
-    <button class="pbtn" onclick="setPeriod('novembre')">Novembre</button>
-    <button class="pbtn" onclick="setPeriod('janvier')">Janvier</button>
-    <button class="pbtn" onclick="setPeriod('mai')">Mai</button>
-  </div>
-</div>
-<nav>
-  <button class="nbtn active" onclick="showPage('overview')" id="n-overview">📊 Vue d'ensemble</button>
-  <button class="nbtn" onclick="showPage('vitesse')" id="n-vitesse">⚡ Vitesse</button>
-  <button class="nbtn" onclick="showPage('force')" id="n-force">💪 Force</button>
-  <button class="nbtn" onclick="showPage('endurance')" id="n-endurance">🫁 Endurance</button>
-  <button class="nbtn" onclick="showPage('explosivite')" id="n-explosivite">🚀 Explosivité</button>
-  <button class="nbtn" onclick="showPage('anthropo')" id="n-anthropo">📏 Anthropo</button>
-  <button class="nbtn" onclick="showPage('joueuses')" id="n-joueuses">👥 Joueuses</button>
-</nav>
-<div class="main">
-  <!-- OVERVIEW -->
-  <div class="page active" id="page-overview">
-    <div class="sgrid" id="ovStats"></div>
-    <div class="crow">
-      <div class="cbox"><div class="stitle">Répartition postes</div><canvas id="cPoste"></canvas></div>
-      <div class="cbox"><div class="stitle">Top 5 Vitesse 10m</div><canvas id="cTop5"></canvas></div>
-    </div>
-    <div class="stitle">Toutes les joueuses</div>
-    <div class="fbar">
-      <input class="sinput" id="sovS" placeholder="🔍 Rechercher..." oninput="renderOv()">
-      <button class="fbtn active" onclick="fp('ov','all',this)">Tous</button>
-      <button class="fbtn" onclick="fp('ov','1re Ligne',this)">1re Ligne</button>
-      <button class="fbtn" onclick="fp('ov','2e Ligne',this)">2e Ligne</button>
-      <button class="fbtn" onclick="fp('ov','3e Ligne',this)">3e Ligne</button>
-      <button class="fbtn" onclick="fp('ov','Ailier/arrière',this)">Ailier/Arrière</button>
-      <button class="fbtn" onclick="fp('ov','Centre',this)">Centre</button>
-      <button class="fbtn" onclick="fp('ov','Demi-melée',this)">Demi-mêlée</button>
-      <button class="fbtn" onclick="fp('ov','Demi-Ouverture',this)">Demi-Ouv.</button>
-    </div>
-    <div class="pgrid" id="ovGrid"></div>
-  </div>
-  <!-- VITESSE -->
-  <div class="page" id="page-vitesse">
-    <div class="stitle">⚡ Vitesse</div>
-    <div class="fbar">
-      <input class="sinput" id="svitS" placeholder="🔍 Rechercher..." oninput="renderVit()">
-      <button class="fbtn active" onclick="fp('vit','all',this)">Tous</button>
-      <button class="fbtn" onclick="fp('vit','1re Ligne',this)">1re Ligne</button>
-      <button class="fbtn" onclick="fp('vit','2e Ligne',this)">2e Ligne</button>
-      <button class="fbtn" onclick="fp('vit','3e Ligne',this)">3e Ligne</button>
-      <button class="fbtn" onclick="fp('vit','Ailier/arrière',this)">Ailier/Arrière</button>
-      <button class="fbtn" onclick="fp('vit','Centre',this)">Centre</button>
-      <button class="fbtn" onclick="fp('vit','Demi-melée',this)">Demi-mêlée</button>
-      <button class="fbtn" onclick="fp('vit','Demi-Ouverture',this)">Demi-Ouv.</button>
-    </div>
-    <div class="vtgl">
-      <button class="vbtn active" onclick="sv('vit','global',this)">🌍 Global</button>
-      <button class="vbtn" onclick="sv('vit','poste',this)">🏷️ Par poste</button>
-    </div>
-    <div id="vitCont"></div>
-  </div>
-  <!-- FORCE -->
-  <div class="page" id="page-force">
-    <div class="stitle">💪 Force</div>
-    <div class="fbar">
-      <input class="sinput" id="sforS" placeholder="🔍 Rechercher..." oninput="renderFor()">
-      <button class="fbtn active" onclick="fp('for','all',this)">Tous</button>
-      <button class="fbtn" onclick="fp('for','1re Ligne',this)">1re Ligne</button>
-      <button class="fbtn" onclick="fp('for','2e Ligne',this)">2e Ligne</button>
-      <button class="fbtn" onclick="fp('for','3e Ligne',this)">3e Ligne</button>
-      <button class="fbtn" onclick="fp('for','Ailier/arrière',this)">Ailier/Arrière</button>
-      <button class="fbtn" onclick="fp('for','Centre',this)">Centre</button>
-      <button class="fbtn" onclick="fp('for','Demi-melée',this)">Demi-mêlée</button>
-      <button class="fbtn" onclick="fp('for','Demi-Ouverture',this)">Demi-Ouv.</button>
-    </div>
-    <div class="vtgl">
-      <button class="vbtn active" onclick="sv('for','global',this)">🌍 Global</button>
-      <button class="vbtn" onclick="sv('for','poste',this)">🏷️ Par poste</button>
-    </div>
-    <div id="forCont"></div>
-  </div>
-  <!-- ENDURANCE -->
-  <div class="page" id="page-endurance">
-    <div class="stitle">🫁 Endurance</div>
-    <div class="fbar">
-      <input class="sinput" id="sendS" placeholder="🔍 Rechercher..." oninput="renderEnd()">
-      <button class="fbtn active" onclick="fp('end','all',this)">Tous</button>
-      <button class="fbtn" onclick="fp('end','1re Ligne',this)">1re Ligne</button>
-      <button class="fbtn" onclick="fp('end','2e Ligne',this)">2e Ligne</button>
-      <button class="fbtn" onclick="fp('end','3e Ligne',this)">3e Ligne</button>
-      <button class="fbtn" onclick="fp('end','Ailier/arrière',this)">Ailier/Arrière</button>
-      <button class="fbtn" onclick="fp('end','Centre',this)">Centre</button>
-      <button class="fbtn" onclick="fp('end','Demi-melée',this)">Demi-mêlée</button>
-      <button class="fbtn" onclick="fp('end','Demi-Ouverture',this)">Demi-Ouv.</button>
-    </div>
-    <div class="vtgl">
-      <button class="vbtn active" onclick="sv('end','global',this)">🌍 Global</button>
-      <button class="vbtn" onclick="sv('end','poste',this)">🏷️ Par poste</button>
-    </div>
-    <div id="endCont"></div>
-  </div>
-  <!-- EXPLOSIVITE -->
-  <div class="page" id="page-explosivite">
-    <div class="stitle">🚀 Explosivité</div>
-    <div class="fbar">
-      <input class="sinput" id="sexplS" placeholder="🔍 Rechercher..." oninput="renderExpl()">
-      <button class="fbtn active" onclick="fp('expl','all',this)">Tous</button>
-      <button class="fbtn" onclick="fp('expl','1re Ligne',this)">1re Ligne</button>
-      <button class="fbtn" onclick="fp('expl','2e Ligne',this)">2e Ligne</button>
-      <button class="fbtn" onclick="fp('expl','3e Ligne',this)">3e Ligne</button>
-      <button class="fbtn" onclick="fp('expl','Ailier/arrière',this)">Ailier/Arrière</button>
-      <button class="fbtn" onclick="fp('expl','Centre',this)">Centre</button>
-      <button class="fbtn" onclick="fp('expl','Demi-melée',this)">Demi-mêlée</button>
-      <button class="fbtn" onclick="fp('expl','Demi-Ouverture',this)">Demi-Ouv.</button>
-    </div>
-    <div class="vtgl">
-      <button class="vbtn active" onclick="sv('expl','global',this)">🌍 Global</button>
-      <button class="vbtn" onclick="sv('expl','poste',this)">🏷️ Par poste</button>
-    </div>
-    <div id="explCont"></div>
-  </div>
-  <!-- ANTHROPO -->
-  <div class="page" id="page-anthropo">
-    <div class="stitle">📏 Anthropométrie</div>
-    <div class="fbar">
-      <input class="sinput" id="santS" placeholder="🔍 Rechercher..." oninput="renderAnt()">
-      <button class="fbtn active" onclick="fp('ant','all',this)">Tous</button>
-      <button class="fbtn" onclick="fp('ant','1re Ligne',this)">1re Ligne</button>
-      <button class="fbtn" onclick="fp('ant','2e Ligne',this)">2e Ligne</button>
-      <button class="fbtn" onclick="fp('ant','3e Ligne',this)">3e Ligne</button>
-      <button class="fbtn" onclick="fp('ant','Ailier/arrière',this)">Ailier/Arrière</button>
-      <button class="fbtn" onclick="fp('ant','Centre',this)">Centre</button>
-      <button class="fbtn" onclick="fp('ant','Demi-melée',this)">Demi-mêlée</button>
-      <button class="fbtn" onclick="fp('ant','Demi-Ouverture',this)">Demi-Ouv.</button>
-    </div>
-    <div id="antCont"></div>
-  </div>
-  <!-- JOUEUSES -->
-  <div class="page" id="page-joueuses">
-    <div class="stitle">👥 Joueuses</div>
-    <div class="fbar">
-      <input class="sinput" id="sjS" placeholder="🔍 Rechercher..." oninput="renderJ()">
-      <button class="fbtn active" onclick="fp('j','all',this)">Tous</button>
-      <button class="fbtn" onclick="fp('j','1re Ligne',this)">1re Ligne</button>
-      <button class="fbtn" onclick="fp('j','2e Ligne',this)">2e Ligne</button>
-      <button class="fbtn" onclick="fp('j','3e Ligne',this)">3e Ligne</button>
-      <button class="fbtn" onclick="fp('j','Ailier/arrière',this)">Ailier/Arrière</button>
-      <button class="fbtn" onclick="fp('j','Centre',this)">Centre</button>
-      <button class="fbtn" onclick="fp('j','Demi-melée',this)">Demi-mêlée</button>
-      <button class="fbtn" onclick="fp('j','Demi-Ouverture',this)">Demi-Ouv.</button>
-    </div>
-    <div class="pgrid" id="jGrid"></div>
-  </div>
-  <!-- DETAIL -->
-  <div class="dpage" id="dpage">
-    <button class="bbtn" onclick="closeDetail()">← Retour</button>
-    <div class="dhero">
-      <div class="davatar" id="dAv"></div>
-      <div class="dinfo"><h2 id="dName"></h2><p id="dPoste"></p></div>
-    </div>
-    <div class="dtabs">
-      <button class="dtab active" onclick="showDTab('evo',this)">📈 Évolution</button>
-      <button class="dtab" onclick="showDTab('dvit',this)">⚡ Vitesse</button>
-      <button class="dtab" onclick="showDTab('dfor',this)">💪 Force</button>
-      <button class="dtab" onclick="showDTab('dend',this)">🫁 Endurance</button>
-      <button class="dtab" onclick="showDTab('dexpl',this)">🚀 Explosivité</button>
-      <button class="dtab" onclick="showDTab('dant',this)">📏 Anthropo</button>
-    </div>
-    <div class="dcont active" id="dc-evo"></div>
-    <div class="dcont" id="dc-dvit"></div>
-    <div class="dcont" id="dc-dfor"></div>
-    <div class="dcont" id="dc-dend"></div>
-    <div class="dcont" id="dc-dexpl"></div>
-    <div class="dcont" id="dc-dant"></div>
-  </div>
-</div>
-10:4.74,ms20:5.46,ms30:5.78,ms40:5.89,v25:null,v50:null,ms25:null,ms50:null,broad:null},
-  mai:{taille:null,poids:null,yoyo:null,dc_1rm:null,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:null,v20:null,v30:null,v40:null,ms10:null,ms20:null,ms30:null,ms40:null,v25:null,v50:null,ms25:null,ms50:null,broad:null}
- }},
- {nom:'Ines R',poste:'Demi-melée',sessions:{
-  septembre:{taille:null,poids:54.55,yoyo:1040,dc_1rm:40,tirage_1rm:35,sdt_1rm:75,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.99,v20:3.48,v25:4.22,v50:8.09,ms10:5.03,ms20:5.75,ms25:5.92,ms50:6.19,v30:null,v40:null,ms30:null,ms40:null,broad:198},
-  novembre:{taille:null,poids:55,yoyo:1000,dc_1rm:40,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.97,v20:3.42,v25:4.12,v50:7.86,ms10:null,ms20:null,ms25:null,ms50:null,v30:null,v40:null,ms30:null,ms40:null,broad:null},
-  janvier:{taille:null,poids:55.15,yoyo:1120,dc_1rm:40,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:30,tirage_3rm:40,v10:1.87,v20:3.27,v30:4.61,v40:6.06,ms10:5.35,ms20:6.12,ms30:6.51,ms40:6.60,v25:null,v50:null,ms25:null,ms50:null,broad:200},
-  mai:{taille:null,poids:null,yoyo:null,dc_1rm:null,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:null,v20:null,v30:null,v40:null,ms10:null,ms20:null,ms30:null,ms40:null,v25:null,v50:null,ms25:null,ms50:null,broad:null}
- }},
- {nom:'Jade',poste:'3e Ligne',sessions:{
-  septembre:{taille:null,poids:null,yoyo:null,dc_1rm:null,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:null,v20:null,v25:null,v50:null,ms10:null,ms20:null,ms25:null,ms50:null,v30:null,v40:null,ms30:null,ms40:null,broad:null},
-  novembre:{taille:null,poids:55,yoyo:1000,dc_1rm:35,tirage_1rm:55,sdt_1rm:100,hipthrust:110,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:2.01,v20:3.58,v25:4.30,v50:8.17,ms10:null,ms20:null,ms25:null,ms50:null,v30:null,v40:null,ms30:null,ms40:null,broad:190},
-  janvier:{taille:null,poids:51.25,yoyo:960,dc_1rm:45,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:40,tirage_3rm:50,v10:1.96,v20:3.47,v30:4.93,v40:6.53,ms10:5.10,ms20:5.76,ms30:6.09,ms40:6.13,v25:null,v50:null,ms25:null,ms50:null,broad:178},
-  mai:{taille:null,poids:null,yoyo:null,dc_1rm:null,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:null,v20:null,v30:null,v40:null,ms10:null,ms20:null,ms30:null,ms40:null,v25:null,v50:null,ms25:null,ms50:null,broad:null}
- }},
- {nom:'Kélia',poste:'Centre',sessions:{
-  septembre:{taille:null,poids:null,yoyo:null,dc_1rm:null,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:null,v20:null,v25:null,v50:null,ms10:null,ms20:null,ms25:null,ms50:null,v30:null,v40:null,ms30:null,ms40:null,broad:null},
-  novembre:{taille:null,poids:59.6,yoyo:960,dc_1rm:35,tirage_1rm:42.5,sdt_1rm:100,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.77,v20:3.14,v25:3.82,v50:7.08,ms10:null,ms20:null,ms25:null,ms50:null,v30:null,v40:null,ms30:null,ms40:null,broad:null},
-  janvier:{taille:null,poids:null,yoyo:1000,dc_1rm:null,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.79,v20:3.11,v30:4.39,v40:5.71,ms10:5.59,ms20:6.43,ms30:6.80,ms40:6.99,v25:null,v50:null,ms25:null,ms50:null,broad:null},
-  mai:{taille:null,poids:null,yoyo:null,dc_1rm:null,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:null,v20:null,v30:null,v40:null,ms10:null,ms20:null,ms30:null,ms40:null,v25:null,v50:null,ms25:null,ms50:null,broad:null}
- }},
- {nom:'Kira',poste:'1re Ligne',sessions:{
-  septembre:{taille:null,poids:null,yoyo:null,dc_1rm:null,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:null,v20:null,v25:null,v50:null,ms10:null,ms20:null,ms25:null,ms50:null,v30:null,v40:null,ms30:null,ms40:null,broad:null},
-  novembre:{taille:null,poids:83.9,yoyo:560,dc_1rm:null,tirage_1rm:55,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:null,v20:null,v25:null,v50:null,ms10:null,ms20:null,ms25:null,ms50:null,v30:null,v40:null,ms30:null,ms40:null,broad:187},
-  janvier:{taille:167,poids:null,yoyo:360,dc_1rm:55,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:52.5,tirage_3rm:50,v10:1.95,v20:3.45,v30:4.89,v40:6.43,ms10:5.13,ms20:5.80,ms30:6.11,ms40:6.19,v25:null,v50:null,ms25:null,ms50:null,broad:null},
-  mai:{taille:null,poids:null,yoyo:null,dc_1rm:null,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:null,v20:null,v30:null,v40:null,ms10:null,ms20:null,ms30:null,ms40:null,v25:null,v50:null,ms25:null,ms50:null,broad:null}
- }},
- {nom:'Lauriane',poste:'2e Ligne',sessions:{
-  septembre:{taille:null,poids:62,yoyo:920,dc_1rm:35,tirage_1rm:45,sdt_1rm:85,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:2.02,v20:3.56,v25:4.38,v50:8.37,ms10:4.95,ms20:5.62,ms25:5.73,ms50:5.98,v30:null,v40:null,ms30:null,ms40:null,broad:185},
-  novembre:{taille:null,poids:62.5,yoyo:920,dc_1rm:40,tirage_1rm:50,sdt_1rm:110,hipthrust:140,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.94,v20:3.44,v25:4.28,v50:8.02,ms10:null,ms20:null,ms25:null,ms50:null,v30:null,v40:null,ms30:null,ms40:null,broad:null},
-  janvier:{taille:null,poids:64.5,yoyo:840,dc_1rm:42.5,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:50,tirage_3rm:50,v10:2.02,v20:3.50,v30:4.97,v40:6.53,ms10:4.95,ms20:5.71,ms30:6.06,ms40:6.13,v25:null,v50:null,ms25:null,ms50:null,broad:189},
-  mai:{taille:null,poids:null,yoyo:840,dc_1rm:45,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:80,tirage_3rm:null,v10:null,v20:null,v30:null,v40:null,ms10:null,ms20:null,ms30:null,ms40:null,v25:null,v50:null,ms25:null,ms50:null,broad:null}
- }},
- {nom:'Lou',poste:'Ailier/arrière',sessions:{
-  septembre:{taille:null,poids:59.8,yoyo:1360,dc_1rm:35,tirage_1rm:40,sdt_1rm:75,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.87,v20:3.35,v25:4.13,v50:7.82,ms10:5.35,ms20:5.97,ms25:6.08,ms50:6.39,v30:null,v40:null,ms30:null,ms40:null,broad:196},
-  novembre:{taille:null,poids:61,yoyo:1360,dc_1rm:42.5,tirage_1rm:45,sdt_1rm:115,hipthrust:120,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.88,v20:3.29,v25:4.04,v50:7.51,ms10:null,ms20:null,ms25:null,ms50:null,v30:null,v40:null,ms30:null,ms40:null,broad:null},
-  janvier:{taille:null,poids:63.3,yoyo:null,dc_1rm:45,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.87,v20:3.25,v30:4.64,v40:6.10,ms10:5.35,ms20:6.15,ms30:6.44,ms40:6.56,v25:null,v50:null,ms25:null,ms50:null,broad:191},
-  mai:{taille:null,poids:null,yoyo:null,dc_1rm:50,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:null,v20:null,v30:null,v40:null,ms10:null,ms20:null,ms30:null,ms40:null,v25:null,v50:null,ms25:null,ms50:null,broad:null}
- }},
- {nom:'Lucie',poste:'Centre',sessions:{
-  septembre:{taille:null,poids:62,yoyo:1200,dc_1rm:42.5,tirage_1rm:40,sdt_1rm:100,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.91,v20:3.34,v25:4.09,v50:7.70,ms10:5.24,ms20:5.99,ms25:6.14,ms50:6.49,v30:null,v40:null,ms30:null,ms40:null,broad:191},
-  novembre:{taille:null,poids:62,yoyo:1200,dc_1rm:50,tirage_1rm:50,sdt_1rm:125,hipthrust:145,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.82,v20:3.22,v25:3.98,v50:7.31,ms10:null,ms20:null,ms25:null,ms50:null,v30:null,v40:null,ms30:null,ms40:null,broad:null},
-  janvier:{taille:null,poids:null,yoyo:1080,dc_1rm:50,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.86,v20:3.28,v30:4.63,v40:6.08,ms10:5.38,ms20:6.10,ms30:6.49,ms40:6.58,v25:null,v50:null,ms25:null,ms50:null,broad:null},
-  mai:{taille:null,poids:null,yoyo:1000,dc_1rm:53,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:null,v20:null,v30:null,v40:null,ms10:null,ms20:null,ms30:null,ms40:null,v25:null,v50:null,ms25:null,ms50:null,broad:null}
- }},
- {nom:'Margot',poste:'Demi-Ouverture',sessions:{
-  septembre:{taille:null,poids:62.7,yoyo:1560,dc_1rm:40,tirage_1rm:42.5,sdt_1rm:90,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.87,v20:3.28,v25:4.04,v50:7.49,ms10:5.35,ms20:6.10,ms25:6.19,ms50:6.68,v30:null,v40:null,ms30:null,ms40:null,broad:187},
-  novembre:{taille:null,poids:63,yoyo:1560,dc_1rm:45,tirage_1rm:50,sdt_1rm:120,hipthrust:150,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.85,v20:3.23,v25:3.96,v50:7.25,ms10:null,ms20:null,ms25:null,ms50:null,v30:null,v40:null,ms30:null,ms40:null,broad:null},
-  janvier:{taille:null,poids:64.1,yoyo:1440,dc_1rm:50,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.88,v20:3.24,v30:4.60,v40:6.00,ms10:5.32,ms20:6.17,ms30:6.52,ms40:6.67,v25:null,v50:null,ms25:null,ms50:null,broad:185},
-  mai:{taille:null,poids:null,yoyo:1360,dc_1rm:53,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.88,v20:3.24,v30:4.60,v40:6.00,ms10:5.32,ms20:6.17,ms30:6.52,ms40:6.67,v25:null,v50:null,ms25:null,ms50:null,broad:null}
- }},
- {nom:'Marine',poste:'1re Ligne',sessions:{
-  septembre:{taille:null,poids:76.5,yoyo:600,dc_1rm:50,tirage_1rm:50,sdt_1rm:100,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:2.06,v20:3.63,v25:4.44,v50:8.41,ms10:4.85,ms20:5.51,ms25:5.67,ms50:5.95,v30:null,v40:null,ms30:null,ms40:null,broad:177},
-  novembre:{taille:null,poids:76.5,yoyo:600,dc_1rm:55,tirage_1rm:60,sdt_1rm:115,hipthrust:155,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.99,v20:3.50,v25:4.28,v50:8.06,ms10:null,ms20:null,ms25:null,ms50:null,v30:null,v40:null,ms30:null,ms40:null,broad:null},
-  janvier:{taille:165,poids:76.8,yoyo:520,dc_1rm:60,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:55,tirage_3rm:60,v10:2.05,v20:3.60,v30:5.12,v40:6.72,ms10:4.88,ms20:5.56,ms30:5.86,ms40:5.95,v25:null,v50:null,ms25:null,ms50:null,broad:165},
-  mai:{taille:null,poids:null,yoyo:520,dc_1rm:63,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:60,tirage_3rm:null,v10:null,v20:null,v30:null,v40:null,ms10:null,ms20:null,ms30:null,ms40:null,v25:null,v50:null,ms25:null,ms50:null,broad:null}
- }},
- {nom:'Marthe',poste:'1re Ligne',sessions:{
-  septembre:{taille:null,poids:null,yoyo:480,dc_1rm:45,tirage_1rm:45,sdt_1rm:90,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:2.09,v20:3.70,v25:4.51,v50:8.60,ms10:4.78,ms20:5.41,ms25:5.55,ms50:5.81,v30:null,v40:null,ms30:null,ms40:null,broad:172},
-  novembre:{taille:null,poids:71.5,yoyo:480,dc_1rm:50,tirage_1rm:55,sdt_1rm:120,hipthrust:140,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:2.00,v20:3.54,v25:4.36,v50:8.14,ms10:null,ms20:null,ms25:null,ms50:null,v30:null,v40:null,ms30:null,ms40:null,broad:null},
-  janvier:{taille:163,poids:72.1,yoyo:560,dc_1rm:52.5,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:60,tirage_3rm:55,v10:2.06,v20:3.61,v30:5.14,v40:6.75,ms10:4.85,ms20:5.54,ms30:5.85,ms40:5.93,v25:null,v50:null,ms25:null,ms50:null,broad:182},
-  mai:{taille:null,poids:null,yoyo:560,dc_1rm:55,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:65,tirage_3rm:null,v10:null,v20:null,v30:null,v40:null,ms10:null,ms20:null,ms30:null,ms40:null,v25:null,v50:null,ms25:null,ms50:null,broad:null}
- }},
- {nom:'Mathilde',poste:'3e Ligne',sessions:{
-  septembre:{taille:null,poids:68,yoyo:640,dc_1rm:40,tirage_1rm:45,sdt_1rm:105,hipthrust:120,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:2.04,v20:3.59,v25:4.40,v50:8.44,ms10:4.90,ms20:5.57,ms25:5.68,ms50:5.93,v30:null,v40:null,ms30:null,ms40:null,broad:201},
-  novembre:{taille:null,poids:68.5,yoyo:640,dc_1rm:45,tirage_1rm:50,sdt_1rm:135,hipthrust:170,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.95,v20:3.43,v25:4.25,v50:8.02,ms10:null,ms20:null,ms25:null,ms50:null,v30:null,v40:null,ms30:null,ms40:null,broad:null},
-  janvier:{taille:164,poids:69.1,yoyo:800,dc_1rm:48,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:70,tirage_3rm:52.5,v10:1.94,v20:3.36,v30:4.76,v40:6.25,ms10:5.15,ms20:5.95,ms30:6.30,ms40:6.40,v25:null,v50:null,ms25:null,ms50:null,broad:205},
-  mai:{taille:null,poids:null,yoyo:800,dc_1rm:50,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:75,tirage_3rm:null,v10:null,v20:null,v30:null,v40:null,ms10:null,ms20:null,ms30:null,ms40:null,v25:null,v50:null,ms25:null,ms50:null,broad:null}
- }},
- {nom:'Mewen',poste:'2e Ligne',sessions:{
-  septembre:{taille:null,poids:65.5,yoyo:920,dc_1rm:45,tirage_1rm:45,sdt_1rm:90,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:2.09,v20:3.73,v25:4.54,v50:8.69,ms10:4.78,ms20:5.35,ms25:5.50,ms50:5.77,v30:null,v40:null,ms30:null,ms40:null,broad:188},
-  novembre:{taille:null,poids:66,yoyo:920,dc_1rm:50,tirage_1rm:55,sdt_1rm:125,hipthrust:155,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:2.00,v20:3.54,v25:4.36,v50:8.25,ms10:null,ms20:null,ms25:null,ms50:null,v30:null,v40:null,ms30:null,ms40:null,broad:null},
-  janvier:{taille:165,poids:67.3,yoyo:840,dc_1rm:52.5,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:55,tirage_3rm:55,v10:2.04,v20:3.56,v30:5.03,v40:6.59,ms10:4.90,ms20:5.62,ms30:5.96,ms40:6.04,v25:null,v50:null,ms25:null,ms50:null,broad:194},
-  mai:{taille:null,poids:null,yoyo:840,dc_1rm:55,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:60,tirage_3rm:null,v10:null,v20:null,v30:null,v40:null,ms10:null,ms20:null,ms30:null,ms40:null,v25:null,v50:null,ms25:null,ms50:null,broad:null}
- }},
- {nom:'Mila',poste:'Ailier/arrière',sessions:{
-  septembre:{taille:null,poids:56.9,yoyo:1520,dc_1rm:30,tirage_1rm:35,sdt_1rm:65,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.80,v20:3.20,v25:3.90,v50:7.40,ms10:5.56,ms20:6.25,ms25:6.41,ms50:6.76,v30:null,v40:null,ms30:null,ms40:null,broad:199},
-  novembre:{taille:null,poids:58,yoyo:1520,dc_1rm:35,tirage_1rm:42.5,sdt_1rm:100,hipthrust:115,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.77,v20:3.14,v25:3.87,v50:7.27,ms10:null,ms20:null,ms25:null,ms50:null,v30:null,v40:null,ms30:null,ms40:null,broad:null},
-  janvier:{taille:null,poids:59.25,yoyo:null,dc_1rm:40,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.79,v20:3.11,v30:4.39,v40:5.71,ms10:5.59,ms20:6.43,ms30:6.80,ms40:6.99,v25:null,v50:null,ms25:null,ms50:null,broad:200},
-  mai:{taille:null,poids:null,yoyo:null,dc_1rm:42.5,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:null,v20:null,v30:null,v40:null,ms10:null,ms20:null,ms30:null,ms40:null,v25:null,v50:null,ms25:null,ms50:null,broad:null}
- }},
- {nom:'Olivia',poste:'Centre',sessions:{
-  septembre:{taille:null,poids:59.5,yoyo:1280,dc_1rm:35,tirage_1rm:42.5,sdt_1rm:85,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.94,v20:3.41,v25:4.15,v50:7.93,ms10:5.15,ms20:5.87,ms25:6.02,ms50:6.32,v30:null,v40:null,ms30:null,ms40:null,broad:189},
-  novembre:{taille:null,poids:60,yoyo:1280,dc_1rm:42.5,tirage_1rm:50,sdt_1rm:115,hipthrust:135,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.86,v20:3.27,v25:4.00,v50:7.50,ms10:null,ms20:null,ms25:null,ms50:null,v30:null,v40:null,ms30:null,ms40:null,broad:null},
-  janvier:{taille:null,poids:61.1,yoyo:1120,dc_1rm:45,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.89,v20:3.29,v30:4.67,v40:6.12,ms10:5.29,ms20:6.08,ms30:6.45,ms40:6.55,v25:null,v50:null,ms25:null,ms50:null,broad:192},
-  mai:{taille:null,poids:null,yoyo:1040,dc_1rm:48,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:null,v20:null,v30:null,v40:null,ms10:null,ms20:null,ms30:null,ms40:null,v25:null,v50:null,ms25:null,ms50:null,broad:null}
- }},
- {nom:'Rose',poste:'Demi-Ouverture',sessions:{
-  septembre:{taille:null,poids:61.5,yoyo:1680,dc_1rm:42.5,tirage_1rm:45,sdt_1rm:100,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.83,v20:3.21,v25:3.92,v50:7.35,ms10:5.46,ms20:6.23,ms25:6.38,ms50:6.80,v30:null,v40:null,ms30:null,ms40:null,broad:194},
-  novembre:{taille:null,poids:62,yoyo:1680,dc_1rm:50,tirage_1rm:55,sdt_1rm:130,hipthrust:160,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.78,v20:3.14,v25:3.85,v50:7.10,ms10:null,ms20:null,ms25:null,ms50:null,v30:null,v40:null,ms30:null,ms40:null,broad:null},
-  janvier:{taille:null,poids:62.8,yoyo:1560,dc_1rm:52.5,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.81,v20:3.16,v30:4.47,v40:5.84,ms10:5.52,ms20:6.33,ms30:6.70,ms40:6.82,v25:null,v50:null,ms25:null,ms50:null,broad:201},
-  mai:{taille:null,poids:null,yoyo:1440,dc_1rm:55,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.81,v20:3.16,v30:4.47,v40:5.84,ms10:5.52,ms20:6.33,ms30:6.70,ms40:6.82,v25:null,v50:null,ms25:null,ms50:null,broad:null}
- }},
- {nom:'Sophie',poste:'3e Ligne',sessions:{
-  septembre:{taille:null,poids:60,yoyo:880,dc_1rm:35,tirage_1rm:42.5,sdt_1rm:80,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:2.08,v20:3.68,v25:4.45,v50:8.43,ms10:4.81,ms20:5.43,ms25:5.62,ms50:5.94,v30:null,v40:null,ms30:null,ms40:null,broad:182},
-  novembre:{taille:null,poids:60.5,yoyo:880,dc_1rm:40,tirage_1rm:50,sdt_1rm:115,hipthrust:130,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:2.00,v20:3.52,v25:4.30,v50:8.05,ms10:null,ms20:null,ms25:null,ms50:null,v30:null,v40:null,ms30:null,ms40:null,broad:null},
-  janvier:{taille:163,poids:61.5,yoyo:1000,dc_1rm:42.5,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:45,tirage_3rm:50,v10:1.99,v20:3.47,v30:4.92,v40:6.49,ms10:5.03,ms20:5.76,ms30:6.10,ms40:6.16,v25:null,v50:null,ms25:null,ms50:null,broad:190},
-  mai:{taille:null,poids:null,yoyo:1000,dc_1rm:45,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:50,tirage_3rm:null,v10:null,v20:null,v30:null,v40:null,ms10:null,ms20:null,ms30:null,ms40:null,v25:null,v50:null,ms25:null,ms50:null,broad:null}
- }},
- {nom:'Stella',poste:'Ailier/arrière',sessions:{
-  septembre:{taille:null,poids:58.2,yoyo:1440,dc_1rm:32.5,tirage_1rm:37.5,sdt_1rm:70,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.75,v20:3.11,v25:3.78,v50:7.21,ms10:5.71,ms20:6.43,ms25:6.61,ms50:6.94,v30:null,v40:null,ms30:null,ms40:null,broad:202},
-  novembre:{taille:null,poids:59,yoyo:1440,dc_1rm:37.5,tirage_1rm:42.5,sdt_1rm:105,hipthrust:125,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.73,v20:3.05,v25:3.74,v50:7.01,ms10:null,ms20:null,ms25:null,ms50:null,v30:null,v40:null,ms30:null,ms40:null,broad:null},
-  janvier:{taille:null,poids:60.1,yoyo:null,dc_1rm:40,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:1.75,v20:3.05,v30:4.31,v40:5.63,ms10:5.71,ms20:6.56,ms30:7.00,ms40:7.17,v25:null,v50:null,ms25:null,ms50:null,broad:205},
-  mai:{taille:null,poids:null,yoyo:null,dc_1rm:42.5,tirage_1rm:null,sdt_1rm:null,hipthrust:null,dc_3rm:null,squat_3rm:null,tirage_3rm:null,v10:null,v20:null,v30:null,v40:null,ms10:null,ms20:null,ms30:null,ms40:null,v25:null,v50:null,ms25:null,ms50:null,broad:null}
- }}
-];
 
-function getSession(idx,period){return DATA[idx].sessions[period]||{};}
-function hasDatas(idx,period){const s=getSession(idx,period);return Object.values(s).some(v=>v!==null);}
-function initApp(){renderOv();updateStats();updateCharts();}
-.join('')}</tbody></table></div>`;container.innerHTML=html;}
-function renderJ(){const search=document.getElementById('sjS').value.toLowerCase();const filtered=DATA.filter(j=>(j.nom.toLowerCase().includes(search)||(filters.j==='all'||j.poste===filters.j)));const grid=document.getElementById('jGrid');grid.innerHTML='';filtered.forEach((j,idx)=>{if(!hasDatas(idx,curPeriod))return;const s=getSession(idx,curPeriod);const avatar=j.nom.substring(0,2).toUpperCase();const allKeys=['taille','poids','yoyo','dc_1rm','tirage_1rm','sdt_1rm','hipthrust','dc_3rm','squat_3rm','tirage_3rm','v10','v20','v25','v30','v40','v50','ms10','ms20','ms25','ms30','ms40','ms50','broad'];const dataCount=allKeys.filter(k=>s[k]!==null).length;let html=`<div class="pcard" onclick="showDetail(${DATA.indexOf(j)})"><div class="phead"><div class="pavatar">${avatar}</div><div><div class="pname">${j.nom}</div><div class="pbadge">${j.poste}</div></div></div>`;html+=`<div class="pminis"><div class="pm"><div class="v">${dataCount}</div><div class="l">Données</div></div></div></div>`;const card=document.createElement('div');card.innerHTML=html;grid.appendChild(card);});}
-function showDetail(idx){const j=DATA[idx];const s=getSession(idx,curPeriod);const modal=document.getElementById('detailModal');const content=document.getElementById('detailContent');let html=`<h2>${j.nom} - ${j.poste}</h2><h3>${getPeriodDates()}</h3>`;const sections=[{title:'Anthropométrie',keys:['taille','poids']},{title:'Puissance aérobie',keys:['yoyo']},{title:'Puissance max (1RM)',keys:['dc_1rm','tirage_1rm','sdt_1rm','hipthrust']},{title:'Puissance max (3RM)',keys:['dc_3rm','squat_3rm','tirage_3rm']},{title:'Vitesse 10-30m',keys:['v10','v20','v25','v30','v40','v50','ms10','ms20','ms25','ms30','ms40','ms50']},{title:'Explosivité',keys:['broad']}];sections.forEach(sec=>{const hasData=sec.keys.some(k=>s[k]!==null);if(hasData){html+=`<div class="detsec"><h4>${sec.title}</h4><table>`;sec.keys.forEach(k=>{if(s[k]!==null){const unit=k.includes('ms')?'m/s':k.includes('v')?'s':k==='taille'?'cm':k==='poids'||k.includes('rm')?'kg':'m';html+=`<tr><td>${getLabel(k)}</td><td>${s[k].toFixed(k==='taille'?0:2)} ${unit}</td></tr>`;}});html+='</table></div>';}});content.innerHTML=html;modal.style.display='block';}
-document.addEventListener('DOMContentLoaded',()=>{document.getElementById('closeModal').onclick=()=>{document.getElementById('detailModal').style.display='none';};window.onclick=(e)=>{if(e.target.id==='detailModal'){document.getElementById('detailModal').style.display='none';}};initApp();});
-</script>
-</head>
-<body>
 <div class="header">
-  <div class="hleft">
-    <div class="hlogo">🏉</div>
-    <div class="htitle">
-      <h1>Dashboard U18F</h1>
-      <p>Suivi performance Feminin</p>
+    <div class="hleft">
+        <div class="hlogo">🏉</div>
+        <div class="htitle">
+            <h1>Dashboard U18F</h1>
+            <p>Suivi de performance - Équipe Féminin</p>
+        </div>
     </div>
-  </div>
-  <div class="pselector">
-    <button class="pbtn active" onclick="setPeriod('septembre')">Septembre</button>
-    <button class="pbtn" onclick="setPeriod('novembre')">Novembre</button>
-    <button class="pbtn" onclick="setPeriod('janvier')">Janvier</button>
-    <button class="pbtn" onclick="setPeriod('mai')">Mai</button>
-  </div>
+    <div class="pselector">
+        <button class="pbtn active" onclick="setPeriod('septembre', this)">Septembre</button>
+        <button class="pbtn" onclick="setPeriod('novembre', this)">Novembre</button>
+        <button class="pbtn" onclick="setPeriod('janvier', this)">Janvier</button>
+        <button class="pbtn" onclick="setPeriod('mai', this)">Mai</button>
+    </div>
 </div>
 
 <nav>
-  <button class="nbtn active" id="n-ov" onclick="showPage('ov')">Vue d'ensemble</button>
-  <button class="nbtn" id="n-vit" onclick="showPage('vit')">Vitesse</button>
-  <button class="nbtn" id="n-for" onclick="showPage('for')">Force</button>
-  <button class="nbtn" id="n-end" onclick="showPage('end')">Endurance</button>
-  <button class="nbtn" id="n-expl" onclick="showPage('expl')">Explosivité</button>
-  <button class="nbtn" id="n-ant" onclick="showPage('ant')">Anthropométrie</button>
-  <button class="nbtn" id="n-j" onclick="showPage('j')">Joueuses</button>
-  <button class="nbtn" id="n-stats" onclick="showPage('stats')">Statistiques</button>
+    <button class="nbtn active" id="nbtn-ov" onclick="showPage('ov', this)">Vue d'ensemble</button>
+    <button class="nbtn" id="nbtn-vit" onclick="showPage('vit', this)">Vitesse</button>
+    <button class="nbtn" id="nbtn-for" onclick="showPage('for', this)">Force</button>
+    <button class="nbtn" id="nbtn-end" onclick="showPage('end', this)">Endurance</button>
+    <button class="nbtn" id="nbtn-expl" onclick="showPage('expl', this)">Explosivité</button>
+    <button class="nbtn" id="nbtn-ant" onclick="showPage('ant', this)">Anthropométrie</button>
+    <button class="nbtn" id="nbtn-j" onclick="showPage('j', this)">Joueuses</button>
+    <button class="nbtn" id="nbtn-stats" onclick="showPage('stats', this)">Statistiques</button>
 </nav>
 
 <div class="main">
+    <div id="page-ov" class="page active">
+        <div class="ptitle">Vue d'ensemble</div>
+        <div class="pfilters">
+            <input type="text" id="searchOv" placeholder="Chercher..." onkeyup="renderOverview()">
+            <button class="pfbtn active" onclick="setFilter('ov', 'all', this); renderOverview()">Tous</button>
+            <button class="pfbtn" onclick="setFilter('ov', '1re Ligne', this); renderOverview()">1re Ligne</button>
+            <button class="pfbtn" onclick="setFilter('ov', '2e Ligne', this); renderOverview()">2e Ligne</button>
+            <button class="pfbtn" onclick="setFilter('ov', '3e Ligne', this); renderOverview()">3e Ligne</button>
+            <button class="pfbtn" onclick="setFilter('ov', 'Demi-melée', this); renderOverview()">Demi-melée</button>
+            <button class="pfbtn" onclick="setFilter('ov', 'Demi-Ouverture', this); renderOverview()">Demi-Ouverture</button>
+            <button class="pfbtn" onclick="setFilter('ov', 'Centre', this); renderOverview()">Centre</button>
+            <button class="pfbtn" onclick="setFilter('ov', 'Ailier/arrière', this); renderOverview()">Ailier/arrière</button>
+        </div>
+        <div id="ovGrid" class="pgrid"></div>
+    </div>
 
-  <!-- PAGE: Vue d'ensemble -->
-  <div id="page-ov" class="page active">
-    <div class="ptitle">Vue d'ensemble</div>
-    <div class="pfilters">
-      <input type="text" id="sovS" placeholder="Chercher..." onkeyup="renderOv()">
-      <button class="pfbtn active" onclick="fp('ov','all',this)">Tous</button>
-      <button class="pfbtn" onclick="fp('ov','1re Ligne',this)">1re Ligne</button>
-      <button class="pfbtn" onclick="fp('ov','2e Ligne',this)">2e Ligne</button>
-      <button class="pfbtn" onclick="fp('ov','3e Ligne',this)">3e Ligne</button>
-      <button class="pfbtn" onclick="fp('ov','Demi-melée',this)">Demi-melée</button>
-      <button class="pfbtn" onclick="fp('ov','Demi-Ouverture',this)">Demi-Ouverture</button>
-      <button class="pfbtn" onclick="fp('ov','Centre',this)">Centre</button>
-      <button class="pfbtn" onclick="fp('ov','Ailier/arrière',this)">Ailier/arrière</button>
+    <div id="page-vit" class="page">
+        <div class="ptitle">Vitesse (10m, 20m, 30m, 40m, 50m)</div>
+        <div class="pfilters">
+            <input type="text" id="searchVit" placeholder="Chercher..." onkeyup="renderVitesse()">
+            <button class="pfbtn active" onclick="setFilter('vit', 'all', this); renderVitesse()">Tous</button>
+            <button class="pfbtn" onclick="setFilter('vit', '1re Ligne', this); renderVitesse()">1re Ligne</button>
+            <button class="pfbtn" onclick="setFilter('vit', '2e Ligne', this); renderVitesse()">2e Ligne</button>
+            <button class="pfbtn" onclick="setFilter('vit', '3e Ligne', this); renderVitesse()">3e Ligne</button>
+            <button class="pfbtn" onclick="setFilter('vit', 'Demi-melée', this); renderVitesse()">Demi-melée</button>
+            <button class="pfbtn" onclick="setFilter('vit', 'Demi-Ouverture', this); renderVitesse()">Demi-Ouverture</button>
+            <button class="pfbtn" onclick="setFilter('vit', 'Centre', this); renderVitesse()">Centre</button>
+            <button class="pfbtn" onclick="setFilter('vit', 'Ailier/arrière', this); renderVitesse()">Ailier/arrière</button>
+        </div>
+        <div class="vviews">
+            <button class="vvbtn active" onclick="setView('vit', 'global', this)">Global</button>
+            <button class="vvbtn" onclick="setView('vit', 'poste', this)">Par poste</button>
+        </div>
+        <div id="vitCont"></div>
     </div>
-    <div id="ovGrid" class="pgrid"></div>
-  </div>
 
-  <!-- PAGE: Vitesse -->
-  <div id="page-vit" class="page">
-    <div class="ptitle">Vitesse</div>
-    <div class="pfilters">
-      <input type="text" id="svitS" placeholder="Chercher..." onkeyup="renderVit()">
-      <button class="pfbtn active" onclick="fp('vit','all',this)">Tous</button>
-      <button class="pfbtn" onclick="fp('vit','1re Ligne',this)">1re Ligne</button>
-      <button class="pfbtn" onclick="fp('vit','2e Ligne',this)">2e Ligne</button>
-      <button class="pfbtn" onclick="fp('vit','3e Ligne',this)">3e Ligne</button>
-      <button class="pfbtn" onclick="fp('vit','Demi-melée',this)">Demi-melée</button>
-      <button class="pfbtn" onclick="fp('vit','Demi-Ouverture',this)">Demi-Ouverture</button>
-      <button class="pfbtn" onclick="fp('vit','Centre',this)">Centre</button>
-      <button class="pfbtn" onclick="fp('vit','Ailier/arrière',this)">Ailier/arrière</button>
+    <div id="page-for" class="page">
+        <div class="ptitle">Force (1RM et 3RM)</div>
+        <div class="pfilters">
+            <input type="text" id="searchFor" placeholder="Chercher..." onkeyup="renderForce()">
+            <button class="pfbtn active" onclick="setFilter('for', 'all', this); renderForce()">Tous</button>
+            <button class="pfbtn" onclick="setFilter('for', '1re Ligne', this); renderForce()">1re Ligne</button>
+            <button class="pfbtn" onclick="setFilter('for', '2e Ligne', this); renderForce()">2e Ligne</button>
+            <button class="pfbtn" onclick="setFilter('for', '3e Ligne', this); renderForce()">3e Ligne</button>
+            <button class="pfbtn" onclick="setFilter('for', 'Demi-melée', this); renderForce()">Demi-melée</button>
+            <button class="pfbtn" onclick="setFilter('for', 'Demi-Ouverture', this); renderForce()">Demi-Ouverture</button>
+            <button class="pfbtn" onclick="setFilter('for', 'Centre', this); renderForce()">Centre</button>
+            <button class="pfbtn" onclick="setFilter('for', 'Ailier/arrière', this); renderForce()">Ailier/arrière</button>
+        </div>
+        <div class="vviews">
+            <button class="vvbtn active" onclick="setView('for', 'global', this)">Global</button>
+            <button class="vvbtn" onclick="setView('for', 'poste', this)">Par poste</button>
+        </div>
+        <div id="forCont"></div>
     </div>
-    <div class="vviews">
-      <button class="vvbtn active" onclick="sv('vit','global',this)">Global</button>
-      <button class="vvbtn" onclick="sv('vit','poste',this)">Par poste</button>
-    </div>
-    <div id="vitCont"></div>
-  </div>
 
-  <!-- PAGE: Force -->
-  <div id="page-for" class="page">
-    <div class="ptitle">Force</div>
-    <div class="pfilters">
-      <input type="text" id="sforS" placeholder="Chercher..." onkeyup="renderFor()">
-      <button class="pfbtn active" onclick="fp('for','all',this)">Tous</button>
-      <button class="pfbtn" onclick="fp('for','1re Ligne',this)">1re Ligne</button>
-      <button class="pfbtn" onclick="fp('for','2e Ligne',this)">2e Ligne</button>
-      <button class="pfbtn" onclick="fp('for','3e Ligne',this)">3e Ligne</button>
-      <button class="pfbtn" onclick="fp('for','Demi-melée',this)">Demi-melée</button>
-      <button class="pfbtn" onclick="fp('for','Demi-Ouverture',this)">Demi-Ouverture</button>
-      <button class="pfbtn" onclick="fp('for','Centre',this)">Centre</button>
-      <button class="pfbtn" onclick="fp('for','Ailier/arrière',this)">Ailier/arrière</button>
+    <div id="page-end" class="page">
+        <div class="ptitle">Endurance (YOYO Test)</div>
+        <div class="pfilters">
+            <input type="text" id="searchEnd" placeholder="Chercher..." onkeyup="renderEndurance()">
+            <button class="pfbtn active" onclick="setFilter('end', 'all', this); renderEndurance()">Tous</button>
+            <button class="pfbtn" onclick="setFilter('end', '1re Ligne', this); renderEndurance()">1re Ligne</button>
+            <button class="pfbtn" onclick="setFilter('end', '2e Ligne', this); renderEndurance()">2e Ligne</button>
+            <button class="pfbtn" onclick="setFilter('end', '3e Ligne', this); renderEndurance()">3e Ligne</button>
+            <button class="pfbtn" onclick="setFilter('end', 'Demi-melée', this); renderEndurance()">Demi-melée</button>
+            <button class="pfbtn" onclick="setFilter('end', 'Demi-Ouverture', this); renderEndurance()">Demi-Ouverture</button>
+            <button class="pfbtn" onclick="setFilter('end', 'Centre', this); renderEndurance()">Centre</button>
+            <button class="pfbtn" onclick="setFilter('end', 'Ailier/arrière', this); renderEndurance()">Ailier/arrière</button>
+        </div>
+        <div class="vviews">
+            <button class="vvbtn active" onclick="setView('end', 'global', this)">Global</button>
+            <button class="vvbtn" onclick="setView('end', 'poste', this)">Par poste</button>
+        </div>
+        <div id="endCont"></div>
     </div>
-    <div class="vviews">
-      <button class="vvbtn active" onclick="sv('for','global',this)">Global</button>
-      <button class="vvbtn" onclick="sv('for','poste',this)">Par poste</button>
-    </div>
-    <div id="forCont"></div>
-  </div>
 
-  <!-- PAGE: Endurance -->
-  <div id="page-end" class="page">
-    <div class="ptitle">Endurance</div>
-    <div class="pfilters">
-      <input type="text" id="sendS" placeholder="Chercher..." onkeyup="renderEnd()">
-      <button class="pfbtn active" onclick="fp('end','all',this)">Tous</button>
-      <button class="pfbtn" onclick="fp('end','1re Ligne',this)">1re Ligne</button>
-      <button class="pfbtn" onclick="fp('end','2e Ligne',this)">2e Ligne</button>
-      <button class="pfbtn" onclick="fp('end','3e Ligne',this)">3e Ligne</button>
-      <button class="pfbtn" onclick="fp('end','Demi-melée',this)">Demi-melée</button>
-      <button class="pfbtn" onclick="fp('end','Demi-Ouverture',this)">Demi-Ouverture</button>
-      <button class="pfbtn" onclick="fp('end','Centre',this)">Centre</button>
-      <button class="pfbtn" onclick="fp('end','Ailier/arrière',this)">Ailier/arrière</button>
+    <div id="page-expl" class="page">
+        <div class="ptitle">Explosivité (Broad Jump)</div>
+        <div class="pfilters">
+            <input type="text" id="searchExpl" placeholder="Chercher..." onkeyup="renderExplosivite()">
+            <button class="pfbtn active" onclick="setFilter('expl', 'all', this); renderExplosivite()">Tous</button>
+            <button class="pfbtn" onclick="setFilter('expl', '1re Ligne', this); renderExplosivite()">1re Ligne</button>
+            <button class="pfbtn" onclick="setFilter('expl', '2e Ligne', this); renderExplosivite()">2e Ligne</button>
+            <button class="pfbtn" onclick="setFilter('expl', '3e Ligne', this); renderExplosivite()">3e Ligne</button>
+            <button class="pfbtn" onclick="setFilter('expl', 'Demi-melée', this); renderExplosivite()">Demi-melée</button>
+            <button class="pfbtn" onclick="setFilter('expl', 'Demi-Ouverture', this); renderExplosivite()">Demi-Ouverture</button>
+            <button class="pfbtn" onclick="setFilter('expl', 'Centre', this); renderExplosivite()">Centre</button>
+            <button class="pfbtn" onclick="setFilter('expl', 'Ailier/arrière', this); renderExplosivite()">Ailier/arrière</button>
+        </div>
+        <div class="vviews">
+            <button class="vvbtn active" onclick="setView('expl', 'global', this)">Global</button>
+            <button class="vvbtn" onclick="setView('expl', 'poste', this)">Par poste</button>
+        </div>
+        <div id="explCont"></div>
     </div>
-    <div class="vviews">
-      <button class="vvbtn active" onclick="sv('end','global',this)">Global</button>
-      <button class="vvbtn" onclick="sv('end','poste',this)">Par poste</button>
-    </div>
-    <div id="endCont"></div>
-  </div>
 
-  <!-- PAGE: Explosivité -->
-  <div id="page-expl" class="page">
-    <div class="ptitle">Explosivité</div>
-    <div class="pfilters">
-      <input type="text" id="sexplS" placeholder="Chercher..." onkeyup="renderExpl()">
-      <button class="pfbtn active" onclick="fp('expl','all',this)">Tous</button>
-      <button class="pfbtn" onclick="fp('expl','1re Ligne',this)">1re Ligne</button>
-      <button class="pfbtn" onclick="fp('expl','2e Ligne',this)">2e Ligne</button>
-      <button class="pfbtn" onclick="fp('expl','3e Ligne',this)">3e Ligne</button>
-      <button class="pfbtn" onclick="fp('expl','Demi-melée',this)">Demi-melée</button>
-      <button class="pfbtn" onclick="fp('expl','Demi-Ouverture',this)">Demi-Ouverture</button>
-      <button class="pfbtn" onclick="fp('expl','Centre',this)">Centre</button>
-      <button class="pfbtn" onclick="fp('expl','Ailier/arrière',this)">Ailier/arrière</button>
+    <div id="page-ant" class="page">
+        <div class="ptitle">Anthropométrie</div>
+        <div class="pfilters">
+            <input type="text" id="searchAnt" placeholder="Chercher..." onkeyup="renderAnthropometrie()">
+            <button class="pfbtn active" onclick="setFilter('ant', 'all', this); renderAnthropometrie()">Tous</button>
+            <button class="pfbtn" onclick="setFilter('ant', '1re Ligne', this); renderAnthropometrie()">1re Ligne</button>
+            <button class="pfbtn" onclick="setFilter('ant', '2e Ligne', this); renderAnthropometrie()">2e Ligne</button>
+            <button class="pfbtn" onclick="setFilter('ant', '3e Ligne', this); renderAnthropometrie()">3e Ligne</button>
+            <button class="pfbtn" onclick="setFilter('ant', 'Demi-melée', this); renderAnthropometrie()">Demi-melée</button>
+            <button class="pfbtn" onclick="setFilter('ant', 'Demi-Ouverture', this); renderAnthropometrie()">Demi-Ouverture</button>
+            <button class="pfbtn" onclick="setFilter('ant', 'Centre', this); renderAnthropometrie()">Centre</button>
+            <button class="pfbtn" onclick="setFilter('ant', 'Ailier/arrière', this); renderAnthropometrie()">Ailier/arrière</button>
+        </div>
+        <div id="antCont"></div>
     </div>
-    <div class="vviews">
-      <button class="vvbtn active" onclick="sv('expl','global',this)">Global</button>
-      <button class="vvbtn" onclick="sv('expl','poste',this)">Par poste</button>
-    </div>
-    <div id="explCont"></div>
-  </div>
 
-  <!-- PAGE: Anthropométrie -->
-  <div id="page-ant" class="page">
-    <div class="ptitle">Anthropométrie</div>
-    <div class="pfilters">
-      <input type="text" id="santS" placeholder="Chercher..." onkeyup="renderAnt()">
-      <button class="pfbtn active" onclick="fp('ant','all',this)">Tous</button>
-      <button class="pfbtn" onclick="fp('ant','1re Ligne',this)">1re Ligne</button>
-      <button class="pfbtn" onclick="fp('ant','2e Ligne',this)">2e Ligne</button>
-      <button class="pfbtn" onclick="fp('ant','3e Ligne',this)">3e Ligne</button>
-      <button class="pfbtn" onclick="fp('ant','Demi-melée',this)">Demi-melée</button>
-      <button class="pfbtn" onclick="fp('ant','Demi-Ouverture',this)">Demi-Ouverture</button>
-      <button class="pfbtn" onclick="fp('ant','Centre',this)">Centre</button>
-      <button class="pfbtn" onclick="fp('ant','Ailier/arrière',this)">Ailier/arrière</button>
+    <div id="page-j" class="page">
+        <div class="ptitle">Joueuses</div>
+        <div class="pfilters">
+            <input type="text" id="searchJ" placeholder="Chercher..." onkeyup="renderJoueuses()">
+            <button class="pfbtn active" onclick="setFilter('j', 'all', this); renderJoueuses()">Tous</button>
+            <button class="pfbtn" onclick="setFilter('j', '1re Ligne', this); renderJoueuses()">1re Ligne</button>
+            <button class="pfbtn" onclick="setFilter('j', '2e Ligne', this); renderJoueuses()">2e Ligne</button>
+            <button class="pfbtn" onclick="setFilter('j', '3e Ligne', this); renderJoueuses()">3e Ligne</button>
+            <button class="pfbtn" onclick="setFilter('j', 'Demi-melée', this); renderJoueuses()">Demi-melée</button>
+            <button class="pfbtn" onclick="setFilter('j', 'Demi-Ouverture', this); renderJoueuses()">Demi-Ouverture</button>
+            <button class="pfbtn" onclick="setFilter('j', 'Centre', this); renderJoueuses()">Centre</button>
+            <button class="pfbtn" onclick="setFilter('j', 'Ailier/arrière', this); renderJoueuses()">Ailier/arrière</button>
+        </div>
+        <div id="jGrid" class="pgrid"></div>
     </div>
-    <div id="antCont"></div>
-  </div>
 
-  <!-- PAGE: Joueuses -->
-  <div id="page-j" class="page">
-    <div class="ptitle">Joueuses</div>
-    <div class="pfilters">
-      <input type="text" id="sjS" placeholder="Chercher..." onkeyup="renderJ()">
-      <button class="pfbtn active" onclick="fp('j','all',this)">Tous</button>
-      <button class="pfbtn" onclick="fp('j','1re Ligne',this)">1re Ligne</button>
-      <button class="pfbtn" onclick="fp('j','2e Ligne',this)">2e Ligne</button>
-      <button class="pfbtn" onclick="fp('j','3e Ligne',this)">3e Ligne</button>
-      <button class="pfbtn" onclick="fp('j','Demi-melée',this)">Demi-melée</button>
-      <button class="pfbtn" onclick="fp('j','Demi-Ouverture',this)">Demi-Ouverture</button>
-      <button class="pfbtn" onclick="fp('j','Centre',this)">Centre</button>
-      <button class="pfbtn" onclick="fp('j','Ailier/arrière',this)">Ailier/arrière</button>
+    <div id="page-stats" class="page">
+        <div class="ptitle">Statistiques globales</div>
+        <div id="statsGrid" class="sgrid"></div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+            <div style="background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 16px;">
+                <canvas id="chartPoste"></canvas>
+            </div>
+            <div style="background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 16px;">
+                <canvas id="chartTop5"></canvas>
+            </div>
+        </div>
     </div>
-    <div id="jGrid" class="pgrid"></div>
-  </div>
-
-  <!-- PAGE: Statistiques -->
-  <div id="page-stats" class="page">
-    <div class="ptitle">Statistiques globales</div>
-    <div id="ovStats" class="sgrid"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0">
-      <div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:16px">
-        <canvas id="cPoste"></canvas>
-      </div>
-      <div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:16px">
-        <canvas id="cTop5"></canvas>
-      </div>
-    </div>
-  </div>
 </div>
 
-<!-- MODAL DETAIL -->
-<div id="detailModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:1000;overflow-y:auto">
-  <div style="background:var(--card);max-width:600px;margin:40px auto;border:1px solid var(--border);border-radius:10px;padding:24px">
-    <span id="closeModal" style="float:right;font-size:24px;cursor:pointer;color:var(--accent)">&times;</span>
-    <div id="detailContent"></div>
-  </div>
+<div id="detailModal">
+    <div>
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <div id="detailContent"></div>
+    </div>
 </div>
 
 <script>
-let curPeriod='septembre';let charts={};let filters={ov:'all',vit:'all',for:'all',end:'all',expl:'all',ant:'all',j:'all'};let views={vit:'global',for:'global',end:'global',expl:'global'};
+const DATA = [
+    {nom: 'Sophie', poste: '1re Ligne', sessions: {septembre: {taille: null, poids: 85, yoyo: null, dc_1rm: 65, tirage_1rm: 70, sdt_1rm: 130, hipthrust: 150, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: 1.78, v20: 3.19, v25: 3.92, v50: 7.52, ms10: 4.98, ms20: 5.81, ms25: 6.09, ms50: 6.35, v30: null, v40: null, ms30: null, ms40: null, broad: 156}, novembre: {taille: null, poids: 83, yoyo: 520, dc_1rm: 70, tirage_1rm: 75, sdt_1rm: 140, hipthrust: 160, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: 1.74, v20: 3.10, v25: 3.82, v50: 7.28, ms10: null, ms20: null, ms25: null, ms50: null, v30: null, v40: null, ms30: null, ms40: null, broad: null}, janvier: {taille: 180, poids: 81, yoyo: 600, dc_1rm: 75, tirage_1rm: 80, sdt_1rm: 150, hipthrust: 170, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: 1.72, v20: 3.05, v25: 3.75, v30: 5.18, v40: 6.82, v50: 8.62, ms10: 4.82, ms20: 5.62, ms25: 5.91, ms30: 6.18, ms40: 6.35, ms50: 6.45, broad: 170}, mai: {taille: null, poids: null, yoyo: null, dc_1rm: null, tirage_1rm: null, sdt_1rm: null, hipthrust: null, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: null, v20: null, v25: null, v30: null, v40: null, v50: null, ms10: null, ms20: null, ms25: null, ms30: null, ms40: null, ms50: null, broad: null}}},
+    {nom: 'Marie', poste: '2e Ligne', sessions: {septembre: {taille: null, poids: 72, yoyo: null, dc_1rm: 45, tirage_1rm: 55, sdt_1rm: 115, hipthrust: 120, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: 2.01, v20: 3.58, v25: 4.45, v50: 9.12, ms10: 4.56, ms20: 5.18, ms25: 5.28, ms50: 5.42, v30: null, v40: null, ms30: null, ms40: null, broad: 167}, novembre: {taille: null, poids: 70, yoyo: 440, dc_1rm: 45, tirage_1rm: 52.5, sdt_1rm: 112.5, hipthrust: 110, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: 2.08, v20: 3.73, v25: 4.50, v50: 8.49, ms10: null, ms20: null, ms25: null, ms50: null, v30: null, v40: null, ms30: null, ms40: null, broad: 179}, janvier: {taille: 161, poids: 73, yoyo: null, dc_1rm: null, tirage_1rm: null, sdt_1rm: null, hipthrust: null, dc_3rm: null, squat_3rm: 50, tirage_3rm: 50, v10: null, v20: null, v30: null, v40: null, ms10: null, ms20: null, ms30: null, ms40: null, v25: null, v50: null, ms25: null, ms50: null, broad: null}, mai: {taille: null, poids: null, yoyo: 480, dc_1rm: 50, tirage_1rm: null, sdt_1rm: null, hipthrust: null, dc_3rm: null, squat_3rm: 50, tirage_3rm: null, v10: null, v20: null, v30: null, v40: null, ms10: null, ms20: null, ms30: null, ms40: null, v25: null, v50: null, ms25: null, ms50: null, broad: null}}},
+    {nom: 'Ines', poste: '2e Ligne', sessions: {septembre: {taille: null, poids: 61.1, yoyo: null, dc_1rm: 30, tirage_1rm: 40, sdt_1rm: 75, hipthrust: null, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: 2.19, v20: 3.88, v25: 4.67, v50: 9.66, ms10: 4.57, ms20: 5.15, ms25: 5.35, ms50: 5.18, v30: null, v40: null, ms30: null, ms40: null, broad: 153}, novembre: {taille: null, poids: 64, yoyo: null, dc_1rm: null, tirage_1rm: null, sdt_1rm: null, hipthrust: null, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: null, v20: null, v25: null, v50: null, ms10: null, ms20: null, ms25: null, ms50: null, v30: null, v40: null, ms30: null, ms40: null, broad: 172}, janvier: {taille: 174, poids: 68.25, yoyo: 400, dc_1rm: 32.5, tirage_1rm: null, sdt_1rm: null, hipthrust: null, dc_3rm: 37.5, squat_3rm: 35, tirage_3rm: null, v10: 2.11, v20: 3.66, v30: 5.19, v40: 6.79, ms10: 4.74, ms20: 5.46, ms30: 5.78, ms40: 5.89, v25: null, v50: null, ms25: null, ms50: null, broad: null}, mai: {taille: null, poids: null, yoyo: null, dc_1rm: null, tirage_1rm: null, sdt_1rm: null, hipthrust: null, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: null, v20: null, v30: null, v40: null, ms10: null, ms20: null, ms30: null, ms40: null, v25: null, v50: null, ms25: null, ms50: null, broad: null}}},
+    {nom: 'Ines R', poste: 'Demi-melée', sessions: {septembre: {taille: null, poids: 54.55, yoyo: 1040, dc_1rm: 40, tirage_1rm: 35, sdt_1rm: 75, hipthrust: null, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: 1.99, v20: 3.48, v25: 4.22, v50: 8.09, ms10: 5.03, ms20: 5.75, ms25: 5.92, ms50: 6.19, v30: null, v40: null, ms30: null, ms40: null, broad: 198}, novembre: {taille: null, poids: 55, yoyo: 1000, dc_1rm: 40, tirage_1rm: null, sdt_1rm: null, hipthrust: null, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: 1.97, v20: 3.42, v25: 4.12, v50: 7.86, ms10: null, ms20: null, ms25: null, ms50: null, v30: null, v40: null, ms30: null, ms40: null, broad: null}, janvier: {taille: null, poids: 55.15, yoyo: 1120, dc_1rm: 40, tirage_1rm: null, sdt_1rm: null, hipthrust: null, dc_3rm: null, squat_3rm: 30, tirage_3rm: 40, v10: 1.87, v20: 3.27, v30: 4.61, v40: 6.06, ms10: 5.35, ms20: 6.12, ms30: 6.51, ms40: 6.60, v25: null, v50: null, ms25: null, ms50: null, broad: 200}, mai: {taille: null, poids: null, yoyo: null, dc_1rm: null, tirage_1rm: null, sdt_1rm: null, hipthrust: null, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: null, v20: null, v30: null, v40: null, ms10: null, ms20: null, ms30: null, ms40: null, v25: null, v50: null, ms25: null, ms50: null, broad: null}}},
+    {nom: 'Jade', poste: '3e Ligne', sessions: {septembre: {taille: null, poids: null, yoyo: null, dc_1rm: null, tirage_1rm: null, sdt_1rm: null, hipthrust: null, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: null, v20: null, v25: null, v50: null, ms10: null, ms20: null, ms25: null, ms50: null, v30: null, v40: null, ms30: null, ms40: null, broad: null}, novembre: {taille: null, poids: 55, yoyo: 1000, dc_1rm: 35, tirage_1rm: 55, sdt_1rm: 100, hipthrust: 110, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: 2.01, v20: 3.58, v25: 4.30, v50: 8.17, ms10: null, ms20: null, ms25: null, ms50: null, v30: null, v40: null, ms30: null, ms40: null, broad: 190}, janvier: {taille: null, poids: 51.25, yoyo: 960, dc_1rm: 45, tirage_1rm: null, sdt_1rm: null, hipthrust: null, dc_3rm: null, squat_3rm: 40, tirage_3rm: 50, v10: 1.96, v20: 3.47, v30: 4.93, v40: 6.53, ms10: 5.10, ms20: 5.76, ms30: 6.09, ms40: 6.13, v25: null, v50: null, ms25: null, ms50: null, broad: 178}, mai: {taille: null, poids: null, yoyo: null, dc_1rm: null, tirage_1rm: null, sdt_1rm: null, hipthrust: null, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: null, v20: null, v30: null, v40: null, ms10: null, ms20: null, ms30: null, ms40: null, v25: null, v50: null, ms25: null, ms50: null, broad: null}}}
+];
+
+let currentPeriod = 'septembre';
+let filters = {ov: 'all', vit: 'all', for: 'all', end: 'all', expl: 'all', ant: 'all', j: 'all'};
+let views = {vit: 'global', for: 'global', end: 'global', expl: 'global'};
+
+function setPeriod(period, el) {
+    currentPeriod = period;
+    document.querySelectorAll('.header .pbtn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    renderCurrentPage();
+}
+
+function showPage(page, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nbtn').forEach(b => b.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    el.classList.add('active');
+    setTimeout(() => {
+        if (page === 'ov') renderOverview();
+        if (page === 'vit') renderVitesse();
+        if (page === 'for') renderForce();
+        if (page === 'end') renderEndurance();
+        if (page === 'expl') renderExplosivite();
+        if (page === 'ant') renderAnthropometrie();
+        if (page === 'j') renderJoueuses();
+        if (page === 'stats') renderStatistiques();
+    }, 0);
+}
+
+function renderCurrentPage() {
+    const active = document.querySelector('.page.active').id.replace('page-', '');
+    if (active === 'ov') renderOverview();
+    if (active === 'vit') renderVitesse();
+    if (active === 'for') renderForce();
+    if (active === 'end') renderEndurance();
+    if (active === 'expl') renderExplosivite();
+    if (active === 'ant') renderAnthropometrie();
+    if (active === 'j') renderJoueuses();
+    if (active === 'stats') renderStatistiques();
+}
+
+function setFilter(section, poste, el) {
+    filters[section] = poste;
+    el.parentElement.querySelectorAll('.pfbtn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+}
+
+function setView(section, view, el) {
+    views[section] = view;
+    el.parentElement.querySelectorAll('.vvbtn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    if (section === 'vit') renderVitesse();
+    if (section === 'for') renderForce();
+    if (section === 'end') renderEndurance();
+    if (section === 'expl') renderExplosivite();
+}
+
+function getLabel(key) {
+    const labels = {
+        taille: 'Taille', poids: 'Poids', yoyo: 'YOYO Test',
+        dc_1rm: 'Développé couché 1RM', tirage_1rm: 'Tirage 1RM', sdt_1rm: 'Soulevé de terre 1RM', hipthrust: 'Hip Thrust',
+        dc_3rm: 'Développé couché 3RM', squat_3rm: 'Squat 3RM', tirage_3rm: 'Tirage 3RM',
+        v10: 'V10m', v20: 'V20m', v25: 'V25m', v30: 'V30m', v40: 'V40m', v50: 'V50m',
+        ms10: 'MS10m', ms20: 'MS20m', ms25: 'MS25m', ms30: 'MS30m', ms40: 'MS40m', ms50: 'MS50m',
+        broad: 'Broad Jump'
+    };
+    return labels[key] || key;
+}
+
+function getFilteredData(section) {
+    const search = document.getElementById('search' + (section.charAt(0).toUpperCase() + section.slice(1)))?.value.toLowerCase() || '';
+    return DATA.filter(j => {
+        const matchesSearch = j.nom.toLowerCase().includes(search);
+        const matchesFilter = filters[section] === 'all' || j.poste === filters[section];
+        return matchesSearch && matchesFilter;
+    });
+}
+
+function renderOverview() {
+    const filtered = getFilteredData('ov');
+    let html = '';
+    filtered.forEach(j => {
+        const s = j.sessions[currentPeriod];
+        if (!s) return;
+        const dataCount = Object.values(s).filter(v => v !== null).length;
+        const avatar = j.nom.substring(0, 2).toUpperCase();
+        html += `<div class="pcard" onclick="showDetail('${j.nom}')">
+            <div class="phead">
+                <div class="pavatar">${avatar}</div>
+                <div>
+                    <div class="pname">${j.nom}</div>
+                    <div class="pbadge">${j.poste}</div>
+                </div>
+            </div>
+            <div class="pminis">
+                <div class="pm"><div class="v">${dataCount}</div><div class="l">Données</div></div>
+            </div>
+        </div>`;
+    });
+    document.getElementById('ovGrid').innerHTML = html || '<p style="grid-column: 1/-1; color: var(--muted);">Aucune donnée</p>';
+}
+
+function renderVitesse() {
+    const filtered = getFilteredData('vit');
+    const container = document.getElementById('vitCont');
+    container.innerHTML = '';
+
+    if (views.vit === 'global') {
+        const speeds = ['v10', 'v20', 'v25', 'v30', 'v40', 'v50'];
+        let html = '';
+        speeds.forEach(s => {
+            const data = [];
+            filtered.forEach(j => {
+                const val = j.sessions[currentPeriod][s];
+                if (val) data.push({nom: j.nom, val: val});
+            });
+            data.sort((a, b) => a.val - b.val);
+            if (data.length > 0) {
+                html += `<div class="twrap">
+                    <table>
+                        <thead><tr><th colspan="2">${getLabel(s)}</th></tr><tr><th>Joueuse</th><th>Temps (s)</th></tr></thead>
+                        <tbody>`;
+                data.slice(0, 20).forEach(d => {
+                    html += `<tr><td>${d.nom}</td><td>${d.val.toFixed(2)}</td></tr>`;
+                });
+                html += `</tbody></table></div>`;
+            }
+        });
+        container.innerHTML = html || '<p style="color: var(--muted);">Aucune donnée</p>';
+    } else {
+        const postes = {};
+        filtered.forEach(j => {
+            if (!postes[j.poste]) postes[j.poste] = [];
+            postes[j.poste].push(j);
+        });
+
+        let html = '';
+        Object.entries(postes).forEach(([poste, joueuses]) => {
+            const speeds = ['v10', 'v20', 'v25', 'v30', 'v40', 'v50'];
+            html += `<div class="psec"><div class="psec-h">${poste}</div>`;
+            speeds.forEach(s => {
+                let sum = 0, count = 0;
+                joueuses.forEach(j => {
+                    const val = j.sessions[currentPeriod][s];
+                    if (val) { sum += val; count++; }
+                });
+                if (count > 0) {
+                    html += `<div class="twrap"><table><thead><tr><th colspan="2">${getLabel(s)}</th></tr></thead><tbody><tr><td>Moyenne (n=${count})</td><td>${(sum/count).toFixed(2)}</td></tr></tbody></table></div>`;
+                }
+            });
+            html += `</div>`;
+        });
+        container.innerHTML = html || '<p style="color: var(--muted);">Aucune donnée</p>';
+    }
+}
+
+function renderForce() {
+    const filtered = getFilteredData('for');
+    const container = document.getElementById('forCont');
+    container.innerHTML = '';
+
+    if (views.for === 'global') {
+        const forces = ['dc_1rm', 'tirage_1rm', 'sdt_1rm', 'hipthrust', 'dc_3rm', 'squat_3rm', 'tirage_3rm'];
+        let html = '';
+        forces.forEach(f => {
+            const data = [];
+            filtered.forEach(j => {
+                const val = j.sessions[currentPeriod][f];
+                if (val) data.push({nom: j.nom, val: val});
+            });
+            data.sort((a, b) => b.val - a.val);
+            if (data.length > 0) {
+                html += `<div class="twrap">
+                    <table>
+                        <thead><tr><th colspan="2">${getLabel(f)}</th></tr><tr><th>Joueuse</th><th>Poids (kg)</th></tr></thead>
+                        <tbody>`;
+                data.slice(0, 20).forEach(d => {
+                    html += `<tr><td>${d.nom}</td><td>${d.val.toFixed(1)}</td></tr>`;
+                });
+                html += `</tbody></table></div>`;
+            }
+        });
+        container.innerHTML = html || '<p style="color: var(--muted);">Aucune donnée</p>';
+    } else {
+        const postes = {};
+        filtered.forEach(j => {
+            if (!postes[j.poste]) postes[j.poste] = [];
+            postes[j.poste].push(j);
+        });
+
+        let html = '';
+        Object.entries(postes).forEach(([poste, joueuses]) => {
+            const forces = ['dc_1rm', 'tirage_1rm', 'sdt_1rm', 'hipthrust', 'dc_3rm', 'squat_3rm', 'tirage_3rm'];
+            html += `<div class="psec"><div class="psec-h">${poste}</div>`;
+            forces.forEach(f => {
+                let sum = 0, count = 0;
+                joueuses.forEach(j => {
+                    const val = j.sessions[currentPeriod][f];
+                    if (val) { sum += val; count++; }
+                });
+                if (count > 0) {
+                    html += `<div class="twrap"><table><thead><tr><th colspan="2">${getLabel(f)}</th></tr></thead><tbody><tr><td>Moyenne (n=${count})</td><td>${(sum/count).toFixed(1)}</td></tr></tbody></table></div>`;
+                }
+            });
+            html += `</div>`;
+        });
+        container.innerHTML = html || '<p style="color: var(--muted);">Aucune donnée</p>';
+    }
+}
+
+function renderEndurance() {
+    const filtered = getFilteredData('end');
+    const container = document.getElementById('endCont');
+    container.innerHTML = '';
+
+    if (views.end === 'global') {
+        const data = [];
+        filtered.forEach(j => {
+            const val = j.sessions[currentPeriod].yoyo;
+            if (val) data.push({nom: j.nom, val: val});
+        });
+        data.sort((a, b) => b.val - a.val);
+
+        let html = '';
+        if (data.length > 0) {
+            html = `<div class="twrap"><table><thead><tr><th colspan="2">YOYO Test</th></tr><tr><th>Joueuse</th><th>Distance (m)</th></tr></thead><tbody>`;
+            data.forEach(d => {
+                html += `<tr><td>${d.nom}</td><td>${d.val.toFixed(0)}</td></tr>`;
+            });
+            html += `</tbody></table></div>`;
+        }
+        container.innerHTML = html || '<p style="color: var(--muted);">Aucune donnée</p>';
+    } else {
+        const postes = {};
+        filtered.forEach(j => {
+            if (!postes[j.poste]) postes[j.poste] = [];
+            postes[j.poste].push(j);
+        });
+
+        let html = '';
+        Object.entries(postes).forEach(([poste, joueuses]) => {
+            let sum = 0, count = 0;
+            joueuses.forEach(j => {
+                const val = j.sessions[currentPeriod].yoyo;
+                if (val) { sum += val; count++; }
+            });
+            if (count > 0) {
+                html += `<div class="twrap"><table><thead><tr><th colspan="2">${poste}</th></tr></thead><tbody><tr><td>YOYO Moyenne (n=${count})</td><td>${(sum/count).toFixed(0)}</td></tr></tbody></table></div>`;
+            }
+        });
+        container.innerHTML = html || '<p style="color: var(--muted);">Aucune donnée</p>';
+    }
+}
+
+function renderExplosivite() {
+    const filtered = getFilteredData('expl');
+    const container = document.getElementById('explCont');
+    container.innerHTML = '';
+
+    if (views.expl === 'global') {
+        const data = [];
+        filtered.forEach(j => {
+            const val = j.sessions[currentPeriod].broad;
+            if (val) data.push({nom: j.nom, val: val});
+        });
+        data.sort((a, b) => b.val - a.val);
+
+        let html = '';
+        if (data.length > 0) {
+            html = `<div class="twrap"><table><thead><tr><th colspan="2">Broad Jump</th></tr><tr><th>Joueuse</th><th>Distance (cm)</th></tr></thead><tbody>`;
+            data.forEach(d => {
+                html += `<tr><td>${d.nom}</td><td>${d.val.toFixed(0)}</td></tr>`;
+            });
+            html += `</tbody></table></div>`;
+        }
+        container.innerHTML = html || '<p style="color: var(--muted);">Aucune donnée</p>';
+    } else {
+        const postes = {};
+        filtered.forEach(j => {
+            if (!postes[j.poste]) postes[j.poste] = [];
+            postes[j.poste].push(j);
+        });
+
+        let html = '';
+        Object.entries(postes).forEach(([poste, joueuses]) => {
+            let sum = 0, count = 0;
+            joueuses.forEach(j => {
+                const val = j.sessions[currentPeriod].broad;
+                if (val) { sum += val; count++; }
+            });
+            if (count > 0) {
+                html += `<div class="twrap"><table><thead><tr><th colspan="2">${poste}</th></tr></thead><tbody><tr><td>Broad Moyenne (n=${count})</td><td>${(sum/count).toFixed(0)}</td></tr></tbody></table></div>`;
+            }
+        });
+        container.innerHTML = html || '<p style="color: var(--muted);">Aucune donnée</p>';
+    }
+}
+
+function renderAnthropometrie() {
+    const filtered = getFilteredData('ant');
+    const container = document.getElementById('antCont');
+    container.innerHTML = '';
+
+    let html = '';
+    const poids = [];
+    const taille = [];
+    
+    filtered.forEach(j => {
+        const s = j.sessions[currentPeriod];
+        if (s.poids) poids.push({nom: j.nom, val: s.poids});
+        if (s.taille) taille.push({nom: j.nom, val: s.taille});
+    });
+    
+    poids.sort((a, b) => b.val - a.val);
+    taille.sort((a, b) => b.val - a.val);
+
+    if (poids.length > 0) {
+        html += `<div class="twrap"><table><thead><tr><th colspan="2">Poids</th></tr><tr><th>Joueuse</th><th>Poids (kg)</th></tr></thead><tbody>`;
+        poids.forEach(d => {
+            html += `<tr><td>${d.nom}</td><td>${d.val.toFixed(1)}</td></tr>`;
+        });
+        html += `</tbody></table></div>`;
+    }
+
+    if (taille.length > 0) {
+        html += `<div class="twrap"><table><thead><tr><th colspan="2">Taille</th></tr><tr><th>Joueuse</th><th>Taille (cm)</th></tr></thead><tbody>`;
+        taille.forEach(d => {
+            html += `<tr><td>${d.nom}</td><td>${d.val.toFixed(0)}</td></tr>`;
+        });
+        html += `</tbody></table></div>`;
+    }
+
+    container.innerHTML = html || '<p style="color: var(--muted);">Aucune donnée</p>';
+}
+
+function renderJoueuses() {
+    const filtered = getFilteredData('j');
+    const grid = document.getElementById('jGrid');
+    grid.innerHTML = '';
+
+    filtered.forEach(j => {
+        const s = j.sessions[currentPeriod];
+        const dataCount = Object.values(s).filter(v => v !== null).length;
+        const avatar = j.nom.substring(0, 2).toUpperCase();
+        
+        const html = `<div class="pcard" onclick="showDetail('${j.nom}')">
+            <div class="phead">
+                <div class="pavatar">${avatar}</div>
+                <div>
+                    <div class="pname">${j.nom}</div>
+                    <div class="pbadge">${j.poste}</div>
+                </div>
+            </div>
+            <div class="pminis">
+                <div class="pm"><div class="v">${dataCount}</div><div class="l">Données</div></div>
+            </div>
+        </div>`;
+        grid.innerHTML += html;
+    });
+    
+    if (grid.innerHTML === '') grid.innerHTML = '<p style="grid-column: 1/-1; color: var(--muted);">Aucune joueuse</p>';
+}
+
+function renderStatistiques() {
+    const container = document.getElementById('statsGrid');
+    container.innerHTML = '';
+
+    const stats = [];
+    let totalData = 0;
+    DATA.forEach(j => {
+        const s = j.sessions[currentPeriod];
+        totalData += Object.values(s).filter(v => v !== null).length;
+    });
+
+    stats.push({label: 'Joueuses', value: DATA.length});
+    stats.push({label: 'Données', value: totalData});
+
+    let html = '';
+    stats.forEach(stat => {
+        html += `<div class="stat"><div class="stat-v">${stat.value}</div><div class="stat-l">${stat.label}</div></div>`;
+    });
+    container.innerHTML = html;
+}
+
+function showDetail(nom) {
+    const j = DATA.find(x => x.nom === nom);
+    if (!j) return;
+    
+    const s = j.sessions[currentPeriod];
+    const modal = document.getElementById('detailModal');
+    const content = document.getElementById('detailContent');
+
+    let html = `<h2>${j.nom}</h2><h3>${j.poste} - ${currentPeriod.charAt(0).toUpperCase() + currentPeriod.slice(1)}</h3>`;
+
+    const sections = [
+        {title: 'Anthropométrie', keys: ['taille', 'poids']},
+        {title: 'Puissance aérobie', keys: ['yoyo']},
+        {title: 'Force Max (1RM)', keys: ['dc_1rm', 'tirage_1rm', 'sdt_1rm', 'hipthrust']},
+        {title: 'Force Max (3RM)', keys: ['dc_3rm', 'squat_3rm', 'tirage_3rm']},
+        {title: 'Vitesse', keys: ['v10', 'v20', 'v25', 'v30', 'v40', 'v50', 'ms10', 'ms20', 'ms25', 'ms30', 'ms40', 'ms50']},
+        {title: 'Explosivité', keys: ['broad']}
+    ];
+
+    sections.forEach(sec => {
+        const hasData = sec.keys.some(k => s[k] !== null);
+        if (hasData) {
+            html += `<h4>${sec.title}</h4><table><tbody>`;
+            sec.keys.forEach(k => {
+                if (s[k] !== null) {
+                    let unit = 's';
+                    if (k.includes('ms')) unit = 'm/s';
+                    if (k === 'taille') unit = 'cm';
+                    if (k === 'poids' || k.includes('rm')) unit = 'kg';
+                    if (k === 'yoyo') unit = 'm';
+                    if (k === 'broad') unit = 'cm';
+                    html += `<tr><td>${getLabel(k)}</td><td><strong>${s[k].toFixed(k === 'taille' ? 0 : 2)}</strong> ${unit}</td></tr>`;
+                }
+            });
+            html += `</tbody></table>`;
+        }
+    });
+
+    content.innerHTML = html;
+    modal.classList.add('show');
+}
+
+function closeModal() {
+    document.getElementById('detailModal').classList.remove('show');
+}
+
+window.onclick = (e) => {
+    const modal = document.getElementById('detailModal');
+    if (e.target === modal) modal.classList.remove('show');
+};
+
+renderOverview();
 </script>
 </body>
 </html>
