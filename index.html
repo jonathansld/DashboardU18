@@ -1,919 +1,563 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard U18F</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --bg: #0d1117;
-            --card: #161b22;
-            --card2: #1c2128;
-            --border: #30363d;
-            --accent: #e94560;
-            --blue: #0f3460;
-            --gold: #f5a623;
-            --txt: #e6edf3;
-            --muted: #8b949e;
-        }
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: var(--bg);
-            color: var(--txt);
-            min-height: 100vh;
-        }
-        .header {
-            background: linear-gradient(135deg, var(--card), var(--blue));
-            padding: 14px 22px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 2px solid var(--accent);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .htitle h1 { font-size: 1.2rem; font-weight: 700; }
-        .htitle p { font-size: 0.72rem; color: var(--muted); }
-        .hlogo { font-size: 1.8rem; margin-right: 10px; }
-        .hleft { display: flex; align-items: center; }
-        .pselector {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-        .pbtn {
-            padding: 5px 13px;
-            border: 2px solid var(--border);
-            background: transparent;
-            color: var(--muted);
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.78rem;
-            transition: all 0.2s;
-        }
-        .pbtn.active {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #fff;
-            font-weight: 600;
-        }
-        .pbtn:hover:not(.active) {
-            border-color: var(--accent);
-            color: var(--txt);
-        }
-        nav {
-            background: var(--card);
-            padding: 0 22px;
-            display: flex;
-            gap: 3px;
-            border-bottom: 1px solid var(--border);
-            overflow-x: auto;
-        }
-        .nbtn {
-            padding: 12px 16px;
-            background: transparent;
-            border: none;
-            color: var(--muted);
-            cursor: pointer;
-            font-size: 0.9rem;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-        .nbtn:hover { color: var(--txt); }
-        .nbtn.active {
-            color: var(--accent);
-            border-bottom-color: var(--accent);
-        }
-        .main {
-            padding: 22px;
-            max-width: 1600px;
-            margin: 0 auto;
-        }
-        .page {
-            display: none;
-        }
-        .page.active {
-            display: block;
-        }
-        .ptitle {
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 16px;
-            color: var(--accent);
-        }
-        .pfilters {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .pfilters input {
-            padding: 8px 12px;
-            background: var(--card2);
-            border: 1px solid var(--border);
-            color: var(--txt);
-            border-radius: 6px;
-            font-size: 0.9rem;
-        }
-        .pfbtn {
-            padding: 6px 12px;
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--muted);
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-        }
-        .pfbtn:hover { border-color: var(--accent); color: var(--txt); }
-        .pfbtn.active {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #fff;
-        }
-        .pgrid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 16px;
-        }
-        .pcard {
-            background: var(--card2);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 16px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .pcard:hover {
-            border-color: var(--accent);
-            transform: translateY(-4px);
-            box-shadow: 0 8px 16px rgba(233, 69, 96, 0.2);
-        }
-        .phead {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-        .pavatar {
-            width: 40px;
-            height: 40px;
-            background: var(--accent);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.9rem;
-        }
-        .pname { font-weight: 600; font-size: 0.95rem; }
-        .pbadge { font-size: 0.75rem; color: var(--muted); }
-        .pminis {
-            display: flex;
-            gap: 8px;
-        }
-        .pm {
-            flex: 1;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 8px;
-            text-align: center;
-        }
-        .pm .v { font-weight: 700; font-size: 1.2rem; color: var(--accent); }
-        .pm .l { font-size: 0.7rem; color: var(--muted); margin-top: 4px; }
-        .twrap {
-            background: var(--card2);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 16px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-        }
-        thead {
-            background: var(--card);
-            border-bottom: 2px solid var(--border);
-        }
-        th {
-            padding: 12px;
-            text-align: left;
-            font-weight: 600;
-            color: var(--accent);
-        }
-        td {
-            padding: 10px 12px;
-            border-bottom: 1px solid var(--border);
-        }
-        tbody tr:hover {
-            background: rgba(233, 69, 96, 0.05);
-        }
-        .vviews {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-        .vvbtn {
-            padding: 6px 12px;
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--muted);
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .vvbtn.active {
-            background: var(--blue);
-            border-color: var(--blue);
-            color: #fff;
-        }
-        .psec {
-            margin-bottom: 20px;
-        }
-        .psec-h {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--gold);
-        }
-        .sgrid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-        .stat {
-            background: var(--card2);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
-        }
-        .stat-v { font-size: 1.8rem; font-weight: 700; color: var(--accent); }
-        .stat-l { font-size: 0.8rem; color: var(--muted); margin-top: 6px; }
-        #detailModal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            overflow-y: auto;
-            display: none;
-        }
-        #detailModal.show {
-            display: block;
-        }
-        #detailModal > div {
-            background: var(--card);
-            max-width: 700px;
-            margin: 40px auto;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 24px;
-        }
-        #detailModal h2 { color: var(--accent); margin-bottom: 6px; }
-        #detailModal h3 { color: var(--muted); font-size: 0.9rem; margin-bottom: 16px; }
-        #detailModal h4 { color: var(--gold); margin-top: 16px; margin-bottom: 8px; font-size: 0.95rem; }
-        .detsec table { margin-bottom: 16px; }
-        .close-btn { float: right; font-size: 24px; cursor: pointer; color: var(--accent); }
-        .close-btn:hover { color: var(--gold); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard U18F</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--card:#161b22;--card2:#1c2128;--border:#30363d;--accent:#e94560;--blue:#0f3460;--gold:#f5a623;--ok:#2ea043;--ko:#da3633;--txt:#e6edf3;--muted:#8b949e}
+body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.header{background:linear-gradient(135deg,var(--card),var(--blue));padding:14px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--accent);position:sticky;top:0;z-index:100;flex-wrap:wrap;gap:10px}
+.htitle h1{font-size:1.2rem}
+.htitle p{font-size:.72rem;color:var(--muted)}
+.hlogo{font-size:1.8rem;margin-right:10px}
+.hleft{display:flex;align-items:center}
+.container{padding:20px;max-width:1400px;margin:0 auto}
+.controls{background:var(--card);padding:20px;border-radius:12px;margin-bottom:20px;display:flex;gap:15px;flex-wrap:wrap;align-items:center}
+.controls label{font-size:.85rem;color:var(--muted);display:block;margin-bottom:5px}
+.controls select{background:var(--card2);color:var(--txt);border:1px solid var(--border);padding:8px 12px;border-radius:6px;font-size:.9rem;min-width:180px}
+.periods{display:flex;gap:8px;flex-wrap:wrap}
+.pchk{display:flex;align-items:center;gap:5px;background:var(--card2);padding:6px 12px;border-radius:20px;cursor:pointer;font-size:.85rem;border:1px solid var(--border)}
+.pchk input{cursor:pointer}
+.pchk.active{background:var(--accent);border-color:var(--accent)}
+.cats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:20px}
+.cat{background:linear-gradient(135deg,var(--card),var(--card2));padding:20px;border-radius:12px;border:1px solid var(--border);cursor:pointer;text-align:center;transition:all .2s}
+.cat:hover{transform:translateY(-3px);border-color:var(--accent)}
+.cat .ico{font-size:2rem;margin-bottom:8px}
+.cat .name{font-weight:600;margin-bottom:4px}
+.cat .desc{font-size:.75rem;color:var(--muted)}
+.section{background:var(--card);padding:20px;border-radius:12px;margin-bottom:20px;border:1px solid var(--border)}
+.section h2{margin-bottom:15px;font-size:1.1rem;color:var(--accent);display:flex;align-items:center;gap:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat{background:var(--card2);padding:15px;border-radius:8px;text-align:center;border:1px solid var(--border)}
+.stat .label{font-size:.75rem;color:var(--muted);text-transform:uppercase;margin-bottom:5px}
+.stat .val{font-size:1.5rem;font-weight:700;color:var(--accent)}
+.stat .unit{font-size:.75rem;color:var(--muted);margin-left:3px}
+.evo{font-size:.75rem;margin-top:4px;font-weight:600}
+.evo.pos{color:var(--ok)}
+.evo.neg{color:var(--ko)}
+.chart-wrap{background:var(--card2);padding:15px;border-radius:8px;margin-top:15px;height:300px;position:relative}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{padding:8px;text-align:left;border-bottom:1px solid var(--border);font-size:.85rem}
+th{background:var(--card2);color:var(--accent);font-weight:600}
+.back{background:var(--accent);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;margin-bottom:15px}
+.hidden{display:none}
+.profile{background:linear-gradient(135deg,var(--blue),var(--card));padding:25px;border-radius:12px;margin-bottom:20px;display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.avatar{width:80px;height:80px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700}
+.pinfo h2{font-size:1.5rem;margin-bottom:5px}
+.pinfo p{color:var(--muted);font-size:.9rem}
+.tag{display:inline-block;background:var(--accent);padding:3px 10px;border-radius:12px;font-size:.75rem;margin-right:5px;margin-top:5px}
+</style>
 </head>
 <body>
-
 <div class="header">
-    <div class="hleft">
-        <div class="hlogo">🏉</div>
-        <div class="htitle">
-            <h1>Dashboard U18F</h1>
-            <p>Suivi de performance - Équipe Féminin</p>
-        </div>
-    </div>
-    <div class="pselector">
-        <button class="pbtn active" onclick="setPeriod('septembre', this)">Septembre</button>
-        <button class="pbtn" onclick="setPeriod('novembre', this)">Novembre</button>
-        <button class="pbtn" onclick="setPeriod('janvier', this)">Janvier</button>
-        <button class="pbtn" onclick="setPeriod('mai', this)">Mai</button>
-    </div>
+<div class="hleft"><div class="hlogo">🏉</div><div class="htitle"><h1>Dashboard U18F</h1><p>Suivi des performances physiques</p></div></div>
 </div>
-
-<nav>
-    <button class="nbtn active" id="nbtn-ov" onclick="showPage('ov', this)">Vue d'ensemble</button>
-    <button class="nbtn" id="nbtn-vit" onclick="showPage('vit', this)">Vitesse</button>
-    <button class="nbtn" id="nbtn-for" onclick="showPage('for', this)">Force</button>
-    <button class="nbtn" id="nbtn-end" onclick="showPage('end', this)">Endurance</button>
-    <button class="nbtn" id="nbtn-expl" onclick="showPage('expl', this)">Explosivité</button>
-    <button class="nbtn" id="nbtn-ant" onclick="showPage('ant', this)">Anthropométrie</button>
-    <button class="nbtn" id="nbtn-j" onclick="showPage('j', this)">Joueuses</button>
-    <button class="nbtn" id="nbtn-stats" onclick="showPage('stats', this)">Statistiques</button>
-</nav>
-
-<div class="main">
-    <div id="page-ov" class="page active">
-        <div class="ptitle">Vue d'ensemble</div>
-        <div class="pfilters">
-            <input type="text" id="searchOv" placeholder="Chercher..." onkeyup="renderOverview()">
-            <button class="pfbtn active" onclick="setFilter('ov', 'all', this); renderOverview()">Tous</button>
-            <button class="pfbtn" onclick="setFilter('ov', '1re Ligne', this); renderOverview()">1re Ligne</button>
-            <button class="pfbtn" onclick="setFilter('ov', '2e Ligne', this); renderOverview()">2e Ligne</button>
-            <button class="pfbtn" onclick="setFilter('ov', '3e Ligne', this); renderOverview()">3e Ligne</button>
-            <button class="pfbtn" onclick="setFilter('ov', 'Demi-melée', this); renderOverview()">Demi-melée</button>
-            <button class="pfbtn" onclick="setFilter('ov', 'Demi-Ouverture', this); renderOverview()">Demi-Ouverture</button>
-            <button class="pfbtn" onclick="setFilter('ov', 'Centre', this); renderOverview()">Centre</button>
-            <button class="pfbtn" onclick="setFilter('ov', 'Ailier/arrière', this); renderOverview()">Ailier/arrière</button>
-        </div>
-        <div id="ovGrid" class="pgrid"></div>
-    </div>
-
-    <div id="page-vit" class="page">
-        <div class="ptitle">Vitesse (10m, 20m, 30m, 40m, 50m)</div>
-        <div class="pfilters">
-            <input type="text" id="searchVit" placeholder="Chercher..." onkeyup="renderVitesse()">
-            <button class="pfbtn active" onclick="setFilter('vit', 'all', this); renderVitesse()">Tous</button>
-            <button class="pfbtn" onclick="setFilter('vit', '1re Ligne', this); renderVitesse()">1re Ligne</button>
-            <button class="pfbtn" onclick="setFilter('vit', '2e Ligne', this); renderVitesse()">2e Ligne</button>
-            <button class="pfbtn" onclick="setFilter('vit', '3e Ligne', this); renderVitesse()">3e Ligne</button>
-            <button class="pfbtn" onclick="setFilter('vit', 'Demi-melée', this); renderVitesse()">Demi-melée</button>
-            <button class="pfbtn" onclick="setFilter('vit', 'Demi-Ouverture', this); renderVitesse()">Demi-Ouverture</button>
-            <button class="pfbtn" onclick="setFilter('vit', 'Centre', this); renderVitesse()">Centre</button>
-            <button class="pfbtn" onclick="setFilter('vit', 'Ailier/arrière', this); renderVitesse()">Ailier/arrière</button>
-        </div>
-        <div class="vviews">
-            <button class="vvbtn active" onclick="setView('vit', 'global', this)">Global</button>
-            <button class="vvbtn" onclick="setView('vit', 'poste', this)">Par poste</button>
-        </div>
-        <div id="vitCont"></div>
-    </div>
-
-    <div id="page-for" class="page">
-        <div class="ptitle">Force (1RM et 3RM)</div>
-        <div class="pfilters">
-            <input type="text" id="searchFor" placeholder="Chercher..." onkeyup="renderForce()">
-            <button class="pfbtn active" onclick="setFilter('for', 'all', this); renderForce()">Tous</button>
-            <button class="pfbtn" onclick="setFilter('for', '1re Ligne', this); renderForce()">1re Ligne</button>
-            <button class="pfbtn" onclick="setFilter('for', '2e Ligne', this); renderForce()">2e Ligne</button>
-            <button class="pfbtn" onclick="setFilter('for', '3e Ligne', this); renderForce()">3e Ligne</button>
-            <button class="pfbtn" onclick="setFilter('for', 'Demi-melée', this); renderForce()">Demi-melée</button>
-            <button class="pfbtn" onclick="setFilter('for', 'Demi-Ouverture', this); renderForce()">Demi-Ouverture</button>
-            <button class="pfbtn" onclick="setFilter('for', 'Centre', this); renderForce()">Centre</button>
-            <button class="pfbtn" onclick="setFilter('for', 'Ailier/arrière', this); renderForce()">Ailier/arrière</button>
-        </div>
-        <div class="vviews">
-            <button class="vvbtn active" onclick="setView('for', 'global', this)">Global</button>
-            <button class="vvbtn" onclick="setView('for', 'poste', this)">Par poste</button>
-        </div>
-        <div id="forCont"></div>
-    </div>
-
-    <div id="page-end" class="page">
-        <div class="ptitle">Endurance (YOYO Test)</div>
-        <div class="pfilters">
-            <input type="text" id="searchEnd" placeholder="Chercher..." onkeyup="renderEndurance()">
-            <button class="pfbtn active" onclick="setFilter('end', 'all', this); renderEndurance()">Tous</button>
-            <button class="pfbtn" onclick="setFilter('end', '1re Ligne', this); renderEndurance()">1re Ligne</button>
-            <button class="pfbtn" onclick="setFilter('end', '2e Ligne', this); renderEndurance()">2e Ligne</button>
-            <button class="pfbtn" onclick="setFilter('end', '3e Ligne', this); renderEndurance()">3e Ligne</button>
-            <button class="pfbtn" onclick="setFilter('end', 'Demi-melée', this); renderEndurance()">Demi-melée</button>
-            <button class="pfbtn" onclick="setFilter('end', 'Demi-Ouverture', this); renderEndurance()">Demi-Ouverture</button>
-            <button class="pfbtn" onclick="setFilter('end', 'Centre', this); renderEndurance()">Centre</button>
-            <button class="pfbtn" onclick="setFilter('end', 'Ailier/arrière', this); renderEndurance()">Ailier/arrière</button>
-        </div>
-        <div class="vviews">
-            <button class="vvbtn active" onclick="setView('end', 'global', this)">Global</button>
-            <button class="vvbtn" onclick="setView('end', 'poste', this)">Par poste</button>
-        </div>
-        <div id="endCont"></div>
-    </div>
-
-    <div id="page-expl" class="page">
-        <div class="ptitle">Explosivité (Broad Jump)</div>
-        <div class="pfilters">
-            <input type="text" id="searchExpl" placeholder="Chercher..." onkeyup="renderExplosivite()">
-            <button class="pfbtn active" onclick="setFilter('expl', 'all', this); renderExplosivite()">Tous</button>
-            <button class="pfbtn" onclick="setFilter('expl', '1re Ligne', this); renderExplosivite()">1re Ligne</button>
-            <button class="pfbtn" onclick="setFilter('expl', '2e Ligne', this); renderExplosivite()">2e Ligne</button>
-            <button class="pfbtn" onclick="setFilter('expl', '3e Ligne', this); renderExplosivite()">3e Ligne</button>
-            <button class="pfbtn" onclick="setFilter('expl', 'Demi-melée', this); renderExplosivite()">Demi-melée</button>
-            <button class="pfbtn" onclick="setFilter('expl', 'Demi-Ouverture', this); renderExplosivite()">Demi-Ouverture</button>
-            <button class="pfbtn" onclick="setFilter('expl', 'Centre', this); renderExplosivite()">Centre</button>
-            <button class="pfbtn" onclick="setFilter('expl', 'Ailier/arrière', this); renderExplosivite()">Ailier/arrière</button>
-        </div>
-        <div class="vviews">
-            <button class="vvbtn active" onclick="setView('expl', 'global', this)">Global</button>
-            <button class="vvbtn" onclick="setView('expl', 'poste', this)">Par poste</button>
-        </div>
-        <div id="explCont"></div>
-    </div>
-
-    <div id="page-ant" class="page">
-        <div class="ptitle">Anthropométrie</div>
-        <div class="pfilters">
-            <input type="text" id="searchAnt" placeholder="Chercher..." onkeyup="renderAnthropometrie()">
-            <button class="pfbtn active" onclick="setFilter('ant', 'all', this); renderAnthropometrie()">Tous</button>
-            <button class="pfbtn" onclick="setFilter('ant', '1re Ligne', this); renderAnthropometrie()">1re Ligne</button>
-            <button class="pfbtn" onclick="setFilter('ant', '2e Ligne', this); renderAnthropometrie()">2e Ligne</button>
-            <button class="pfbtn" onclick="setFilter('ant', '3e Ligne', this); renderAnthropometrie()">3e Ligne</button>
-            <button class="pfbtn" onclick="setFilter('ant', 'Demi-melée', this); renderAnthropometrie()">Demi-melée</button>
-            <button class="pfbtn" onclick="setFilter('ant', 'Demi-Ouverture', this); renderAnthropometrie()">Demi-Ouverture</button>
-            <button class="pfbtn" onclick="setFilter('ant', 'Centre', this); renderAnthropometrie()">Centre</button>
-            <button class="pfbtn" onclick="setFilter('ant', 'Ailier/arrière', this); renderAnthropometrie()">Ailier/arrière</button>
-        </div>
-        <div id="antCont"></div>
-    </div>
-
-    <div id="page-j" class="page">
-        <div class="ptitle">Joueuses</div>
-        <div class="pfilters">
-            <input type="text" id="searchJ" placeholder="Chercher..." onkeyup="renderJoueuses()">
-            <button class="pfbtn active" onclick="setFilter('j', 'all', this); renderJoueuses()">Tous</button>
-            <button class="pfbtn" onclick="setFilter('j', '1re Ligne', this); renderJoueuses()">1re Ligne</button>
-            <button class="pfbtn" onclick="setFilter('j', '2e Ligne', this); renderJoueuses()">2e Ligne</button>
-            <button class="pfbtn" onclick="setFilter('j', '3e Ligne', this); renderJoueuses()">3e Ligne</button>
-            <button class="pfbtn" onclick="setFilter('j', 'Demi-melée', this); renderJoueuses()">Demi-melée</button>
-            <button class="pfbtn" onclick="setFilter('j', 'Demi-Ouverture', this); renderJoueuses()">Demi-Ouverture</button>
-            <button class="pfbtn" onclick="setFilter('j', 'Centre', this); renderJoueuses()">Centre</button>
-            <button class="pfbtn" onclick="setFilter('j', 'Ailier/arrière', this); renderJoueuses()">Ailier/arrière</button>
-        </div>
-        <div id="jGrid" class="pgrid"></div>
-    </div>
-
-    <div id="page-stats" class="page">
-        <div class="ptitle">Statistiques globales</div>
-        <div id="statsGrid" class="sgrid"></div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
-            <div style="background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 16px;">
-                <canvas id="chartPoste"></canvas>
-            </div>
-            <div style="background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 16px;">
-                <canvas id="chartTop5"></canvas>
-            </div>
-        </div>
-    </div>
+<div class="container">
+<div class="controls">
+<div><label>Joueuse</label><select id="selJ" onchange="render()"></select></div>
+<div><label>Périodes à comparer</label><div class="periods" id="periods"></div></div>
 </div>
-
-<div id="detailModal">
-    <div>
-        <span class="close-btn" onclick="closeModal()">&times;</span>
-        <div id="detailContent"></div>
-    </div>
+<div id="content"></div>
 </div>
-
 <script>
-const DATA = [
-    {nom: 'Sophie', poste: '1re Ligne', sessions: {septembre: {taille: null, poids: 85, yoyo: null, dc_1rm: 65, tirage_1rm: 70, sdt_1rm: 130, hipthrust: 150, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: 1.78, v20: 3.19, v25: 3.92, v50: 7.52, ms10: 4.98, ms20: 5.81, ms25: 6.09, ms50: 6.35, v30: null, v40: null, ms30: null, ms40: null, broad: 156}, novembre: {taille: null, poids: 83, yoyo: 520, dc_1rm: 70, tirage_1rm: 75, sdt_1rm: 140, hipthrust: 160, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: 1.74, v20: 3.10, v25: 3.82, v50: 7.28, ms10: null, ms20: null, ms25: null, ms50: null, v30: null, v40: null, ms30: null, ms40: null, broad: null}, janvier: {taille: 180, poids: 81, yoyo: 600, dc_1rm: 75, tirage_1rm: 80, sdt_1rm: 150, hipthrust: 170, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: 1.72, v20: 3.05, v25: 3.75, v30: 5.18, v40: 6.82, v50: 8.62, ms10: 4.82, ms20: 5.62, ms25: 5.91, ms30: 6.18, ms40: 6.35, ms50: 6.45, broad: 170}, mai: {taille: null, poids: null, yoyo: null, dc_1rm: null, tirage_1rm: null, sdt_1rm: null, hipthrust: null, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: null, v20: null, v25: null, v30: null, v40: null, v50: null, ms10: null, ms20: null, ms25: null, ms30: null, ms40: null, ms50: null, broad: null}}},
-    {nom: 'Marie', poste: '2e Ligne', sessions: {septembre: {taille: null, poids: 72, yoyo: null, dc_1rm: 45, tirage_1rm: 55, sdt_1rm: 115, hipthrust: 120, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: 2.01, v20: 3.58, v25: 4.45, v50: 9.12, ms10: 4.56, ms20: 5.18, ms25: 5.28, ms50: 5.42, v30: null, v40: null, ms30: null, ms40: null, broad: 167}, novembre: {taille: null, poids: 70, yoyo: 440, dc_1rm: 45, tirage_1rm: 52.5, sdt_1rm: 112.5, hipthrust: 110, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: 2.08, v20: 3.73, v25: 4.50, v50: 8.49, ms10: null, ms20: null, ms25: null, ms50: null, v30: null, v40: null, ms30: null, ms40: null, broad: 179}, janvier: {taille: 161, poids: 73, yoyo: null, dc_1rm: null, tirage_1rm: null, sdt_1rm: null, hipthrust: null, dc_3rm: null, squat_3rm: 50, tirage_3rm: 50, v10: null, v20: null, v30: null, v40: null, ms10: null, ms20: null, ms30: null, ms40: null, v25: null, v50: null, ms25: null, ms50: null, broad: null}, mai: {taille: null, poids: null, yoyo: 480, dc_1rm: 50, tirage_1rm: null, sdt_1rm: null, hipthrust: null, dc_3rm: null, squat_3rm: 50, tirage_3rm: null, v10: null, v20: null, v30: null, v40: null, ms10: null, ms20: null, ms30: null, ms40: null, v25: null, v50: null, ms25: null, ms50: null, broad: null}}},
-    {nom: 'Ines', poste: '2e Ligne', sessions: {septembre: {taille: null, poids: 61.1, yoyo: null, dc_1rm: 30, tirage_1rm: 40, sdt_1rm: 75, hipthrust: null, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: 2.19, v20: 3.88, v25: 4.67, v50: 9.66, ms10: 4.57, ms20: 5.15, ms25: 5.35, ms50: 5.18, v30: null, v40: null, ms30: null, ms40: null, broad: 153}, novembre: {taille: null, poids: 64, yoyo: null, dc_1rm: null, tirage_1rm: null, sdt_1rm: null, hipthrust: null, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: null, v20: null, v25: null, v50: null, ms10: null, ms20: null, ms25: null, ms50: null, v30: null, v40: null, ms30: null, ms40: null, broad: 172}, janvier: {taille: 174, poids: 68.25, yoyo: 400, dc_1rm: 32.5, tirage_1rm: null, sdt_1rm: null, hipthrust: null, dc_3rm: 37.5, squat_3rm: 35, tirage_3rm: null, v10: 2.11, v20: 3.66, v30: 5.19, v40: 6.79, ms10: 4.74, ms20: 5.46, ms30: 5.78, ms40: 5.89, v25: null, v50: null, ms25: null, ms50: null, broad: null}, mai: {taille: null, poids: null, yoyo: null, dc_1rm: null, tirage_1rm: null, sdt_1rm: null, hipthrust: null, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: null, v20: null, v30: null, v40: null, ms10: null, ms20: null, ms30: null, ms40: null, v25: null, v50: null, ms25: null, ms50: null, broad: null}}},
-    {nom: 'Ines R', poste: 'Demi-melée', sessions: {septembre: {taille: null, poids: 54.55, yoyo: 1040, dc_1rm: 40, tirage_1rm: 35, sdt_1rm: 75, hipthrust: null, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: 1.99, v20: 3.48, v25: 4.22, v50: 8.09, ms10: 5.03, ms20: 5.75, ms25: 5.92, ms50: 6.19, v30: null, v40: null, ms30: null, ms40: null, broad: 198}, novembre: {taille: null, poids: 55, yoyo: 1000, dc_1rm: 40, tirage_1rm: null, sdt_1rm: null, hipthrust: null, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: 1.97, v20: 3.42, v25: 4.12, v50: 7.86, ms10: null, ms20: null, ms25: null, ms50: null, v30: null, v40: null, ms30: null, ms40: null, broad: null}, janvier: {taille: null, poids: 55.15, yoyo: 1120, dc_1rm: 40, tirage_1rm: null, sdt_1rm: null, hipthrust: null, dc_3rm: null, squat_3rm: 30, tirage_3rm: 40, v10: 1.87, v20: 3.27, v30: 4.61, v40: 6.06, ms10: 5.35, ms20: 6.12, ms30: 6.51, ms40: 6.60, v25: null, v50: null, ms25: null, ms50: null, broad: 200}, mai: {taille: null, poids: null, yoyo: null, dc_1rm: null, tirage_1rm: null, sdt_1rm: null, hipthrust: null, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: null, v20: null, v30: null, v40: null, ms10: null, ms20: null, ms30: null, ms40: null, v25: null, v50: null, ms25: null, ms50: null, broad: null}}},
-    {nom: 'Jade', poste: '3e Ligne', sessions: {septembre: {taille: null, poids: null, yoyo: null, dc_1rm: null, tirage_1rm: null, sdt_1rm: null, hipthrust: null, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: null, v20: null, v25: null, v50: null, ms10: null, ms20: null, ms25: null, ms50: null, v30: null, v40: null, ms30: null, ms40: null, broad: null}, novembre: {taille: null, poids: 55, yoyo: 1000, dc_1rm: 35, tirage_1rm: 55, sdt_1rm: 100, hipthrust: 110, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: 2.01, v20: 3.58, v25: 4.30, v50: 8.17, ms10: null, ms20: null, ms25: null, ms50: null, v30: null, v40: null, ms30: null, ms40: null, broad: 190}, janvier: {taille: null, poids: 51.25, yoyo: 960, dc_1rm: 45, tirage_1rm: null, sdt_1rm: null, hipthrust: null, dc_3rm: null, squat_3rm: 40, tirage_3rm: 50, v10: 1.96, v20: 3.47, v30: 4.93, v40: 6.53, ms10: 5.10, ms20: 5.76, ms30: 6.09, ms40: 6.13, v25: null, v50: null, ms25: null, ms50: null, broad: 178}, mai: {taille: null, poids: null, yoyo: null, dc_1rm: null, tirage_1rm: null, sdt_1rm: null, hipthrust: null, dc_3rm: null, squat_3rm: null, tirage_3rm: null, v10: null, v20: null, v30: null, v40: null, ms10: null, ms20: null, ms30: null, ms40: null, v25: null, v50: null, ms25: null, ms50: null, broad: null}}}
-];
+const PERIODS = ['Septembre','Novembre','Janvier','Mai'];
 
-let currentPeriod = 'septembre';
-let filters = {ov: 'all', vit: 'all', for: 'all', end: 'all', expl: 'all', ant: 'all', j: 'all'};
-let views = {vit: 'global', for: 'global', end: 'global', expl: 'global'};
-
-function setPeriod(period, el) {
-    currentPeriod = period;
-    document.querySelectorAll('.header .pbtn').forEach(b => b.classList.remove('active'));
-    el.classList.add('active');
-    renderCurrentPage();
-}
-
-function showPage(page, el) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nbtn').forEach(b => b.classList.remove('active'));
-    document.getElementById('page-' + page).classList.add('active');
-    el.classList.add('active');
-    setTimeout(() => {
-        if (page === 'ov') renderOverview();
-        if (page === 'vit') renderVitesse();
-        if (page === 'for') renderForce();
-        if (page === 'end') renderEndurance();
-        if (page === 'expl') renderExplosivite();
-        if (page === 'ant') renderAnthropometrie();
-        if (page === 'j') renderJoueuses();
-        if (page === 'stats') renderStatistiques();
-    }, 0);
-}
-
-function renderCurrentPage() {
-    const active = document.querySelector('.page.active').id.replace('page-', '');
-    if (active === 'ov') renderOverview();
-    if (active === 'vit') renderVitesse();
-    if (active === 'for') renderForce();
-    if (active === 'end') renderEndurance();
-    if (active === 'expl') renderExplosivite();
-    if (active === 'ant') renderAnthropometrie();
-    if (active === 'j') renderJoueuses();
-    if (active === 'stats') renderStatistiques();
-}
-
-function setFilter(section, poste, el) {
-    filters[section] = poste;
-    el.parentElement.querySelectorAll('.pfbtn').forEach(b => b.classList.remove('active'));
-    el.classList.add('active');
-}
-
-function setView(section, view, el) {
-    views[section] = view;
-    el.parentElement.querySelectorAll('.vvbtn').forEach(b => b.classList.remove('active'));
-    el.classList.add('active');
-    if (section === 'vit') renderVitesse();
-    if (section === 'for') renderForce();
-    if (section === 'end') renderEndurance();
-    if (section === 'expl') renderExplosivite();
-}
-
-function getLabel(key) {
-    const labels = {
-        taille: 'Taille', poids: 'Poids', yoyo: 'YOYO Test',
-        dc_1rm: 'Développé couché 1RM', tirage_1rm: 'Tirage 1RM', sdt_1rm: 'Soulevé de terre 1RM', hipthrust: 'Hip Thrust',
-        dc_3rm: 'Développé couché 3RM', squat_3rm: 'Squat 3RM', tirage_3rm: 'Tirage 3RM',
-        v10: 'V10m', v20: 'V20m', v25: 'V25m', v30: 'V30m', v40: 'V40m', v50: 'V50m',
-        ms10: 'MS10m', ms20: 'MS20m', ms25: 'MS25m', ms30: 'MS30m', ms40: 'MS40m', ms50: 'MS50m',
-        broad: 'Broad Jump'
-    };
-    return labels[key] || key;
-}
-
-function getFilteredData(section) {
-    const search = document.getElementById('search' + (section.charAt(0).toUpperCase() + section.slice(1)))?.value.toLowerCase() || '';
-    return DATA.filter(j => {
-        const matchesSearch = j.nom.toLowerCase().includes(search);
-        const matchesFilter = filters[section] === 'all' || j.poste === filters[section];
-        return matchesSearch && matchesFilter;
-    });
-}
-
-function renderOverview() {
-    const filtered = getFilteredData('ov');
-    let html = '';
-    filtered.forEach(j => {
-        const s = j.sessions[currentPeriod];
-        if (!s) return;
-        const dataCount = Object.values(s).filter(v => v !== null).length;
-        const avatar = j.nom.substring(0, 2).toUpperCase();
-        html += `<div class="pcard" onclick="showDetail('${j.nom}')">
-            <div class="phead">
-                <div class="pavatar">${avatar}</div>
-                <div>
-                    <div class="pname">${j.nom}</div>
-                    <div class="pbadge">${j.poste}</div>
-                </div>
-            </div>
-            <div class="pminis">
-                <div class="pm"><div class="v">${dataCount}</div><div class="l">Données</div></div>
-            </div>
-        </div>`;
-    });
-    document.getElementById('ovGrid').innerHTML = html || '<p style="grid-column: 1/-1; color: var(--muted);">Aucune donnée</p>';
-}
-
-function renderVitesse() {
-    const filtered = getFilteredData('vit');
-    const container = document.getElementById('vitCont');
-    container.innerHTML = '';
-
-    if (views.vit === 'global') {
-        const speeds = ['v10', 'v20', 'v25', 'v30', 'v40', 'v50'];
-        let html = '';
-        speeds.forEach(s => {
-            const data = [];
-            filtered.forEach(j => {
-                const val = j.sessions[currentPeriod][s];
-                if (val) data.push({nom: j.nom, val: val});
-            });
-            data.sort((a, b) => a.val - b.val);
-            if (data.length > 0) {
-                html += `<div class="twrap">
-                    <table>
-                        <thead><tr><th colspan="2">${getLabel(s)}</th></tr><tr><th>Joueuse</th><th>Temps (s)</th></tr></thead>
-                        <tbody>`;
-                data.slice(0, 20).forEach(d => {
-                    html += `<tr><td>${d.nom}</td><td>${d.val.toFixed(2)}</td></tr>`;
-                });
-                html += `</tbody></table></div>`;
-            }
-        });
-        container.innerHTML = html || '<p style="color: var(--muted);">Aucune donnée</p>';
-    } else {
-        const postes = {};
-        filtered.forEach(j => {
-            if (!postes[j.poste]) postes[j.poste] = [];
-            postes[j.poste].push(j);
-        });
-
-        let html = '';
-        Object.entries(postes).forEach(([poste, joueuses]) => {
-            const speeds = ['v10', 'v20', 'v25', 'v30', 'v40', 'v50'];
-            html += `<div class="psec"><div class="psec-h">${poste}</div>`;
-            speeds.forEach(s => {
-                let sum = 0, count = 0;
-                joueuses.forEach(j => {
-                    const val = j.sessions[currentPeriod][s];
-                    if (val) { sum += val; count++; }
-                });
-                if (count > 0) {
-                    html += `<div class="twrap"><table><thead><tr><th colspan="2">${getLabel(s)}</th></tr></thead><tbody><tr><td>Moyenne (n=${count})</td><td>${(sum/count).toFixed(2)}</td></tr></tbody></table></div>`;
-                }
-            });
-            html += `</div>`;
-        });
-        container.innerHTML = html || '<p style="color: var(--muted);">Aucune donnée</p>';
-    }
-}
-
-function renderForce() {
-    const filtered = getFilteredData('for');
-    const container = document.getElementById('forCont');
-    container.innerHTML = '';
-
-    if (views.for === 'global') {
-        const forces = ['dc_1rm', 'tirage_1rm', 'sdt_1rm', 'hipthrust', 'dc_3rm', 'squat_3rm', 'tirage_3rm'];
-        let html = '';
-        forces.forEach(f => {
-            const data = [];
-            filtered.forEach(j => {
-                const val = j.sessions[currentPeriod][f];
-                if (val) data.push({nom: j.nom, val: val});
-            });
-            data.sort((a, b) => b.val - a.val);
-            if (data.length > 0) {
-                html += `<div class="twrap">
-                    <table>
-                        <thead><tr><th colspan="2">${getLabel(f)}</th></tr><tr><th>Joueuse</th><th>Poids (kg)</th></tr></thead>
-                        <tbody>`;
-                data.slice(0, 20).forEach(d => {
-                    html += `<tr><td>${d.nom}</td><td>${d.val.toFixed(1)}</td></tr>`;
-                });
-                html += `</tbody></table></div>`;
-            }
-        });
-        container.innerHTML = html || '<p style="color: var(--muted);">Aucune donnée</p>';
-    } else {
-        const postes = {};
-        filtered.forEach(j => {
-            if (!postes[j.poste]) postes[j.poste] = [];
-            postes[j.poste].push(j);
-        });
-
-        let html = '';
-        Object.entries(postes).forEach(([poste, joueuses]) => {
-            const forces = ['dc_1rm', 'tirage_1rm', 'sdt_1rm', 'hipthrust', 'dc_3rm', 'squat_3rm', 'tirage_3rm'];
-            html += `<div class="psec"><div class="psec-h">${poste}</div>`;
-            forces.forEach(f => {
-                let sum = 0, count = 0;
-                joueuses.forEach(j => {
-                    const val = j.sessions[currentPeriod][f];
-                    if (val) { sum += val; count++; }
-                });
-                if (count > 0) {
-                    html += `<div class="twrap"><table><thead><tr><th colspan="2">${getLabel(f)}</th></tr></thead><tbody><tr><td>Moyenne (n=${count})</td><td>${(sum/count).toFixed(1)}</td></tr></tbody></table></div>`;
-                }
-            });
-            html += `</div>`;
-        });
-        container.innerHTML = html || '<p style="color: var(--muted);">Aucune donnée</p>';
-    }
-}
-
-function renderEndurance() {
-    const filtered = getFilteredData('end');
-    const container = document.getElementById('endCont');
-    container.innerHTML = '';
-
-    if (views.end === 'global') {
-        const data = [];
-        filtered.forEach(j => {
-            const val = j.sessions[currentPeriod].yoyo;
-            if (val) data.push({nom: j.nom, val: val});
-        });
-        data.sort((a, b) => b.val - a.val);
-
-        let html = '';
-        if (data.length > 0) {
-            html = `<div class="twrap"><table><thead><tr><th colspan="2">YOYO Test</th></tr><tr><th>Joueuse</th><th>Distance (m)</th></tr></thead><tbody>`;
-            data.forEach(d => {
-                html += `<tr><td>${d.nom}</td><td>${d.val.toFixed(0)}</td></tr>`;
-            });
-            html += `</tbody></table></div>`;
-        }
-        container.innerHTML = html || '<p style="color: var(--muted);">Aucune donnée</p>';
-    } else {
-        const postes = {};
-        filtered.forEach(j => {
-            if (!postes[j.poste]) postes[j.poste] = [];
-            postes[j.poste].push(j);
-        });
-
-        let html = '';
-        Object.entries(postes).forEach(([poste, joueuses]) => {
-            let sum = 0, count = 0;
-            joueuses.forEach(j => {
-                const val = j.sessions[currentPeriod].yoyo;
-                if (val) { sum += val; count++; }
-            });
-            if (count > 0) {
-                html += `<div class="twrap"><table><thead><tr><th colspan="2">${poste}</th></tr></thead><tbody><tr><td>YOYO Moyenne (n=${count})</td><td>${(sum/count).toFixed(0)}</td></tr></tbody></table></div>`;
-            }
-        });
-        container.innerHTML = html || '<p style="color: var(--muted);">Aucune donnée</p>';
-    }
-}
-
-function renderExplosivite() {
-    const filtered = getFilteredData('expl');
-    const container = document.getElementById('explCont');
-    container.innerHTML = '';
-
-    if (views.expl === 'global') {
-        const data = [];
-        filtered.forEach(j => {
-            const val = j.sessions[currentPeriod].broad;
-            if (val) data.push({nom: j.nom, val: val});
-        });
-        data.sort((a, b) => b.val - a.val);
-
-        let html = '';
-        if (data.length > 0) {
-            html = `<div class="twrap"><table><thead><tr><th colspan="2">Broad Jump</th></tr><tr><th>Joueuse</th><th>Distance (cm)</th></tr></thead><tbody>`;
-            data.forEach(d => {
-                html += `<tr><td>${d.nom}</td><td>${d.val.toFixed(0)}</td></tr>`;
-            });
-            html += `</tbody></table></div>`;
-        }
-        container.innerHTML = html || '<p style="color: var(--muted);">Aucune donnée</p>';
-    } else {
-        const postes = {};
-        filtered.forEach(j => {
-            if (!postes[j.poste]) postes[j.poste] = [];
-            postes[j.poste].push(j);
-        });
-
-        let html = '';
-        Object.entries(postes).forEach(([poste, joueuses]) => {
-            let sum = 0, count = 0;
-            joueuses.forEach(j => {
-                const val = j.sessions[currentPeriod].broad;
-                if (val) { sum += val; count++; }
-            });
-            if (count > 0) {
-                html += `<div class="twrap"><table><thead><tr><th colspan="2">${poste}</th></tr></thead><tbody><tr><td>Broad Moyenne (n=${count})</td><td>${(sum/count).toFixed(0)}</td></tr></tbody></table></div>`;
-            }
-        });
-        container.innerHTML = html || '<p style="color: var(--muted);">Aucune donnée</p>';
-    }
-}
-
-function renderAnthropometrie() {
-    const filtered = getFilteredData('ant');
-    const container = document.getElementById('antCont');
-    container.innerHTML = '';
-
-    let html = '';
-    const poids = [];
-    const taille = [];
-    
-    filtered.forEach(j => {
-        const s = j.sessions[currentPeriod];
-        if (s.poids) poids.push({nom: j.nom, val: s.poids});
-        if (s.taille) taille.push({nom: j.nom, val: s.taille});
-    });
-    
-    poids.sort((a, b) => b.val - a.val);
-    taille.sort((a, b) => b.val - a.val);
-
-    if (poids.length > 0) {
-        html += `<div class="twrap"><table><thead><tr><th colspan="2">Poids</th></tr><tr><th>Joueuse</th><th>Poids (kg)</th></tr></thead><tbody>`;
-        poids.forEach(d => {
-            html += `<tr><td>${d.nom}</td><td>${d.val.toFixed(1)}</td></tr>`;
-        });
-        html += `</tbody></table></div>`;
-    }
-
-    if (taille.length > 0) {
-        html += `<div class="twrap"><table><thead><tr><th colspan="2">Taille</th></tr><tr><th>Joueuse</th><th>Taille (cm)</th></tr></thead><tbody>`;
-        taille.forEach(d => {
-            html += `<tr><td>${d.nom}</td><td>${d.val.toFixed(0)}</td></tr>`;
-        });
-        html += `</tbody></table></div>`;
-    }
-
-    container.innerHTML = html || '<p style="color: var(--muted);">Aucune donnée</p>';
-}
-
-function renderJoueuses() {
-    const filtered = getFilteredData('j');
-    const grid = document.getElementById('jGrid');
-    grid.innerHTML = '';
-
-    filtered.forEach(j => {
-        const s = j.sessions[currentPeriod];
-        const dataCount = Object.values(s).filter(v => v !== null).length;
-        const avatar = j.nom.substring(0, 2).toUpperCase();
-        
-        const html = `<div class="pcard" onclick="showDetail('${j.nom}')">
-            <div class="phead">
-                <div class="pavatar">${avatar}</div>
-                <div>
-                    <div class="pname">${j.nom}</div>
-                    <div class="pbadge">${j.poste}</div>
-                </div>
-            </div>
-            <div class="pminis">
-                <div class="pm"><div class="v">${dataCount}</div><div class="l">Données</div></div>
-            </div>
-        </div>`;
-        grid.innerHTML += html;
-    });
-    
-    if (grid.innerHTML === '') grid.innerHTML = '<p style="grid-column: 1/-1; color: var(--muted);">Aucune joueuse</p>';
-}
-
-function renderStatistiques() {
-    const container = document.getElementById('statsGrid');
-    container.innerHTML = '';
-
-    const stats = [];
-    let totalData = 0;
-    DATA.forEach(j => {
-        const s = j.sessions[currentPeriod];
-        totalData += Object.values(s).filter(v => v !== null).length;
-    });
-
-    stats.push({label: 'Joueuses', value: DATA.length});
-    stats.push({label: 'Données', value: totalData});
-
-    let html = '';
-    stats.forEach(stat => {
-        html += `<div class="stat"><div class="stat-v">${stat.value}</div><div class="stat-l">${stat.label}</div></div>`;
-    });
-    container.innerHTML = html;
-}
-
-function showDetail(nom) {
-    const j = DATA.find(x => x.nom === nom);
-    if (!j) return;
-    
-    const s = j.sessions[currentPeriod];
-    const modal = document.getElementById('detailModal');
-    const content = document.getElementById('detailContent');
-
-    let html = `<h2>${j.nom}</h2><h3>${j.poste} - ${currentPeriod.charAt(0).toUpperCase() + currentPeriod.slice(1)}</h3>`;
-
-    const sections = [
-        {title: 'Anthropométrie', keys: ['taille', 'poids']},
-        {title: 'Puissance aérobie', keys: ['yoyo']},
-        {title: 'Force Max (1RM)', keys: ['dc_1rm', 'tirage_1rm', 'sdt_1rm', 'hipthrust']},
-        {title: 'Force Max (3RM)', keys: ['dc_3rm', 'squat_3rm', 'tirage_3rm']},
-        {title: 'Vitesse', keys: ['v10', 'v20', 'v25', 'v30', 'v40', 'v50', 'ms10', 'ms20', 'ms25', 'ms30', 'ms40', 'ms50']},
-        {title: 'Explosivité', keys: ['broad']}
-    ];
-
-    sections.forEach(sec => {
-        const hasData = sec.keys.some(k => s[k] !== null);
-        if (hasData) {
-            html += `<h4>${sec.title}</h4><table><tbody>`;
-            sec.keys.forEach(k => {
-                if (s[k] !== null) {
-                    let unit = 's';
-                    if (k.includes('ms')) unit = 'm/s';
-                    if (k === 'taille') unit = 'cm';
-                    if (k === 'poids' || k.includes('rm')) unit = 'kg';
-                    if (k === 'yoyo') unit = 'm';
-                    if (k === 'broad') unit = 'cm';
-                    html += `<tr><td>${getLabel(k)}</td><td><strong>${s[k].toFixed(k === 'taille' ? 0 : 2)}</strong> ${unit}</td></tr>`;
-                }
-            });
-            html += `</tbody></table>`;
-        }
-    });
-
-    content.innerHTML = html;
-    modal.classList.add('show');
-}
-
-function closeModal() {
-    document.getElementById('detailModal').classList.remove('show');
-}
-
-window.onclick = (e) => {
-    const modal = document.getElementById('detailModal');
-    if (e.target === modal) modal.classList.remove('show');
+// Données extraites de ton Excel DATAS U18F 25_26.xlsx
+const DATA = {
+  "Alina": {poste:"1re Ligne", stats:{
+    Septembre:{taille:157,poids:70.7,yoyo:560,dc_1rm:42.5,tirage_1rm:50,sdt_1rm:95,hipthrust:125,v10:2.04,v20:3.66,v25:4.44,v50:8.41},
+    Novembre:{poids:70.7,yoyo:560,dc_1rm:42.5,tirage_1rm:50,sdt_1rm:95,hipthrust:125,v10:2.04,v20:3.66,v25:4.44,v50:8.41},
+    Janvier:{taille:157,yoyo:480,dc_3rm:37.5,squat_3rm:85,tirage_3rm:40,v10:2.15,v20:3.75,v30:5.38,v40:7.05}
+  }},
+  "Amaia": {poste:"Demi-melée", stats:{
+    Septembre:{poids:61.7,yoyo:1480,dc_1rm:45,tirage_1rm:50,sdt_1rm:125,hipthrust:120,v10:1.82,v20:3.26,v25:3.92,v50:7.27,broad:200},
+    Novembre:{poids:61.7,yoyo:1480,dc_1rm:45,tirage_1rm:50,sdt_1rm:125,hipthrust:120,v10:1.82,v20:3.26,v25:3.92,v50:7.27,broad:200},
+    Janvier:{dc_3rm:45,squat_3rm:45,tirage_3rm:45}
+  }},
+  "Andréa": {poste:"1re Ligne", stats:{
+    Septembre:{poids:76,yoyo:560},
+    Novembre:{poids:76,yoyo:560},
+    Janvier:{tirage_3rm:48}
+  }},
+  "Annaelle": {poste:"1re Ligne", stats:{
+    Septembre:{poids:87.4,yoyo:440,dc_1rm:50,tirage_1rm:60,sdt_1rm:125,hipthrust:140,v10:2.11,v20:3.7,v25:4.6,v50:8.71},
+    Novembre:{poids:87.4,yoyo:440,dc_1rm:50,tirage_1rm:60,sdt_1rm:125,hipthrust:140,v10:2.11,v20:3.7,v25:4.6,v50:8.71},
+    Janvier:{taille:164,dc_3rm:60,tirage_3rm:55}
+  }},
+  "Augustine": {poste:"3e Ligne", stats:{
+    Septembre:{poids:64.1,yoyo:1400,dc_1rm:58,tirage_1rm:55,sdt_1rm:130,hipthrust:165,v10:1.84,v20:3.22,v25:3.98,v50:7.21,broad:210},
+    Novembre:{poids:64.1,yoyo:1400,dc_1rm:58,tirage_1rm:55,sdt_1rm:130,hipthrust:165,v10:1.84,v20:3.22,v25:3.98,v50:7.21,broad:210},
+    Janvier:{taille:164,yoyo:1160,dc_3rm:53,squat_3rm:60,tirage_3rm:55,v10:1.95,v20:3.29,v30:4.63,v40:5.95}
+  }},
+  "Calliopée": {poste:"3e Ligne", stats:{
+    Septembre:{poids:65,dc_1rm:50,tirage_1rm:60,sdt_1rm:110,hipthrust:150,v10:1.96,v20:3.46,v25:4.24,v50:7.9},
+    Novembre:{poids:65,dc_1rm:50,tirage_1rm:60,sdt_1rm:110,hipthrust:150,v10:1.96,v20:3.46,v25:4.24,v50:7.9}
+  }},
+  "Camille": {poste:"1re Ligne", stats:{
+    Septembre:{poids:72.5,yoyo:400},
+    Novembre:{yoyo:400},
+    Janvier:{taille:162}
+  }},
+  "Charlotte": {poste:"Ailier/arrière", stats:{
+    Septembre:{poids:59.3,yoyo:1400,dc_1rm:45,tirage_1rm:47.5,sdt_1rm:125,hipthrust:150,v10:1.82,v20:3.19,v25:3.91,v50:7.14,broad:187},
+    Novembre:{poids:59.6,yoyo:1400,dc_1rm:45,tirage_1rm:47.5,sdt_1rm:125,hipthrust:150,v10:1.82,v20:3.19,v25:3.91,v50:7.14,broad:187},
+    Janvier:{dc_3rm:50,tirage_3rm:45,v10:1.93,v20:3.31,v30:4.61,v40:5.94}
+  }},
+  "Ciara": {poste:"3e Ligne", stats:{
+    Septembre:{poids:59,yoyo:680,dc_1rm:30,tirage_1rm:35,sdt_1rm:70,hipthrust:110,v10:2.13,v20:3.73,v25:4.41,v50:8.49},
+    Novembre:{poids:61,yoyo:680,dc_1rm:35,tirage_1rm:45,sdt_1rm:110,hipthrust:90,v10:2,v20:3.53,v25:4.19,v50:7.8,broad:199},
+    Janvier:{taille:164,poids:62.3,yoyo:960,dc_3rm:40,tirage_3rm:40,v10:1.85,v20:3.24,v30:4.62,v40:6.05,broad:184}
+  }},
+  "Clara": {poste:"Ailier/arrière", stats:{
+    Septembre:{poids:65.9,yoyo:960,dc_1rm:37.5,tirage_1rm:50,sdt_1rm:70,hipthrust:90,v10:1.71,v20:3.1,v25:3.73,v50:6.94},
+    Novembre:{poids:68,yoyo:960,dc_1rm:42.5,tirage_1rm:50,sdt_1rm:90,hipthrust:120,v10:1.79,v20:3.12,v25:3.76,v50:6.93,broad:215},
+    Janvier:{yoyo:960,v10:1.73,v20:2.99,v30:4.2,v40:5.47,broad:214}
+  }},
+  "Danaé": {poste:"2e Ligne", stats:{
+    Septembre:{poids:65,dc_1rm:42.5,tirage_1rm:45,sdt_1rm:80,v10:2.13,v20:3.72,v25:4.43,v50:8.36},
+    Novembre:{poids:65,dc_1rm:45,tirage_1rm:45},
+    Janvier:{poids:65.4}
+  }},
+  "Elyna": {poste:"1re Ligne", stats:{
+    Septembre:{poids:80.1,yoyo:560,v10:1.98,v20:3.54,v25:4.2,v50:8},
+    Novembre:{poids:79.5,yoyo:560,v10:1.98,v20:3.54,v25:4.2,v50:8},
+    Janvier:{v10:1.96,v20:3.44,v30:4.94,v40:6.47}
+  }},
+  "Emilie": {poste:"3e Ligne", stats:{
+    Septembre:{poids:71.4,yoyo:640,dc_1rm:45,tirage_1rm:50,sdt_1rm:95,hipthrust:130,v10:2.04,v20:3.59,v25:4.33,v50:8.09},
+    Novembre:{poids:72.6,yoyo:640,dc_1rm:50,tirage_1rm:55,sdt_1rm:130,hipthrust:160,v10:1.9,v20:3.36,v25:4.15,v50:7.71},
+    Janvier:{taille:164,poids:74.8,yoyo:840,dc_3rm:47.5,squat_3rm:90,tirage_3rm:55,v10:1.84,v20:3.28,v30:4.64,v40:6.09,broad:187}
+  }},
+  "Faustine": {poste:"3e Ligne", stats:{
+    Septembre:{poids:72.3,yoyo:440,dc_1rm:50,tirage_1rm:42.5,sdt_1rm:90,hipthrust:112.5,v10:2.15,v20:3.84,v25:4.73,v50:9.18,broad:180},
+    Novembre:{poids:70,yoyo:440,dc_1rm:45,tirage_1rm:52.5,sdt_1rm:112.5,hipthrust:110,v10:2.08,v20:3.73,v25:4.5,v50:8.49,broad:179},
+    Janvier:{taille:161,poids:73,dc_3rm:50,tirage_3rm:50}
+  }},
+  "Ines": {poste:"2e Ligne", stats:{
+    Septembre:{poids:61.1,yoyo:0,dc_1rm:30,tirage_1rm:40,sdt_1rm:75,v10:2.19,v20:3.88,v25:4.67,v50:9.66},
+    Novembre:{poids:64,broad:172},
+    Janvier:{taille:174,poids:68.25,yoyo:400,dc_3rm:37.5,tirage_3rm:35,v10:2.11,v20:3.66,v30:5.19,v40:6.79}
+  }},
+  "Ines R": {poste:"Demi-melée", stats:{
+    Septembre:{poids:54.55,yoyo:1040,dc_1rm:40,tirage_1rm:35,sdt_1rm:75,hipthrust:90,v10:2.08,v20:3.66,v25:4.44,v50:8.38},
+    Novembre:{poids:54.1,yoyo:1040,dc_1rm:40,tirage_1rm:45,sdt_1rm:90,hipthrust:130,v10:1.9,v20:3.38,v25:4.19,v50:7.86},
+    Janvier:{taille:158,yoyo:1120,dc_3rm:30,squat_3rm:65,tirage_3rm:40,v10:1.87,v20:3.27,v30:4.61,v40:6.06,broad:200}
+  }},
+  "Jade": {poste:"3e Ligne", stats:{
+    Septembre:{poids:54.5,yoyo:1000,dc_1rm:32.5,tirage_1rm:40,sdt_1rm:75,hipthrust:100,v10:2.19,v20:3.92,v25:4.68,v50:8.92,broad:196},
+    Novembre:{poids:55,yoyo:1000,dc_1rm:35,tirage_1rm:55,sdt_1rm:100,hipthrust:110,v10:2.01,v20:3.58,v25:4.3,v50:8.17,broad:190},
+    Janvier:{taille:161,poids:51.25,yoyo:960,dc_3rm:40,squat_3rm:85,tirage_3rm:50,v10:1.96,v20:3.47,v30:4.93,v40:6.53,broad:178}
+  }},
+  "Kélia": {poste:"Centre", stats:{
+    Septembre:{poids:60.2,yoyo:960,dc_1rm:32.5,tirage_1rm:35,sdt_1rm:70,hipthrust:100,v10:1.91,v20:3.32,v25:3.97,v50:7.38,broad:160},
+    Novembre:{poids:59.6,yoyo:960,dc_1rm:35,tirage_1rm:42.5,sdt_1rm:100,v10:1.77,v20:3.14,v25:3.82,v50:7.08},
+    Janvier:{yoyo:1000,v10:1.79,v20:3.11,v30:4.39,v40:5.71}
+  }},
+  "Kira": {poste:"1re Ligne", stats:{
+    Septembre:{poids:83.7,yoyo:560,dc_1rm:50,tirage_1rm:60,hipthrust:70,v10:2.3,v20:3.95,v25:4.67,v50:8.65,broad:166},
+    Novembre:{poids:83.9,yoyo:560,dc_1rm:60,tirage_1rm:55,broad:187},
+    Janvier:{taille:167,poids:85.4,yoyo:360,dc_3rm:52.5,squat_3rm:85,tirage_3rm:50,v10:1.95,v20:3.45,v30:4.89,v40:6.43,broad:163}
+  }},
+  "Lily B": {poste:"3e Ligne", stats:{
+    Septembre:{poids:59.4,yoyo:1200,dc_1rm:40,tirage_1rm:50,sdt_1rm:100,hipthrust:110,v10:2,v20:3.53,v25:4.26,v50:8.04,broad:190},
+    Novembre:{poids:62.6,yoyo:1200,dc_1rm:50,tirage_1rm:60,sdt_1rm:110,hipthrust:150,v10:1.89,v20:3.31,v25:3.96,v50:7.28,broad:202},
+    Janvier:{taille:162,poids:64.5,yoyo:960,dc_3rm:52.5,squat_3rm:105,tirage_3rm:60,v10:1.9,v20:3.3,v30:4.63,v40:5.95}
+  }},
+  "Lily N": {poste:"1re Ligne", stats:{
+    Septembre:{poids:68.3,yoyo:760,dc_1rm:45,tirage_1rm:50,sdt_1rm:92.5,hipthrust:100,v10:2.03,v20:3.55,v25:4.35,v50:8.24,broad:193},
+    Novembre:{poids:67,yoyo:760,dc_1rm:50,tirage_1rm:42.5,sdt_1rm:100,hipthrust:160,v10:1.94,v20:3.42,v25:4.27,v50:8.01,broad:202},
+    Janvier:{taille:160,poids:67.8,yoyo:960,dc_3rm:52.5,squat_3rm:80,tirage_3rm:50,v10:1.93,v20:3.4,v30:4.81,v40:6.34,broad:196}
+  }},
+  "Loréana": {poste:"1re Ligne", stats:{
+    Septembre:{poids:81.3,yoyo:440,dc_1rm:45,sdt_1rm:95,hipthrust:125,v10:2.04,v20:3.59,v25:4.38,v50:8.18},
+    Novembre:{poids:84,yoyo:440,sdt_1rm:125,hipthrust:145},
+    Janvier:{yoyo:480,dc_3rm:48,squat_3rm:110,tirage_3rm:55,v10:1.93,v20:3.39,v30:4.81,v40:6.34,broad:202}
+  }},
+  "Louane D": {poste:"Ailier/arrière", stats:{
+    Septembre:{poids:55.6,dc_1rm:50,tirage_1rm:55,sdt_1rm:100,hipthrust:122.5,v10:1.84,v20:3.26,v25:3.96,v50:7.48,broad:180},
+    Novembre:{poids:55.6,dc_1rm:50,tirage_1rm:55,sdt_1rm:122.5,hipthrust:140,v10:1.8,v20:3.18,v25:3.8,v50:7.09},
+    Janvier:{poids:58.25,dc_3rm:48,tirage_3rm:50,v10:1.77,v20:3.09,v30:4.35,v40:5.66,broad:202}
+  }},
+  "Louanne Dom": {poste:"Centre", stats:{
+    Septembre:{poids:70.3,yoyo:760,v10:1.91,v20:3.37,v25:4.1,v50:7.48},
+    Novembre:{poids:70.3,yoyo:760,dc_1rm:60,tirage_1rm:55,sdt_1rm:120,v10:1.91,v20:3.37,v25:4.1,v50:7.48},
+    Janvier:{taille:168,poids:69.9,yoyo:800,dc_3rm:60,squat_3rm:90,tirage_3rm:57.5,v10:1.87,v20:3.25,v30:4.55,v40:5.98,broad:207}
+  }},
+  "Lylou": {poste:"2e Ligne", stats:{
+    Septembre:{poids:74.5,yoyo:440,dc_1rm:45,tirage_1rm:55,sdt_1rm:110,hipthrust:110,v10:1.96,v20:3.5,v25:4.34,v50:8.1,broad:200},
+    Novembre:{poids:74.5,yoyo:440,dc_1rm:45,tirage_1rm:55,sdt_1rm:110,hipthrust:110,v10:1.96,v20:3.5,v25:4.34,v50:8.1,broad:200},
+    Janvier:{taille:174,yoyo:680}
+  }},
+  "Maëna": {poste:"Ailier/arrière", stats:{
+    Septembre:{yoyo:880,v10:1.92,v20:3.3,v25:3.99,v50:7.36},
+    Novembre:{yoyo:880},
+    Janvier:{taille:162,poids:58.6,dc_3rm:45,squat_3rm:80,tirage_3rm:55,v10:1.86,v20:3.23,v30:4.55,v40:5.82}
+  }},
+  "Malaury": {poste:"3e Ligne", stats:{
+    Septembre:{poids:63.3,yoyo:1040,dc_1rm:50,tirage_1rm:50,sdt_1rm:105,hipthrust:145,v10:1.96,v20:3.47,v25:4.3,v50:8.07},
+    Novembre:{poids:63.3,yoyo:1040,dc_1rm:50,tirage_1rm:50,sdt_1rm:105,hipthrust:145,v10:1.96,v20:3.47,v25:4.3,v50:8.07},
+    Janvier:{taille:166,dc_3rm:50,squat_3rm:85,tirage_3rm:45,v10:1.89,v20:3.35,v30:4.71,v40:6.22}
+  }},
+  "Margaux": {poste:"Centre", stats:{
+    Septembre:{poids:70,yoyo:560,v10:1.78,v20:3.17,v25:4,v50:7.4},
+    Novembre:{poids:70,yoyo:560,v10:1.78,v20:3.17,v25:4,v50:7.4}
+  }},
+  "Mathilde": {poste:"Demi-Ouverture", stats:{
+    Septembre:{poids:74.3,yoyo:360},
+    Novembre:{poids:78.9,yoyo:360,hipthrust:130}
+  }},
+  "Maylis": {poste:"3e Ligne", stats:{
+    Septembre:{poids:54.9,yoyo:1040,dc_1rm:37.5,tirage_1rm:49,sdt_1rm:80,v10:1.97,v20:3.47,v25:4.28,v50:8.02,broad:175},
+    Novembre:{poids:56.4,yoyo:1040,dc_1rm:42.5,tirage_1rm:52.5,sdt_1rm:110,hipthrust:100,v10:1.88,v20:3.39,v25:3.95,v50:7.39},
+    Janvier:{taille:160,dc_3rm:42.5,tirage_3rm:47.5,v10:1.79,v20:3.14,v30:4.41,v40:5.82}
+  }},
+  "Méloée": {poste:"Demi-Ouverture", stats:{
+    Septembre:{poids:65.4,yoyo:760,dc_1rm:55,tirage_1rm:55,sdt_1rm:110,v10:1.99,v20:3.43,v25:4.12,v50:7.61,broad:192},
+    Novembre:{poids:67.4,yoyo:760,dc_1rm:60,tirage_1rm:63,sdt_1rm:135,hipthrust:150,v10:1.87,v20:3.27},
+    Janvier:{taille:166,dc_3rm:55,tirage_3rm:60}
+  }},
+  "Morgane": {poste:"Ailier/arrière", stats:{
+    Septembre:{poids:65.1,yoyo:1080,dc_1rm:35,tirage_1rm:55,sdt_1rm:90,v10:1.95,v20:3.37,v25:4.1,v50:7.69,broad:192},
+    Novembre:{poids:64.6,yoyo:1080,dc_1rm:47.5,tirage_1rm:62.5,sdt_1rm:90,hipthrust:145,v10:1.83,v20:3.24,v25:3.96,v50:7.38,broad:192},
+    Janvier:{taille:164,squat_3rm:105,tirage_3rm:60,v10:1.97,v20:3.41,v30:4.79,v40:6.13,yoyo:960}
+  }},
+  "Romane": {poste:"Demi-Ouverture", stats:{
+    Septembre:{poids:58.1,yoyo:720,dc_1rm:35,tirage_1rm:42.5,sdt_1rm:75,v10:1.99,v20:3.52,v25:4.22,v50:8.03,broad:189},
+    Novembre:{poids:59.4,yoyo:720,dc_1rm:42.5,tirage_1rm:50,sdt_1rm:110,v10:1.83,v20:3.26,v25:3.97,v50:7.37},
+    Janvier:{dc_3rm:45,tirage_3rm:42.5,v10:1.79,v20:3.15,v30:4.43,v40:5.83}
+  }},
+  "Shayna": {poste:"3e Ligne", stats:{
+    Septembre:{poids:66.3,yoyo:640,dc_1rm:38,tirage_1rm:38.5,sdt_1rm:80,hipthrust:110,v10:2.19,v20:3.88,v25:4.75,v50:8.5},
+    Novembre:{poids:66.2,yoyo:640,dc_1rm:40,tirage_1rm:50,sdt_1rm:110,v10:2.06,v20:3.75},
+    Janvier:{taille:162,dc_3rm:35,squat_3rm:85,tirage_3rm:50,v10:2.07,v20:3.62,v30:5.17,v40:6.75}
+  }},
+  "Zoé": {poste:"2e Ligne", stats:{
+    Septembre:{poids:63.9,yoyo:920,dc_1rm:50,tirage_1rm:40,sdt_1rm:100,hipthrust:125,v10:2.07,v20:3.65,v25:4.55,v50:8.64,broad:164},
+    Novembre:{poids:63.7,yoyo:920,dc_1rm:55,tirage_1rm:60,sdt_1rm:125,v10:1.89,v20:3.37,v25:4.21,v50:7.93,broad:167},
+    Janvier:{taille:163,poids:68.15,yoyo:960,dc_3rm:55,squat_3rm:110,tirage_3rm:60,v10:1.86,v20:3.26,v30:4.59,v40:6.02,broad:189}
+  }}
 };
 
-renderOverview();
+const LABELS = {
+  taille:"Taille",poids:"Poids",yoyo:"Yo-Yo Test",
+  dc_1rm:"1RM DC",tirage_1rm:"1RM Tirage",sdt_1rm:"1RM SDT",hipthrust:"Hip Thrust",
+  dc_3rm:"3RM DC",squat_3rm:"3RM Squat",tirage_3rm:"3RM Tirage",
+  v10:"10m",v20:"20m",v25:"25m",v30:"30m",v40:"40m",v50:"50m",broad:"Broad Jump"
+};
+const UNITS = {
+  taille:"cm",poids:"kg",yoyo:"m",broad:"cm",
+  dc_1rm:"kg",tirage_1rm:"kg",sdt_1rm:"kg",hipthrust:"kg",
+  dc_3rm:"kg",squat_3rm:"kg",tirage_3rm:"kg",
+  v10:"s",v20:"s",v25:"s",v30:"s",v40:"s",v50:"s"
+};
+const CATS = {
+  antrho:{name:"Anthropométrie",ico:"📏",keys:["taille","poids"]},
+  aero:{name:"Endurance",ico:"🏃‍♀️",keys:["yoyo"]},
+  force1:{name:"Force 1RM",ico:"💪",keys:["dc_1rm","tirage_1rm","sdt_1rm","hipthrust"]},
+  force3:{name:"Force 3RM",ico:"🏋️‍♀️",keys:["dc_3rm","squat_3rm","tirage_3rm"]},
+  vitesse:{name:"Vitesse",ico:"⚡",keys:["v10","v20","v25","v30","v40","v50"]},
+  explo:{name:"Explosivité",ico:"🚀",keys:["broad"]}
+};
+// invert = true => plus petit = mieux (sprints)
+const INVERT = ["v10","v20","v25","v30","v40","v50"];
 </script>
+<script>
+let selectedPlayer = null;
+let selectedPeriods = ['Septembre','Novembre','Janvier'];
+let selectedCat = null;
+
+// Init dropdown joueuses
+function initUI(){
+  const sel = document.getElementById('selJ');
+  const names = Object.keys(DATA).sort();
+  sel.innerHTML = '<option value="">-- Choisir une joueuse --</option>' +
+    names.map(n=>`<option value="${n}">${n} (${DATA[n].poste})</option>`).join('');
+  
+  // Périodes
+  const pdiv = document.getElementById('periods');
+  pdiv.innerHTML = PERIODS.map(p=>`
+    <label class="pchk ${selectedPeriods.includes(p)?'active':''}">
+      <input type="checkbox" value="${p}" ${selectedPeriods.includes(p)?'checked':''} onchange="togglePeriod('${p}',this.checked)">
+      ${p}
+    </label>
+  `).join('');
+}
+
+function togglePeriod(p,checked){
+  if(checked) selectedPeriods.push(p);
+  else selectedPeriods = selectedPeriods.filter(x=>x!==p);
+  selectedPeriods.sort((a,b)=>PERIODS.indexOf(a)-PERIODS.indexOf(b));
+  initUI();
+  document.getElementById('selJ').value = selectedPlayer||'';
+  render();
+}
+
+function render(){
+  const name = document.getElementById('selJ').value;
+  selectedPlayer = name;
+  const c = document.getElementById('content');
+  
+  if(!name){
+    c.innerHTML = `<div class="section"><h2>👋 Bienvenue</h2><p style="color:var(--muted)">Sélectionne une joueuse pour afficher son dashboard complet.</p></div>`;
+    return;
+  }
+  
+  if(selectedCat){
+    renderCategory(name);
+  } else {
+    renderDashboard(name);
+  }
+}
+
+// ===== DASHBOARD GÉNÉRAL =====
+function renderDashboard(name){
+  const p = DATA[name];
+  const c = document.getElementById('content');
+  
+  // Profil
+  let html = `
+    <div class="profile">
+      <div class="avatar">${name[0]}</div>
+      <div class="pinfo">
+        <h2>${name}</h2>
+        <p>Poste : <strong>${p.poste}</strong></p>
+        <div>
+          ${selectedPeriods.map(per=>p.stats[per]?`<span class="tag">${per}</span>`:'').join('')}
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Vue d'ensemble : stats clés
+  html += `<div class="section"><h2>📊 Vue d'ensemble — Dernière période évaluée</h2>`;
+  const lastPer = [...selectedPeriods].reverse().find(per=>p.stats[per]);
+  const firstPer = selectedPeriods.find(per=>p.stats[per]);
+  
+  if(lastPer){
+    const keyStats = ['poids','yoyo','dc_1rm','sdt_1rm','v10','v20','broad'];
+    html += `<div class="grid">`;
+    keyStats.forEach(k=>{
+      const v = p.stats[lastPer][k];
+      if(v===undefined) return;
+      const evo = computeEvo(p,k,firstPer,lastPer);
+      html += `<div class="stat">
+        <div class="label">${LABELS[k]}</div>
+        <div class="val">${v}<span class="unit">${UNITS[k]||''}</span></div>
+        ${evo?`<div class="evo ${evo.cls}">${evo.txt}</div>`:''}
+      </div>`;
+    });
+    html += `</div>`;
+  }
+  html += `</div>`;
+  
+  // Catégories cliquables
+  html += `<h2 style="margin:20px 0 10px;color:var(--accent)">🗂️ Catégories détaillées</h2>`;
+  html += `<div class="cats">`;
+  Object.keys(CATS).forEach(k=>{
+    const cat = CATS[k];
+    const has = cat.keys.some(key=>selectedPeriods.some(per=>p.stats[per]&&p.stats[per][key]!==undefined));
+    if(!has) return;
+    html += `<div class="cat" onclick="openCat('${k}')">
+      <div class="ico">${cat.ico}</div>
+      <div class="name">${cat.name}</div>
+      <div class="desc">${cat.keys.length} indicateurs</div>
+    </div>`;
+  });
+  html += `</div>`;
+  
+  // Graphique global évolution (poids + yoyo normalisés)
+  html += `<div class="section"><h2>📈 Évolution générale</h2>
+    <div class="chart-wrap"><canvas id="globalChart"></canvas></div>
+  </div>`;
+  
+  c.innerHTML = html;
+  
+  // Build global chart
+  setTimeout(()=>buildGlobalChart(name),50);
+}
+
+function computeEvo(p,key,firstPer,lastPer){
+  if(!firstPer||!lastPer||firstPer===lastPer) return null;
+  const a = p.stats[firstPer]?.[key];
+  const b = p.stats[lastPer]?.[key];
+  if(a===undefined||b===undefined||a===0) return null;
+  const diff = b-a;
+  const pct = (diff/a)*100;
+  const better = INVERT.includes(key) ? diff<0 : diff>0;
+  const arrow = diff>0?'▲':(diff<0?'▼':'=');
+  return {
+    cls: better?'pos':'neg',
+    txt:`${arrow} ${pct>0?'+':''}${pct.toFixed(1)}%`
+  };
+}
+
+function buildGlobalChart(name){
+  const p = DATA[name];
+  const labels = selectedPeriods.filter(per=>p.stats[per]);
+  const ds = [];
+  const colors = ['#e94560','#f5a623','#2ea043','#58a6ff','#bc8cff','#ff7b72'];
+  ['poids','yoyo','dc_1rm','sdt_1rm','v50','broad'].forEach((k,i)=>{
+    const data = labels.map(per=>p.stats[per][k]??null);
+    if(data.some(v=>v!==null)){
+      ds.push({
+        label:LABELS[k],
+        data,
+        borderColor:colors[i],
+        backgroundColor:colors[i]+'33',
+        tension:0.3,
+        yAxisID: (k==='yoyo'||k==='broad')?'y2':'y1'
+      });
+    }
+  });
+  new Chart(document.getElementById('globalChart'),{
+    type:'line',
+    data:{labels,datasets:ds},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#e6edf3'}}},
+      scales:{
+        x:{ticks:{color:'#8b949e'},grid:{color:'#30363d'}},
+        y1:{position:'left',ticks:{color:'#8b949e'},grid:{color:'#30363d'}},
+        y2:{position:'right',ticks:{color:'#8b949e'},grid:{display:false}}
+      }
+    }
+  });
+}
+
+function openCat(k){
+  selectedCat = k;
+  render();
+}
+function closeCat(){
+  selectedCat = null;
+  render();
+}
+</script>
+<script>
+// ===== VUE CATÉGORIE DÉTAILLÉE =====
+function renderCategory(name){
+  const p = DATA[name];
+  const cat = CATS[selectedCat];
+  const c = document.getElementById('content');
+  
+  let html = `
+    <button class="back" onclick="closeCat()">← Retour au dashboard</button>
+    <div class="section">
+      <h2>${cat.ico} ${cat.name} — ${name}</h2>
+  `;
+  
+  // Tableau comparatif
+  html += `<table>
+    <thead><tr><th>Indicateur</th>
+    ${selectedPeriods.map(per=>p.stats[per]?`<th>${per}</th>`:'').join('')}
+    <th>Évolution</th></tr></thead>
+    <tbody>`;
+  
+  const firstPer = selectedPeriods.find(per=>p.stats[per]);
+  const lastPer = [...selectedPeriods].reverse().find(per=>p.stats[per]);
+  
+  cat.keys.forEach(k=>{
+    const hasAny = selectedPeriods.some(per=>p.stats[per]&&p.stats[per][k]!==undefined);
+    if(!hasAny) return;
+    const evo = computeEvo(p,k,firstPer,lastPer);
+    html += `<tr>
+      <td><strong>${LABELS[k]}</strong> <span style="color:var(--muted);font-size:.75rem">${UNITS[k]||''}</span></td>
+      ${selectedPeriods.map(per=>p.stats[per]?`<td>${p.stats[per][k]!==undefined?p.stats[per][k]:'—'}</td>`:'').join('')}
+      <td>${evo?`<span class="${evo.cls}">${evo.txt}</span>`:'—'}</td>
+    </tr>`;
+  });
+  
+  html += `</tbody></table>`;
+  
+  // Graphique par indicateur
+  cat.keys.forEach(k=>{
+    const labels = selectedPeriods.filter(per=>p.stats[per]&&p.stats[per][k]!==undefined);
+    if(labels.length < 2) return;
+    html += `
+      <h3 style="margin-top:20px;color:var(--muted);font-size:.95rem">${LABELS[k]} (${UNITS[k]||''})</h3>
+      <div class="chart-wrap" style="height:220px"><canvas id="chart_${k}"></canvas></div>
+    `;
+  });
+  
+  html += `</div>`;
+  c.innerHTML = html;
+  
+  // Build charts
+  setTimeout(()=>{
+    cat.keys.forEach(k=>{
+      const canvas = document.getElementById(`chart_${k}`);
+      if(!canvas) return;
+      const labels = selectedPeriods.filter(per=>p.stats[per]&&p.stats[per][k]!==undefined);
+      const data = labels.map(per=>p.stats[per][k]);
+      const colors = data.map((v,i)=>{
+        if(i===0) return '#58a6ff';
+        const better = INVERT.includes(k) ? v < data[i-1] : v > data[i-1];
+        return better ? '#2ea043' : '#da3633';
+      });
+      new Chart(canvas,{
+        type:'bar',
+        data:{
+          labels,
+          datasets:[{
+            label:LABELS[k],
+            data,
+            backgroundColor:colors,
+            borderRadius:6
+          },{
+            type:'line',
+            label:'Tendance',
+            data,
+            borderColor:'#f5a623',
+            borderWidth:2,
+            pointBackgroundColor:'#f5a623',
+            tension:0.3,
+            fill:false
+          }]
+        },
+        options:{
+          responsive:true,maintainAspectRatio:false,
+          plugins:{legend:{labels:{color:'#e6edf3'}}},
+          scales:{
+            x:{ticks:{color:'#8b949e'},grid:{color:'#30363d'}},
+            y:{ticks:{color:'#8b949e'},grid:{color:'#30363d'}}
+          }
+        }
+      });
+    });
+  },50);
+}
+
+// ===== INIT =====
+initUI();
+render();
+</script>
+
+<!-- CSS manquant pour les checkboxes périodes et catégories -->
+<style>
+.pchk{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border:2px solid var(--border);border-radius:16px;cursor:pointer;font-size:.82rem;color:var(--muted);transition:all .2s;user-select:none}
+.pchk.active{border-color:var(--accent);color:var(--accent);background:rgba(233,69,96,.08)}
+.pchk input{display:none}
+.cats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:5px}
+.cat{background:var(--card2);border:2px solid var(--border);border-radius:10px;padding:18px 14px;cursor:pointer;text-align:center;transition:all .2s}
+.cat:hover{border-color:var(--accent);transform:translateY(-2px)}
+.cat .ico{font-size:1.8rem;margin-bottom:6px}
+.cat .name{font-weight:600;font-size:.9rem}
+.cat .desc{color:var(--muted);font-size:.75rem;margin-top:3px}
+.section{background:var(--card);border-radius:12px;padding:20px;margin-bottom:16px}
+.section h2{margin-bottom:14px;font-size:1.05rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.stat{background:var(--card2);padding:14px;border-radius:8px;border-left:3px solid var(--accent)}
+.stat .label{font-size:.75rem;color:var(--muted);margin-bottom:4px}
+.stat .val{font-size:1.3rem;font-weight:700;color:var(--accent)}
+.stat .unit{font-size:.75rem;color:var(--muted);margin-left:3px}
+.evo{font-size:.75rem;margin-top:4px;font-weight:600}
+.evo.pos{color:var(--ok)}
+.evo.neg{color:var(--ko)}
+.periods{display:flex;gap:8px;flex-wrap:wrap}
+</style>
+
 </body>
 </html>
