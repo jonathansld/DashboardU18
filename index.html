@@ -46,6 +46,21 @@ tr:hover td{background:rgba(255,255,255,.02)}
 .back:hover{border-color:var(--accent);color:var(--accent)}
 .subtitle{color:var(--muted);font-size:.8rem;margin-top:4px}
 .tbl-wrap{overflow-x:auto;margin-top:8px}
+  .tabBtn{background:var(--card);color:var(--muted);border:2px solid var(--border);padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;font-size:.9rem;transition:all .2s}
+.tabBtn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tabBtn:hover{color:var(--text)}
+.rank{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--card2);border-radius:8px;margin-bottom:6px;border-left:4px solid var(--border)}
+.rank.top1{border-left-color:#ffd700}
+.rank.top2{border-left-color:#c0c0c0}
+.rank.top3{border-left-color:#cd7f32}
+.rank.me{background:rgba(233,69,96,.15);border-left-color:var(--accent)}
+.rank .pos{font-size:1.2rem;font-weight:700;min-width:40px;color:var(--accent2)}
+.rank .nm{flex:1;font-weight:600}
+.rank .ps{color:var(--muted);font-size:.82rem;margin-right:10px}
+.rank .vl{font-weight:700;color:var(--accent2);font-size:1.05rem}
+.cmpChip{padding:6px 12px;border:2px solid var(--border);border-radius:16px;cursor:pointer;font-size:.82rem;color:var(--muted);user-select:none;transition:all .2s}
+.cmpChip.active{border-color:var(--accent);color:var(--text);background:rgba(233,69,96,.15)}
+.cmpChip:hover{color:var(--text)}
 </style>
 </head>
 <body>
@@ -55,14 +70,37 @@ tr:hover td{background:rgba(255,255,255,.02)}
   <div class="subtitle">Suivi individuel des performances</div>
 </div>
 
-<div class="controls">
+<div class="tabs" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+  <button class="tabBtn active" data-tab="indiv" onclick="setTab('indiv')">👤 Individuel</button>
+  <button class="tabBtn" data-tab="leader" onclick="setTab('leader')">🏆 Leaderboard</button>
+  <button class="tabBtn" data-tab="compare" onclick="setTab('compare')">⚔️ Comparaison</button>
+</div>
+
+<div id="ctrlIndiv" class="controls">
   <label>Joueuse :</label>
   <select id="selJ" onchange="render()"></select>
   <label>Périodes :</label>
   <div class="periods" id="periods"></div>
 </div>
 
+<div id="ctrlLeader" class="controls" style="display:none">
+  <label>Mouvement :</label>
+  <select id="selMove"></select>
+  <label>Période :</label>
+  <select id="selPeriodL"></select>
+  <label>Filtre poste :</label>
+  <select id="selPoste"><option value="">Tous les postes</option></select>
+</div>
+
+<div id="ctrlCompare" class="controls" style="display:none;flex-direction:column;align-items:flex-start">
+  <label>Joueuses à comparer (clique pour sélectionner) :</label>
+  <div id="cmpPlayers" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+  <label style="margin-top:8px">Période :</label>
+  <select id="selPeriodC"></select>
+</div>
+
 <div id="content"></div>
+
 
 <script>
 // ====== CONFIG ======
@@ -499,6 +537,214 @@ function openCat(k){selectedCat=k;render();window.scrollTo(0,0);}
 function closeCat(){selectedCat=null;render();}
 
 // ====== START ======
+  <script>
+// ====== ÉTAT GLOBAL ======
+let currentTab = 'indiv';
+let cmpSelected = []; // joueuses sélectionnées pour comparaison
+
+// ====== INIT NOUVEAUX CONTRÔLES ======
+function initExtras(){
+  // Mouvements (toutes les clés de LABELS)
+  const selMove = document.getElementById('selMove');
+  Object.entries(LABELS).forEach(([k,v])=>{
+    const o=document.createElement('option');o.value=k;o.textContent=v+(UNITS[k]?' ('+UNITS[k]+')':'');
+    selMove.appendChild(o);
+  });
+  selMove.value='dc_1rm';
+  selMove.onchange=renderLeader;
+
+  // Périodes leaderboard
+  const selPL = document.getElementById('selPeriodL');
+  PERIODS.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;selPL.appendChild(o);});
+  selPL.value='Janvier';
+  selPL.onchange=renderLeader;
+
+  // Postes (uniques)
+  const postes = [...new Set(Object.values(DATA).map(d=>d.poste).filter(Boolean))].sort();
+  const selP = document.getElementById('selPoste');
+  postes.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;selP.appendChild(o);});
+  selP.onchange=renderLeader;
+
+  // Comparaison : chips joueuses
+  const cmpDiv = document.getElementById('cmpPlayers');
+  Object.keys(DATA).sort().forEach(n=>{
+    const c=document.createElement('div');
+    c.className='cmpChip';c.textContent=n;
+    c.onclick=()=>{
+      if(cmpSelected.includes(n)){cmpSelected=cmpSelected.filter(x=>x!==n);c.classList.remove('active');}
+      else{cmpSelected.push(n);c.classList.add('active');}
+      renderCompare();
+    };
+    cmpDiv.appendChild(c);
+  });
+
+  // Période comparaison
+  const selPC = document.getElementById('selPeriodC');
+  PERIODS.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;selPC.appendChild(o);});
+  selPC.value='Janvier';
+  selPC.onchange=renderCompare;
+}
+
+// ====== TABS ======
+function setTab(t){
+  currentTab=t;
+  document.querySelectorAll('.tabBtn').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
+  document.getElementById('ctrlIndiv').style.display = t==='indiv'?'flex':'none';
+  document.getElementById('ctrlLeader').style.display = t==='leader'?'flex':'none';
+  document.getElementById('ctrlCompare').style.display = t==='compare'?'flex':'none';
+  destroyCharts();
+  if(t==='indiv') render();
+  else if(t==='leader') renderLeader();
+  else renderCompare();
+}
+
+// ====== LEADERBOARD ======
+function renderLeader(){
+  destroyCharts();
+  const move = document.getElementById('selMove').value;
+  const period = document.getElementById('selPeriodL').value;
+  const posteFilter = document.getElementById('selPoste').value;
+  const content = document.getElementById('content');
+
+  let list = Object.entries(DATA)
+    .filter(([n,d])=>!posteFilter || d.poste===posteFilter)
+    .map(([n,d])=>({nom:n,poste:d.poste,val:d.stats[period]?.[move]}))
+    .filter(x=>x.val!=null);
+
+  list.sort((a,b)=>INVERT.includes(move) ? a.val-b.val : b.val-a.val);
+
+  let html = `<div class="section"><h2>🏆 Classement — ${LABELS[move]} (${period})${posteFilter?' • '+posteFilter:''}</h2>`;
+  if(list.length===0){
+    html += `<p class="subtitle">Aucune donnée pour ces critères.</p></div>`;
+    content.innerHTML=html;return;
+  }
+
+  // Si vitesse : afficher aussi m/s et km/h
+  const isSpeed = DIST[move]!=null;
+
+  list.forEach((p,i)=>{
+    const cls = i===0?'top1':i===1?'top2':i===2?'top3':'';
+    const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1);
+    let extra = '';
+    if(isSpeed){
+      const ms = (DIST[move]/p.val).toFixed(2);
+      const kmh = ((DIST[move]/p.val)*3.6).toFixed(1);
+      extra = ` <span style="color:var(--muted);font-size:.82rem">(${ms} m/s • ${kmh} km/h)</span>`;
+    }
+    html += `<div class="rank ${cls}">
+      <div class="pos">${medal}</div>
+      <div class="nm">${p.nom}</div>
+      <div class="ps">${p.poste||''}</div>
+      <div class="vl">${p.val} ${UNITS[move]||''}${extra}</div>
+    </div>`;
+  });
+  html += `</div>`;
+  content.innerHTML = html;
+}
+
+// ====== COMPARAISON ======
+function renderCompare(){
+  destroyCharts();
+  const period = document.getElementById('selPeriodC').value;
+  const content = document.getElementById('content');
+
+  if(cmpSelected.length<1){
+    content.innerHTML = `<div class="section"><h2>⚔️ Comparaison</h2>
+      <p class="subtitle">Sélectionne au moins 1 joueuse ci-dessus pour commencer la comparaison.</p></div>`;
+    return;
+  }
+
+  // Toutes les clés présentes pour les joueuses sélectionnées sur cette période
+  const allKeys = new Set();
+  cmpSelected.forEach(j=>{
+    const s = DATA[j].stats[period];
+    if(s) Object.keys(s).forEach(k=>{if(LABELS[k]) allKeys.add(k);});
+  });
+
+  let html = `<div class="section"><h2>⚔️ Comparaison — ${period}</h2>`;
+
+  if(allKeys.size===0){
+    html += `<p class="subtitle">Aucune donnée pour ces joueuses sur cette période.</p></div>`;
+    content.innerHTML=html;return;
+  }
+
+  // Grouper par unité
+  const byUnit = {};
+  allKeys.forEach(k=>{const u=UNITS[k]||'autre';if(!byUnit[u])byUnit[u]=[];byUnit[u].push(k);});
+  const unitOrder = ['kg','cm','m','s',''];
+  const unitNames = {kg:'Charges (kg)',cm:'Distances (cm)',m:'Distance (m)',s:'Temps (s)','':'Palier'};
+
+  unitOrder.forEach(u=>{
+    if(!byUnit[u]||byUnit[u].length===0) return;
+    const keys = byUnit[u].sort((a,b)=>Object.keys(LABELS).indexOf(a)-Object.keys(LABELS).indexOf(b));
+    html += `<h3>${unitNames[u]||u}</h3><div class="tbl-wrap"><table>
+      <thead><tr><th>Indicateur</th>`;
+    cmpSelected.forEach(j=>html+=`<th>${j}<br><span style="color:var(--muted);font-weight:400;font-size:.75rem">${DATA[j].poste||''}</span></th>`);
+    html += `<th>Meilleure</th></tr></thead><tbody>`;
+    keys.forEach(k=>{
+      html += `<tr><td><strong>${LABELS[k]}</strong></td>`;
+      const vals = cmpSelected.map(j=>DATA[j].stats[period]?.[k]);
+      const valid = vals.filter(v=>v!=null);
+      let best = null;
+      if(valid.length>0) best = INVERT.includes(k) ? Math.min(...valid) : Math.max(...valid);
+      vals.forEach(v=>{
+        const isBest = v!=null && v===best && valid.length>1;
+        html += `<td style="${isBest?'color:#2ea043;font-weight:700':''}">${v!=null?v+(UNITS[k]?' '+UNITS[k]:''):'—'}</td>`;
+      });
+      const bestIdx = vals.indexOf(best);
+      html += `<td style="color:var(--accent2);font-weight:600">${bestIdx>=0?cmpSelected[bestIdx]:'—'}</td>`;
+      html += `</tr>`;
+    });
+    html += `</tbody></table></div>`;
+  });
+
+  // Graphique radar si >=2 joueuses et plusieurs métriques
+  if(cmpSelected.length>=2 && allKeys.size>=3){
+    html += `<h3>📊 Profil comparatif (normalisé)</h3>
+      <div class="chart-wrap" style="height:400px"><canvas id="radarCmp"></canvas></div>
+      <p class="subtitle" style="margin-top:6px;font-size:.78rem">Valeurs normalisées 0-100 (100 = meilleure perf entre joueuses sélectionnées)</p>`;
+  }
+
+  html += `</div>`;
+  content.innerHTML = html;
+
+  // Radar
+  if(cmpSelected.length>=2 && allKeys.size>=3){
+    const keys = [...allKeys];
+    const colors = ['#e94560','#f5a623','#2ea043','#58a6ff','#bc8cff','#ff7b72','#79c0ff'];
+    const datasets = cmpSelected.map((j,i)=>{
+      const data = keys.map(k=>{
+        const v = DATA[j].stats[period]?.[k];
+        if(v==null) return 0;
+        const allV = cmpSelected.map(x=>DATA[x].stats[period]?.[k]).filter(x=>x!=null);
+        if(allV.length===0) return 0;
+        const mn = Math.min(...allV), mx = Math.max(...allV);
+        if(mx===mn) return 100;
+        return INVERT.includes(k) ? ((mx-v)/(mx-mn))*100 : ((v-mn)/(mx-mn))*100;
+      });
+      return {label:j,data,borderColor:colors[i%colors.length],backgroundColor:colors[i%colors.length]+'33',borderWidth:2};
+    });
+    const ctx = document.getElementById('radarCmp');
+    const c = new Chart(ctx,{
+      type:'radar',
+      data:{labels:keys.map(k=>LABELS[k]),datasets},
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{labels:{color:'#e6edf3'}}},
+        scales:{r:{
+          angleLines:{color:'#30363d'},grid:{color:'#30363d'},
+          pointLabels:{color:'#e6edf3',font:{size:11}},
+          ticks:{color:'#8b949e',backdropColor:'transparent'},
+          suggestedMin:0,suggestedMax:100
+        }}
+      }
+    });
+    charts.push(c);
+  }
+}
+
+initExtras();
+</script>
 initUI();
 render();
 </script>
