@@ -1,698 +1,417 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Tests Physiques - U18F</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: #0f0f1a; color: #fff; min-height: 100vh; }
-
-        .header {
-            background: linear-gradient(135deg, #1a1a2e, #0f3460);
-            padding: 25px 40px;
-            border-bottom: 2px solid #e94560;
-            display: flex; align-items: center; gap: 20px;
-        }
-        .header h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; }
-        .header p { color: #a0a0c0; font-size: 0.9rem; margin-top: 4px; }
-        .logo { font-size: 2.5rem; }
-
-        .selectors {
-            background: #1a1a2e;
-            padding: 20px 40px;
-            display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap;
-            border-bottom: 1px solid #2a2a4e;
-        }
-        .sel-group { display: flex; flex-direction: column; gap: 6px; }
-        .sel-group label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.5px; color: #a0a0c0; font-weight: 600; }
-        .sel-group select {
-            background: #0f0f1a; border: 1px solid #3a3a6e; color: #fff;
-            padding: 10px 15px; border-radius: 8px; font-size: 0.95rem;
-            cursor: pointer; min-width: 180px;
-        }
-        .sel-group select:focus { outline: none; border-color: #e94560; }
-
-        .welcome {
-            text-align: center; padding: 80px 20px; color: #3a3a6e;
-        }
-        .welcome .icon { font-size: 5rem; margin-bottom: 20px; }
-        .welcome h2 { font-size: 1.5rem; color: #5a5a8e; }
-
-        .dashboard { padding: 30px 40px; display: none; }
-
-        .player-header {
-            background: linear-gradient(135deg, #1a1a2e, #0f3460);
-            border-radius: 12px; padding: 20px 30px;
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 25px; border: 1px solid #2a2a4e;
-            flex-wrap: wrap; gap: 15px;
-        }
-        .player-name { font-size: 2rem; font-weight: 700; }
-        .player-info { color: #a0a0c0; font-size: 0.9rem; margin-top: 4px; }
-        .player-badges { display: flex; gap: 10px; flex-wrap: wrap; }
-        .badge {
-            padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
-            background: #0f3460; border: 1px solid #e94560; color: #e94560;
-        }
-
-        .stats-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px; margin-bottom: 25px;
-        }
-        .stat-card {
-            background: #1a1a2e; border-radius: 10px; padding: 15px;
-            border: 1px solid #2a2a4e; text-align: center;
-        }
-        .stat-card .label { font-size: 0.72rem; color: #a0a0c0; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-        .stat-card .value { font-size: 1.6rem; font-weight: 700; color: #fff; }
-        .stat-card .unit { font-size: 0.75rem; color: #5a5a8e; margin-top: 2px; }
-        .stat-card .evo { font-size: 0.8rem; margin-top: 5px; }
-
-        .pill-pos { color: #00d4aa; }
-        .pill-neg { color: #e94560; }
-        .pill-neu { color: #a0a0c0; }
-
-        .section-title {
-            font-size: 1rem; font-weight: 700; text-transform: uppercase;
-            letter-spacing: 2px; color: #e94560; margin: 25px 0 15px;
-            padding-bottom: 8px; border-bottom: 1px solid #2a2a4e;
-        }
-
-        .charts-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-            gap: 20px; margin-bottom: 25px;
-        }
-        .chart-card {
-            background: #1a1a2e; border-radius: 12px; padding: 20px;
-            border: 1px solid #2a2a4e;
-        }
-        .chart-card h3 { font-size: 0.85rem; color: #a0a0c0; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
-
-        .table-wrap { overflow-x: auto; margin-bottom: 25px; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-        th {
-            background: #0f3460; color: #a0a0c0; text-transform: uppercase;
-            font-size: 0.72rem; letter-spacing: 1px; padding: 10px 12px; text-align: left;
-        }
-        td { padding: 10px 12px; border-bottom: 1px solid #1a1a3e; }
-        tr:hover td { background: #1a1a3e; }
-        .td-name { font-weight: 600; color: #fff; }
-
-        @media (max-width: 600px) {
-            .header, .selectors, .dashboard { padding: 15px; }
-            .charts-grid { grid-template-columns: 1fr; }
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Dashboard U18F</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Segoe UI',sans-serif; background:#0f0f1a; color:#fff; min-height:100vh; }
+.header { background:linear-gradient(135deg,#1a1a2e,#0f3460); padding:25px 40px; border-bottom:2px solid #e94560; display:flex; align-items:center; gap:20px; }
+.header h1 { font-size:1.8rem; letter-spacing:2px; }
+.header p { color:#a0a0c0; font-size:0.9rem; margin-top:4px; }
+.logo { font-size:2.5rem; }
+.selectors { background:#1a1a2e; padding:20px 40px; display:flex; gap:20px; flex-wrap:wrap; border-bottom:1px solid #2a2a4e; }
+.sel-group { display:flex; flex-direction:column; gap:6px; }
+.sel-group label { font-size:0.72rem; text-transform:uppercase; letter-spacing:1.5px; color:#a0a0c0; font-weight:600; }
+.sel-group select { background:#0f0f1a; border:1px solid #3a3a6e; color:#fff; padding:10px 15px; border-radius:8px; font-size:0.95rem; min-width:200px; cursor:pointer; }
+.welcome { text-align:center; padding:80px 20px; color:#5a5a8e; }
+.welcome .icon { font-size:5rem; margin-bottom:20px; }
+.dashboard { padding:30px 40px; display:none; }
+.player-header { background:linear-gradient(135deg,#1a1a2e,#0f3460); border-radius:12px; padding:20px 30px; display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; border:1px solid #2a2a4e; flex-wrap:wrap; gap:15px; }
+.player-name { font-size:2rem; font-weight:700; }
+.player-info { color:#a0a0c0; font-size:0.9rem; margin-top:4px; }
+.badge { padding:6px 14px; border-radius:20px; font-size:0.8rem; font-weight:600; background:#0f3460; border:1px solid #e94560; color:#e94560; }
+.stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:15px; margin-bottom:25px; }
+.stat-card { background:#1a1a2e; border-radius:10px; padding:15px; border:1px solid #2a2a4e; text-align:center; }
+.stat-card .label { font-size:0.72rem; color:#a0a0c0; text-transform:uppercase; margin-bottom:8px; }
+.stat-card .value { font-size:1.6rem; font-weight:700; }
+.stat-card .unit { font-size:0.75rem; color:#5a5a8e; margin-top:2px; }
+.stat-card .evo { font-size:0.85rem; margin-top:5px; font-weight:600; }
+.pos { color:#00d4aa; } .neg { color:#e94560; } .neu { color:#a0a0c0; }
+.section-title { font-size:1rem; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:#e94560; margin:25px 0 15px; padding-bottom:8px; border-bottom:1px solid #2a2a4e; }
+.charts-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(380px,1fr)); gap:20px; margin-bottom:25px; }
+.chart-card { background:#1a1a2e; border-radius:12px; padding:20px; border:1px solid #2a2a4e; }
+.chart-card h3 { font-size:0.85rem; color:#a0a0c0; text-transform:uppercase; margin-bottom:15px; }
+.table-wrap { overflow-x:auto; background:#1a1a2e; border-radius:12px; padding:15px; }
+table { width:100%; border-collapse:collapse; font-size:0.88rem; }
+th { background:#0f3460; color:#a0a0c0; text-transform:uppercase; font-size:0.72rem; padding:10px 12px; text-align:left; }
+td { padding:10px 12px; border-bottom:1px solid #1a1a3e; }
+tr:hover td { background:#1a1a3e; }
+</style>
 </head>
 <body>
 
 <div class="header">
-    <div class="logo">🏉</div>
-    <div>
-        <h1>DASHBOARD TESTS PHYSIQUES</h1>
-        <p>Équipe U18F — Saison 2025/2026</p>
-    </div>
+<div class="logo">🏉</div>
+<div>
+<h1>DASHBOARD TESTS PHYSIQUES</h1>
+<p>Équipe U18F — Saison 2025/2026</p>
+</div>
 </div>
 
 <div class="selectors">
-    <div class="sel-group">
-        <label>👤 Joueuse</label>
-        <select id="sel-player" onchange="render()">
-            <option value="">— Sélectionner —</option>
-        </select>
-    </div>
-    <div class="sel-group">
-        <label>📅 Session</label>
-        <select id="sel-session" onchange="render()">
-            <option value="all">Toutes les sessions</option>
-            <option value="Septembre">Septembre</option>
-            <option value="Novembre">Novembre</option>
-            <option value="Janvier">Janvier</option>
-            <option value="Mai">Mai</option>
-        </select>
-    </div>
+<div class="sel-group">
+<label>👤 Joueuse</label>
+<select id="sel-player"><option value="">— Sélectionner —</option></select>
+</div>
+<div class="sel-group">
+<label>📅 Session</label>
+<select id="sel-session">
+<option value="all">Toutes les sessions</option>
+<option value="Septembre">Septembre</option>
+<option value="Novembre">Novembre</option>
+<option value="Janvier">Janvier</option>
+<option value="Mai">Mai</option>
+</select>
+</div>
 </div>
 
 <div class="welcome" id="welcome">
-    <div class="icon">🏉</div>
-    <h2>Sélectionne une joueuse pour afficher son dashboard</h2>
+<div class="icon">🏉</div>
+<h2>Sélectionne une joueuse pour afficher son dashboard</h2>
 </div>
 
 <div class="dashboard" id="dashboard">
-    <div class="player-header">
-        <div>
-            <div class="player-name" id="ph-name"></div>
-            <div class="player-info" id="ph-info"></div>
-        </div>
-        <div class="player-badges" id="ph-badges"></div>
-    </div>
-
-    <div class="section-title">📊 Dernières valeurs & Évolution globale</div>
-    <div class="stats-grid" id="stats-grid"></div>
-
-    <div class="section-title">📈 Graphiques d'évolution</div>
-    <div class="charts-grid" id="charts-grid"></div>
-
-    <div class="section-title">📋 Historique complet</div>
-    <div class="table-wrap" id="history-table"></div>
+<div class="player-header">
+<div>
+<div class="player-name" id="ph-name"></div>
+<div class="player-info" id="ph-info"></div>
+</div>
+<div id="ph-badges"></div>
+</div>
+<div class="section-title">📊 Dernières valeurs & Évolution</div>
+<div class="stats-grid" id="stats-grid"></div>
+<div class="section-title">📈 Graphiques d'évolution</div>
+<div class="charts-grid" id="charts-grid"></div>
+<div class="section-title">📋 Historique complet</div>
+<div class="table-wrap" id="history-table"></div>
 </div>
 
 <script>
 // ============================================================
-// DONNÉES
+// 📊 DONNÉES EXTRAITES DE L'EXCEL
 // ============================================================
 const DATA = {
-    players: {
-        "Alina": {
-            poste: "1re Ligne",
-            sessions: {
-                "Novembre": { 
-                    "Taille (cm)": 170, "Poids (kg)": 70.7, "Yo-yo level 1": 560, 
-                    "Flexion ISO (N·m)": 14.1, "Extension ISO (N·m)": 21.8, 
-                    "1RM DC (kg)": 42.5, "1RM Tirage (kg)": 50, "1RM SDT (kg)": 95, "1RM Hip Thrust (kg)": 125,
-                    "10m (s)": 2.04, "20m (s)": 3.66, "25m (s)": 4.44, "50m (s)": 8.41,
-                    "Broad Jump (cm)": 170
-                },
-                "Janvier":  { 
-                    "3RM DC (kg)": 37.5, "3RM Squat (kg)": 0, "3RM Tirage (kg)": 85, 
-                    "10m (s)": 2.15, "20m (s)": 3.75, "30m (s)": 5.38, "40m (s)": 7.05, 
-                    "Broad Jump (cm)": 157 
-                },
-                "Mai":      { "1RM DC (kg)": 42.5, "30m (s)": 5.38, "40m (s)": 7.05 }
-            }
-        },
-        "Amaia": {
-            poste: "Demi-mêlée",
-            sessions: {
-                "Septembre": { 
-                    "Taille (cm)": 193, "Poids (kg)": 61.5, "Yo-yo level 1": 1480, 
-                    "1RM DC (kg)": 37.5, "1RM Tirage (kg)": 47.5, "1RM SDT (kg)": 75, "1RM Hip Thrust (kg)": 125,
-                    "10m (s)": 1.97, "20m (s)": 3.43, "25m (s)": 4.28, "50m (s)": 7.74
-                },
-                "Novembre": { 
-                    "Poids (kg)": 61.7, "Yo-yo level 1": 1480, "Flexion ISO (N·m)": 13.3, "Extension ISO (N·m)": 20.6, 
-                    "1RM DC (kg)": 45, "1RM Tirage (kg)": 50, "1RM SDT (kg)": 125, "1RM Hip Thrust (kg)": 120, 
-                    "10m (s)": 1.82, "20m (s)": 3.26, "25m (s)": 3.92, "50m (s)": 7.27, 
-                    "Broad Jump (cm)": 200
-                },
-                "Janvier":  { "3RM DC (kg)": 45, "3RM Squat (kg)": 45, "3RM Tirage (kg)": 45 },
-                "Mai":      { "1RM DC (kg)": 45, "1RM Tirage (kg)": 45, "3RM Squat (kg)": 45 }
-            }
-        },
-        "Andréa": {
-            poste: "1re Ligne",
-            sessions: {
-                "Septembre": { "Taille (cm)": 193, "Poids (kg)": 77.1, "Yo-yo level 1": 560, "1RM DC (kg)": 52.5, "10m (s)": 2.02, "20m (s)": 3.52, "25m (s)": 4.30, "50m (s)": 8.11 },
-                "Novembre":  { "Poids (kg)": 76, "Yo-yo level 1": 560, "Flexion ISO (N·m)": 15.2, "Extension ISO (N·m)": 25.9, "1RM DC (kg)": 60 },
-                "Janvier":  { "3RM DC (kg)": 48, "3RM Tirage (kg)": 0 }
-            }
-        },
-        "Annaelle": {
-            poste: "1re Ligne",
-            sessions: {
-                "Septembre": { 
-                    "Taille (cm)": 170, "Poids (kg)": 89.2, "Yo-yo level 1": 440, 
-                    "1RM DC (kg)": 45, "1RM Tirage (kg)": 60, "1RM SDT (kg)": 60, "1RM Hip Thrust (kg)": 125,
-                    "10m (s)": 2.23, "20m (s)": 3.9, "25m (s)": 4.88, "50m (s)": 9.39
-                },
-                "Novembre": { 
-                    "Poids (kg)": 87.4, "Yo-yo level 1": 440, "Flexion ISO (N·m)": 21.5, "Extension ISO (N·m)": 25.6, 
-                    "1RM DC (kg)": 50, "1RM Tirage (kg)": 60, "1RM SDT (kg)": 125, "1RM Hip Thrust (kg)": 140, 
-                    "10m (s)": 2.11, "20m (s)": 3.70, "25m (s)": 4.60, "50m (s)": 8.71
-                },
-                "Janvier":  { "3RM DC (kg)": 60, "3RM Tirage (kg)": 55 },
-                "Mai":      { "1RM DC (kg)": 55, "1RM Tirage (kg)": 60, "30m (s)": 4.96, "40m (s)": 6.53, "Broad Jump (cm)": 157 }
-            }
-        },
-        "Augustine": {
-            poste: "3e Ligne",
-            sessions: {
-                "Septembre": { 
-                    "Taille (cm)": 202, "Poids (kg)": 64, "Yo-yo level 1": 1400, 
-                    "1RM DC (kg)": 50, "1RM Tirage (kg)": 50, "1RM SDT (kg)": 105, "1RM Hip Thrust (kg)": 130,
-                    "10m (s)": 1.94, "20m (s)": 3.32, "25m (s)": 4.07, "50m (s)": 7.50
-                },
-                "Novembre": { 
-                    "Poids (kg)": 64.1, "Yo-yo level 1": 1400, "Flexion ISO (N·m)": 9.8, "Extension ISO (N·m)": 25.7, 
-                    "1RM DC (kg)": 58, "1RM Tirage (kg)": 55, "1RM SDT (kg)": 130, "1RM Hip Thrust (kg)": 165, 
-                    "10m (s)": 1.84, "20m (s)": 3.22, "25m (s)": 3.98, "50m (s)": 7.21, 
-                    "Broad Jump (cm)": 210
-                },
-                "Janvier":  { "3RM DC (kg)": 0, "3RM Squat (kg)": 0, "3RM Tirage (kg)": 0 },
-                "Mai":      { "Yo-yo level 1": 1160, "1RM DC (kg)": 55, "10m (s)": 1.95, "20m (s)": 3.29, "30m (s)": 4.63, "40m (s)": 5.95 }
-            }
-        },
-        "Calliopée": {
-            poste: "3e Ligne",
-            sessions: {
-                "Septembre": { "Poids (kg)": 63.4, "1RM DC (kg)": 45, "1RM Tirage (kg)": 48, "1RM SDT (kg)": 100, "1RM Hip Thrust (kg)": 110, "10m (s)": 1.95, "20m (s)": 3.39, "25m (s)": 4.11, "50m (s)": 7.71 },
-                "Novembre": { "Poids (kg)": 65, "1RM DC (kg)": 50, "1RM Tirage (kg)": 60, "1RM SDT (kg)": 110, "1RM Hip Thrust (kg)": 150, "10m (s)": 1.96, "20m (s)": 3.46, "25m (s)": 4.24, "50m (s)": 7.90 },
-                "Janvier":  { "3RM DC (kg)": 0 },
-                "Mai":      { "1RM DC (kg)": 40, "1RM Tirage (kg)": 53 }
-            }
-        },
-        "Camille": {
-            poste: "1re Ligne",
-            sessions: {
-                "Novembre": { "Poids (kg)": 72, "Yo-yo level 1": 400 },
-                "Janvier":  { "3RM Tirage (kg)": 50 }
-            }
-        },
-        "Charlotte": {
-            poste: "Ailier/Arrière",
-            sessions: {
-                "Septembre": { "10m (s)": 1.92, "20m (s)": 3.32, "25m (s)": 3.91, "50m (s)": 7.14 },
-                "Novembre":  { 
-                    "Poids (kg)": 59.6, "Yo-yo level 1": 1400, "Flexion ISO (N·m)": 14.6, "Extension ISO (N·m)": 25.5, 
-                    "1RM DC (kg)": 45, "1RM Tirage (kg)": 47.5, "1RM SDT (kg)": 125, "1RM Hip Thrust (kg)": 150, 
-                    "10m (s)": 1.82, "20m (s)": 3.19, "25m (s)": 3.91, "50m (s)": 7.14
-                },
-                "Janvier":   { "3RM DC (kg)": 45, "3RM Tirage (kg)": 45 },
-                "Mai":       { "1RM DC (kg)": 45, "10m (s)": 1.93, "20m (s)": 3.31, "30m (s)": 4.61, "40m (s)": 5.94 }
-            }
-        },
-        "Ciara": {
-            poste: "3e Ligne",
-            sessions: {
-                "Septembre": { 
-                    "Poids (kg)": 59, "Yo-yo level 1": 680, 
-                    "1RM DC (kg)": 16, "1RM Tirage (kg)": 30, "1RM SDT (kg)": 42.5, "1RM Hip Thrust (kg)": 70, 
-                    "10m (s)": 2.13, "20m (s)": 3.73, "25m (s)": 4.41, "50m (s)": 8.49, 
-                    "Broad Jump (cm)": 180
-                },
-                "Novembre":  { 
-                    "Poids (kg)": 61, "Yo-yo level 1": 680, "Flexion ISO (N·m)": 12.1, "Extension ISO (N·m)": 28.4, 
-                    "1RM DC (kg)": 35, "1RM Tirage (kg)": 45, "1RM SDT (kg)": 110, "1RM Hip Thrust (kg)": 90, 
-                    "10m (s)": 2.00, "20m (s)": 3.53, "25m (s)": 4.19, "50m (s)": 7.80, 
-                    "Broad Jump (cm)": 199
-                },
-                "Janvier":   { 
-                    "Poids (kg)": 62.3, "Yo-yo level 1": 960, 
-                    "3RM DC (kg)": 40, "3RM Tirage (kg)": 40, 
-                    "10m (s)": 1.85, "20m (s)": 3.24, "30m (s)": 4.62, "40m (s)": 6.05, 
-                    "Broad Jump (cm)": 184
-                },
-                "Mai":       { "1RM DC (kg)": 42.5, "1RM Tirage (kg)": 45, "30m (s)": 4.62, "40m (s)": 6.05, "Broad Jump (cm)": 184 }
-            }
-        },
-        "Clara": {
-            poste: "Ailier/Arrière",
-            sessions: {
-                "Septembre": { 
-                    "Poids (kg)": 65.9, "Yo-yo level 1": 960, 
-                    "1RM DC (kg)": 37.5, "1RM Tirage (kg)": 37.5, "1RM SDT (kg)": 70, 
-                    "10m (s)": 1.71, "20m (s)": 3.10, "25m (s)": 3.73, "50m (s)": 6.94
-                },
-                "Novembre":  { 
-                    "Poids (kg)": 68, "Yo-yo level 1": 960, "Flexion ISO (N·m)": 12.7, "Extension ISO (N·m)": 25.9, 
-                    "1RM DC (kg)": 42.5, "1RM Tirage (kg)": 50, "1RM SDT (kg)": 90, "1RM Hip Thrust (kg)": 120, 
-                    "10m (s)": 1.79, "20m (s)": 3.12, "25m (s)": 3.76, "50m (s)": 6.93, 
-                    "Broad Jump (cm)": 215
-                },
-                "Janvier":   { "Yo-yo level 1": 960, "10m (s)": 1.73, "20m (s)": 2.99, "30m (s)": 4.20, "40m (s)": 5.47, "Broad Jump (cm)": 214 },
-                "Mai":       { "1RM DC (kg)": 45, "30m (s)": 4.20, "40m (s)": 5.47, "Broad Jump (cm)": 214 }
-            }
-        },
-        "Danaé": {
-            poste: "2e Ligne",
-            sessions: {
-                "Septembre": { 
-                    "Taille (cm)": 178, "Poids (kg)": 65.4, 
-                    "1RM DC (kg)": 17, "1RM SDT (kg)": 42.5, "1RM Hip Thrust (kg)": 40, 
-                    "10m (s)": 2.13, "20m (s)": 3.72, "25m (s)": 4.43, "50m (s)": 8.36
-                },
-                "Novembre":  { "Flexion ISO (N·m)": 11.8, "Extension ISO (N·m)": 21, "1RM DC (kg)": 45, "1RM Tirage (kg)": 45 },
-                "Janvier":   { "3RM DC (kg)": 0, "3RM Squat (kg)": 0 },
-                "Mai":       { "1RM DC (kg)": 40, "1RM Tirage (kg)": 40 }
-            }
-        },
-        "Elyna": {
-            poste: "1re Ligne",
-            sessions: {
-                "Septembre": { "Poids (kg)": 80.1, "Yo-yo level 1": 560 },
-                "Novembre":  { "Poids (kg)": 79.5, "Yo-yo level 1": 560, "10m (s)": 1.98, "20m (s)": 3.54, "25m (s)": 4.20, "50m (s)": 8.00 },
-                "Janvier":   { "10m (s)": 1.96, "20m (s)": 3.44, "30m (s)": 4.94, "40m (s)": 6.47 },
-                "Mai":       { "Yo-yo level 1": 560, "30m (s)": 4.94, "40m (s)": 6.47 }
-            }
-        },
-        "Emilie": {
-            poste: "3e Ligne",
-            sessions: {
-                "Septembre": { 
-                    "Taille (cm)": 187, "Poids (kg)": 71.4, "Yo-yo level 1": 640, 
-                    "1RM DC (kg)": 16.5, "1RM Tirage (kg)": 45, "1RM SDT (kg)": 45, "1RM Hip Thrust (kg)": 95, 
-                    "10m (s)": 2.04, "20m (s)": 3.59, "25m (s)": 4.33, "50m (s)": 8.09
-                },
-                "Novembre":  { 
-                    "Poids (kg)": 72.6, "Yo-yo level 1": 640, "Flexion ISO (N·m)": 14.6, "Extension ISO (N·m)": 25.9, 
-                    "1RM DC (kg)": 50, "1RM Tirage (kg)": 55, "1RM SDT (kg)": 130, "1RM Hip Thrust (kg)": 160, 
-                    "10m (s)": 1.90, "20m (s)": 3.36, "25m (s)": 4.15, "50m (s)": 7.71
-                },
-                "Janvier":   { 
-                    "Poids (kg)": 74.8, "Yo-yo level 1": 840, 
-                    "3RM DC (kg)": 47.5, "3RM Tirage (kg)": 55, 
-                    "10m (s)": 1.84, "20m (s)": 3.28, "30m (s)": 4.64, "40m (s)": 6.09, 
-                    "Broad Jump (cm)": 187
-                },
-                "Mai":       { "Yo-yo level 1": 840, "1RM DC (kg)": 53, "1RM Tirage (kg)": 60, "30m (s)": 4.64, "40m (s)": 6.09, "Broad Jump (cm)": 187 }
-            }
-        },
-        "Faustine": {
-            poste: "1re Ligne",
-            sessions: {
-                "Septembre": { 
-                    "Taille (cm)": 180, "Poids (kg)": 72.3, "Yo-yo level 1": 440, 
-                    "1RM DC (kg)": 14, "1RM Tirage (kg)": 40, "1RM SDT (kg)": 50, "1RM Hip Thrust (kg)": 90, 
-                    "10m (s)": 2.15, "20m (s)": 3.84, "25m (s)": 4.73, "50m (s)": 9.18
-                },
-                "Novembre":  { 
-                    "Poids (kg)": 70, "Yo-yo level 1": 440, "Flexion ISO (N·m)": 13.9, "Extension ISO (N·m)": 21.1, 
-                    "1RM DC (kg)": 45, "1RM Tirage (kg)": 52.5, "1RM SDT (kg)": 112.5, "1RM Hip Thrust (kg)": 110, 
-                    "10m (s)": 2.08, "20m (s)": 3.73, "25m (s)": 4.50, "50m (s)": 8.49, 
-                    "Broad Jump (cm)": 179
-                },
-                "Janvier":   { "Poids (kg)": 73, "3RM DC (kg)": 50, "3RM Tirage (kg)": 50 },
-                "Mai":       { "1RM DC (kg)": 55, "1RM Tirage (kg)": 57.5 }
-            }
-        },
-        "Ines": {
-            poste: "2e Ligne",
-            sessions: {
-                "Septembre": { 
-                    "Taille (cm)": 153, "Poids (kg)": 61.1, 
-                    "1RM DC (kg)": 13, "1RM Tirage (kg)": 30, "1RM SDT (kg)": 40, "1RM Hip Thrust (kg)": 75, 
-                    "10m (s)": 2.19, "20m (s)": 3.88, "25m (s)": 4.67, "50m (s)": 9.66
-                },
-                "Novembre":  { "Poids (kg)": 64, "Flexion ISO (N·m)": 11.3, "Extension ISO (N·m)": 21.1, "Broad Jump (cm)": 172 },
-                "Janvier":   { 
-                    "Poids (kg)": 68.25, "Yo-yo level 1": 400, 
-                    "3RM DC (kg)": 37.5, "3RM Squat (kg)": 35, 
-                    "10m (s)": 2.11, "20m (s)": 3.66, "30m (s)": 5.19, "40m (s)": 6.79
-                },
-                "Mai":       { "1RM DC (kg)": 35, "1RM Tirage (kg)": 45 }
-            }
-        },
-        "Ines R": {
-            poste: "Demi-mêlée",
-            sessions: {
-                "Septembre": { 
-                    "Taille (cm)": 196, "Poids (kg)": 54.55, "Yo-yo level 1": 1040, 
-                    "1RM DC (kg)": 17, "1RM Tirage (kg)": 40, "1RM SDT (kg)": 35, "1RM Hip Thrust (kg)": 75, 
-                    "10m (s)": 2.08, "20m (s)": 3.66, "25m (s)": 4.44, "50m (s)": 8.38
-                },
-                "Novembre":  { 
-                    "Poids (kg)": 54.1, "Yo-yo level 1": 1040, "Flexion ISO (N·m)": 14.7, "Extension ISO (N·m)": 22.8, 
-                    "1RM DC (kg)": 40, "1RM Tirage (kg)": 45, "1RM SDT (kg)": 90, "1RM Hip Thrust (kg)": 130, 
-                    "10m (s)": 1.90, "20m (s)": 3.38, "25m (s)": 4.19, "50m (s)": 7.86
-                },
-                "Janvier":   { 
-                    "Yo-yo level 1": 1120, 
-                    "3RM DC (kg)": 30, "3RM Tirage (kg)": 40, 
-                    "10m (s)": 1.87, "20m (s)": 3.27, "30m (s)": 4.61, "40m (s)": 6.06, 
-                    "Broad Jump (cm)": 200
-                },
-                "Mai":       { "Yo-yo level 1": 880, "1RM DC (kg)": 40, "1RM Tirage (kg)": 40, "30m (s)": 4.61, "40m (s)": 6.06, "Broad Jump (cm)": 200 }
-            }
-        },
-        "Jade": {
-            poste: "3e Ligne",
-            sessions: {
-                "Septembre": { 
-                    "Taille (cm)": 160, "Poids (kg)": 54.5, "Yo-yo level 1": 1000, 
-                    "1RM DC (kg)": 15.5, "1RM Tirage (kg)": 32.5, "1RM SDT (kg)": 40, "1RM Hip Thrust (kg)": 75, 
-                    "10m (s)": 2.19, "20m (s)": 3.92, "25m (s)": 4.68, "50m (s)": 8.92
-                },
-                "Novembre":  { 
-                    "Poids (kg)": 55, "Yo-yo level 1": 1000, "Flexion ISO (N·m)": 10.2, "Extension ISO (N·m)": 18.9, 
-                    "1RM DC (kg)": 35, "1RM Tirage (kg)": 55, "1RM SDT (kg)": 100, "1RM Hip Thrust (kg)": 110, 
-                    "10m (s)": 2.01, "20m (s)": 3.58, "25m (s)": 4.30, "50m (s)": 8.17, 
-                    "Broad Jump (cm)": 190
-                },
-                "Janvier":   { 
-                    "Poids (kg)": 51.25, "Yo-yo level 1": 960, 
-                    "3RM DC (kg)": 40, "3RM Squat (kg)": 85, "3RM Tirage (kg)": 50, 
-                    "10m (s)": 1.96, "20m (s)": 3.47, "30m (s)": 4.93, "40m (s)": 6.53, 
-                    "Broad Jump (cm)": 178
-                },
-                "Mai":       { "Yo-yo level 1": 640, "1RM DC (kg)": 42.5, "1RM Tirage (kg)": 55, "30m (s)": 4.93, "40m (s)": 6.53, "Broad Jump (cm)": 178 }
-            }
-        },
-        "Kélia": {
-            poste: "Centre",
-            sessions: {
-                "Septembre": { 
-                    "Taille (cm)": 207, "Poids (kg)": 60.2, "Yo-yo level 1": 960, 
-                    "1RM DC (kg)": 16.5, "1RM Tirage (kg)": 32.5, "1RM SDT (kg)": 35, "1RM Hip Thrust (kg)": 70, 
-                    "10m (s)": 1.91, "20m (s)": 3.32, "25m (s)": 3.97, "50m (s)": 7.38
-                },
-                "Novembre":  { 
-                    "Poids (kg)": 59.6, "Yo-yo level 1": 960, 
-                    "1RM DC (kg)": 35, "1RM Tirage (kg)": 42.5, "1RM SDT (kg)": 100, 
-                    "10m (s)": 1.77, "20m (s)": 3.14, "25m (s)": 3.82, "50m (s)": 7.08
-                },
-                "Janvier":   { "Yo-yo level 1": 1000, "10m (s)": 1.79, "20m (s)": 3.11, "30m (s)": 4.39, "40m (s)": 5.71, "Broad Jump (cm)": 215 },
-                "Mai":       { "Yo-yo level 1": 960, "30m (s)": 4.39, "40m (s)": 5.71, "Broad Jump (cm)": 215 }
-            }
-        },
-        "Kira": {
-            poste: "1re Ligne",
-            sessions: {
-                "Septembre": { "Poids (kg)": 83.7, "Yo-yo level 1": 560, "1RM DC (kg)": 15.5, "1RM Tirage (kg)": 50, "1RM SDT (kg)": 55, "1RM Hip Thrust (kg)": 70 },
-                "Novembre":  { "Poids (kg)": 83.9, "Yo-yo level 1": 560, "Flexion ISO (N·m)": 15, "Extension ISO (N·m)": 24.1, "1RM DC (kg)": 60, "1RM Tirage (kg)": 55, "Broad Jump (cm)": 187 },
-                "Janvier":   { 
-                    "Poids (kg)": 85.4, "Yo-yo level 1": 360, 
-                    "3RM DC (kg)": 52.5, "3RM Squat (kg)": 85, "3RM Tirage (kg)": 50, 
-                    "10m (s)": 1.95, "20m (s)": 3.45, "30m (s)": 4.89, "40m (s)": 6.43, 
-                    "Broad Jump (cm)": 163
-                },
-                "Mai":       { "Yo-yo level 1": 560, "1RM DC (kg)": 60, "1RM Tirage (kg)": 60, "30m (s)": 4.89, "40m (s)": 6.43, "Broad Jump (cm)": 163 }
-            }
-        },
-        "Lily B": {
-            poste: "3e Ligne",
-            sessions: {
-                "Novembre": { 
-                    "Poids (kg)": 62.6, "Yo-yo level 1": 1200, "Flexion ISO (N·m)": 19.1, "Extension ISO (N·m)": 26, 
-                    "1RM DC (kg)": 50, "1RM Tirage (kg)": 60, "1RM SDT (kg)": 110, "1RM Hip Thrust (kg)": 150, 
-                    "10m (s)": 1.89, "20m (s)": 3.31, "25m (s)": 3.96, "50m (s)": 7.28, 
-                    "Broad Jump (cm)": 202
-                },
-                "Janvier":  { 
-                    "Poids (kg)": 64.5, "Yo-yo level 1": 960, 
-                    "3RM DC (kg)": 52.5, "3RM Squat (kg)": 105, "3RM Tirage (kg)": 60, 
-                    "10m (s)": 1.90, "20m (s)": 3.30, "30m (s)": 4.63, "40m (s)": 5.95
-                },
-                "Mai":      { "Yo-yo level 1": 920, "1RM DC (kg)": 62.5, "1RM Tirage (kg)": 67.5, "30m (s)": 4.63, "40m (s)": 5.95 }
-            }
-        },
-        "Lily N": {
-            poste: "1re Ligne",
-            sessions: {
-                "Novembre": { 
-                    "Poids (kg)": 67, "Yo-yo level 1": 760, "Flexion ISO (N·m)": 14.2, "Extension ISO (N·m)": 31.7, 
-                    "1RM DC (kg)": 50, "1RM Tirage (kg)": 42.5, "1RM SDT (kg)": 100, "1RM Hip Thrust (kg)": 160, 
-                    "10m (s)": 1.94, "20m (s)": 3.42, "25m (s)": 4.27, "50m (s)": 8.01, 
-                    "Broad Jump (cm)": 202
-                },
-                "Janvier":  { 
-                    "Poids (kg)": 67.8, "Yo-yo level 1": 960, 
-                    "3RM DC (kg)": 52.5, "3RM Squat (kg)": 80, "3RM Tirage (kg)": 50, 
-                    "10m (s)": 1.93, "20m (s)": 3.40, "30m (s)": 4.81, "40m (s)": 6.34, 
-                    "Broad Jump (cm)": 196
-                },
-                "Mai":      { "Yo-yo level 1": 800, "1RM DC (kg)": 55, "1RM Tirage (kg)": 55, "30m (s)": 4.81, "40m (s)": 6.34, "Broad Jump (cm)": 196 }
-            }
-        },
-        "Loréana": {
-            poste: "1re Ligne",
-            sessions: {
-                "Novembre": { "Poids (kg)": 84, "Yo-yo level 1": 440, "Flexion ISO (N·m)": 17.6, "Extension ISO (N·m)": 34.8, "1RM SDT (kg)": 125, "1RM Hip Thrust (kg)": 145 },
-                "Janvier":  { 
-                    "Yo-yo level 1": 480, 
-                    "3RM DC (kg)": 48, "3RM Tirage (kg)": 55, 
-                    "10m (s)": 1.93, "20m (s)": 3.39, "30m (s)": 4.81, "40m (s)": 6.34, 
-                    "Broad Jump (cm)": 202
-                },
-                "Mai":      { "Yo-yo level 1": 480, "1RM DC (kg)": 65, "1RM Tirage (kg)": 55, "30m (s)": 4.81, "40m (s)": 6.34, "Broad Jump (cm)": 202 }
-            }
-        },
-        "Louane D": {
-            poste: "Ailier/Arrière",
-            sessions: {
-                "Septembre": { "10m (s)": 1.84, "20m (s)": 3.26, "25m (s)": 3.96, "50m (s)": 7.48 },
-                "Novembre":  { 
-                    "Poids (kg)": 55.6, "Flexion ISO (N·m)": 16, "Extension ISO (N·m)": 26.9, 
-                    "1RM DC (kg)": 50, "1RM Tirage (kg)": 55, "1RM SDT (kg)": 122.5, "1RM Hip Thrust (kg)": 140, 
-                    "10m (s)": 1.80, "20m (s)": 3.18, "25m (s)": 3.80, "50m (s)": 7.09
-                },
-                "Janvier":   { 
-                    "Poids (kg)": 58.25, 
-                    "3RM DC (kg)": 48, "3RM Tirage (kg)": 50, 
-                    "10m (s)": 1.77, "20m (s)": 3.09, "30m (s)": 4.35, "40m (s)": 5.66, 
-                    "Broad Jump (cm)": 202
-                },
-                "Mai":       { "1RM DC (kg)": 53, "1RM Tirage (kg)": 90, "30m (s)": 4.35, "40m (s)": 5.66, "Broad Jump (cm)": 202 }
-            }
-        },
-        "Louanne Dom": {
-            poste: "Centre",
-            sessions: {
-                "Novembre": { 
-                    "Poids (kg)": 70.3, "Yo-yo level 1": 760, "Flexion ISO (N·m)": 13.1, "Extension ISO (N·m)": 24.9, 
-                    "1RM DC (kg)": 60, "1RM Tirage (kg)": 55, "1RM SDT (kg)": 120, 
-                    "10m (s)": 1.91, "20m (s)": 3.37, "25m (s)": 4.10, "50m (s)": 7.48
-                },
-                "Janvier":  { 
-                    "Poids (kg)": 69.9, "Yo-yo level 1": 800, 
-                    "3RM DC (kg)": 60, "3RM Tirage (kg)": 57.5, 
-                    "10m (s)": 1.87, "20m (s)": 3.25, "30m (s)": 4.55, "40m (s)": 5.98, 
-                    "Broad Jump (cm)": 207
-                },
-                "Mai":      { "Yo-yo level 1": 800, "1RM DC (kg)": 65, "1RM Tirage (kg)": 90, "30m (s)": 4.55, "40m (s)": 5.98, "Broad Jump (cm)": 207 }
-            }
-        },
-        "Lylou": {
-            poste: "2e Ligne",
-            sessions: {
-                "Novembre": { 
-                    "Poids (kg)": 74.5, "Yo-yo level 1": 440, "Flexion ISO (N·m)": 15.7, "Extension ISO (N·m)": 32.9, 
-                    "1RM DC (kg)": 45, "1RM Tirage (kg)": 55, "1RM SDT (kg)": 110, "1RM Hip Thrust (kg)": 110, 
-                    "10m (s)": 1.96, "20m (s)": 3.50, "25m (s)": 4.34, "50m (s)": 8.10, 
-                    "Broad Jump (cm)": 200
-                },
-                "Janvier":  { "Yo-yo level 1": 680, "3RM DC (kg)": 0, "3RM Tirage (kg)": 0 }
-            }
-        },
-        "Maëna": {
-            poste: "Ailier/Arrière",
-            sessions: {
-                "Septembre": { "10m (s)": 1.92, "20m (s)": 3.30, "25m (s)": 3.99, "50m (s)": 7.36 },
-                "Novembre":  { "Yo-yo level 1": 880, "Flexion ISO (N·m)": 20.4, "Extension ISO (N·m)": 25.9, "1RM DC (kg)": 52.5 },
-                "Janvier":   { 
-                    "Poids (kg)": 58.6, 
-                    "3RM DC (kg)": 45, "3RM Tirage (kg)": 55, 
-                    "10m (s)": 1.86, "20m (s)": 3.23, "30m (s)": 4.55, "40m (s)": 5.82, 
-                    "Broad Jump (cm)": 162
-                },
-                "Mai":       { "1RM DC (kg)": 52.5, "30m (s)": 4.55, "40m (s)": 5.82, "Broad Jump (cm)": 162 }
-            }
-        },
-        "Malaury": {
-            poste: "3e Ligne",
-            sessions: {
-                "Novembre": { 
-                    "Poids (kg)": 63.3, "Yo-yo level 1": 1040, "Flexion ISO (N·m)": 13.1, "Extension ISO (N·m)": 26.2, 
-                    "1RM DC (kg)": 50, "1RM Tirage (kg)": 50, "1RM SDT (kg)": 105, "1RM Hip Thrust (kg)": 145, 
-                    "10m (s)": 1.96, "20m (s)": 3.47, "25m (s)": 4.30, "50m (s)": 8.07
-                },
-                "Janvier":  { 
-                    "3RM DC (kg)": 50, "3RM Squat (kg)": 85, "3RM Tirage (kg)": 45, 
-                    "10m (s)": 0, "20m (s)": 0, "30m (s)": 0, "40m (s)": 0
-                },
-                "Mai":      { "Yo-yo level 1": 960, "1RM DC (kg)": 52.5, "1RM Tirage (kg)": 53, "30m (s)": 4.71, "40m (s)": 6.22 }
-            }
-        },
-        "Margaux": {
-            poste: "Centre",
-            sessions: {
-                "Novembre": { "Poids (kg)": 70, "Yo-yo level 1": 560, "10m (s)": 1.78, "20m (s)": 3.17, "25m (s)": 4.00, "50m (s)": 7.40 }
-            }
-        },
-        "Mathilde": {
-            poste: "Demi-Ouverture",
-            sessions: {
-                "Septembre": { "Poids (kg)": 74.3, "Yo-yo level 1": 360 },
-                "Novembre":  { "Poids (kg)": 78.9, "Yo-yo level 1": 360, "1RM SDT (kg)": 130 }
-            }
-        },
-        "Maylis": {
-            poste: "3e Ligne",
-            sessions: {
-                "Septembre": { 
-                    "Taille (cm)": 175, "Poids (kg)": 54.9, "Yo-yo level 1": 1040, 
-                    "1RM DC (kg)": 17, "1RM Tirage (kg)": 37.5, "1RM SDT (kg)": 49, "1RM Hip Thrust (kg)": 80, 
-                    "10m (s)": 1.97, "20m (s)": 3.47, "25m (s)": 4.28, "50m (s)": 8.02
-                },
-                "Novembre":  { 
-                    "Poids (kg)": 56.4, "Yo-yo level 1": 1040, "Flexion ISO (N·m)": 19.9, "Extension ISO (N·m)": 20.9, 
-                    "1RM DC (kg)": 42.5, "1RM Tirage (kg)": 52.5, "1RM SDT (kg)": 110, "1RM Hip Thrust (kg)": 100, 
-                    "10m (s)": 1.88, "20m (s)": 3.39, "25m (s)": 3.95, "50m (s)": 7.39
-                },
-                "Janvier":   { "3RM DC (kg)": 42.5, "3RM Tirage (kg)": 47.5 },
-                "Mai":       { "Yo-yo level 1": 960, "1RM DC (kg)": 60, "1RM Tirage (kg)": 45, "30m (s)": 4.41, "40m (s)": 5.82 }
-            }
-        },
-        "Méloée": {
-            poste: "Demi-Ouverture",
-            sessions: {
-                "Septembre": { 
-                    "Taille (cm)": 192, "Poids (kg)": 65.4, "Yo-yo level 1": 760, 
-                    "1RM DC (kg)": 16.5, "1RM Tirage (kg)": 55, "1RM SDT (kg)": 55, "1RM Hip Thrust (kg)": 110, 
-                    "10m (s)": 1.99, "20m (s)": 3.43, "25m (s)": 4.12, "50m (s)": 7.61
-                },
-                "Novembre":  { 
-                    "Poids (kg)": 67.4, "Yo-yo level 1": 760, "Flexion ISO (N·m)": 14.2, "Extension ISO (N·m)": 19.6, 
-                    "1RM DC (kg)": 60, "1RM Tirage (kg)": 63, "1RM SDT (kg)": 135, "1RM Hip Thrust (kg)": 150, 
-                    "10m (s)": 1.87, "20m (s)": 3.27, "25m (s)": 4.00, "50m (s)": 7.52
-                },
-                "Janvier":   { "3RM DC (kg)": 55, "3RM Tirage (kg)": 60 },
-                "Mai":       { "1RM DC (kg)": 55, "1RM Tirage (kg)": 60 }
-            }
-        },
-        "Morgane": {
-            poste: "Ailier/Arrière",
-            sessions: {
-                "Septembre": { 
-                    "Taille (cm)": 192, "Poids (kg)": 65.1, "Yo-yo level 1": 1080, 
-                    "1RM DC (kg)": 17, "1RM Tirage (kg)": 35, "1RM SDT (kg)": 55, "1RM Hip Thrust (kg)": 90, 
-                    "10m (s)": 1.95, "20m (s)": 3.37, "25m (s)": 4.10, "50m (s)": 7.69
-                },
-                "Novembre":  { "10m (s)": 1.83, "20m (s)": 3.24, "25m (s)": 3.96, "50m (s)": 7.38 },
-                "Janvier":   { 
-                    "3RM DC (kg)": 45, "3RM Squat (kg)": 105, "3RM Tirage (kg)": 60, 
-                    "10m (s)": 0, "20m (s)": 0, "30m (s)": 0, "40m (s)": 0
-                },
-                "Mai":       { "Yo-yo level 1": 960, "1RM DC (kg)": 60, "30m (s)": 4.79, "40m (s)": 6.13 }
-            }
-        },
-        "Romane": {
-            poste: "Demi-Ouverture",
-            sessions: {
-                "Septembre": { 
-                    "Taille (cm)": 189, "Poids (kg)": 58.1, "Yo-yo level 1": 720, 
-                    "1RM DC (kg)": 15.5, "1RM Tirage (kg)": 35, "1RM SDT (kg)": 42.5, "1RM Hip Thrust (kg)": 75, 
-                    "10m (s)": 1.99, "20m (s)": 3.52, "25m (s)": 4.22, "50m (s)": 8.03
-                },
-                "Novembre":  { "10m (s)": 1.83, "20m (s)": 3.26, "25m (s)": 3.97, "50m (s)": 7.37 },
-                "Janvier":   { 
-                    "Poids (kg)": 59.4, 
-                    "3RM DC (kg)": 45, "3RM Tirage (kg)": 42.5, 
-                    "10m (s)": 1.83, "20m (s)": 3.26, "30m (s)": 3.97, "40m (s)": 7.37
-                },
-                "Mai":       { "Yo-yo level 1": 0, "1RM DC (kg)": 45, "1RM Tirage (kg)": 50, "30m (s)": 4.43, "40m (s)": 5.83 }
-            }
-        },
-        "Shayna": {
-            poste: "3e Ligne",
-            sessions: {
-                "Septembre": { 
-                    "Taille (cm)": 164, "Poids (kg)": 66.3, "Yo-yo level 1": 640, 
-                    "1RM DC (kg)": 14, "1RM Tirage (kg)": 38, "1RM SDT (kg)": 38.5, "1RM Hip Thrust (kg)": 80, 
-                    "10m (s)": 2.19, "20m (s)": 3.88
-                },
-                "Novembre":  { "10m (s)": 2.06, "20m (s)": 3.75, "25m (s)": 4.75, "50m (s)": 8.50 },
-                "Janvier":   { "3RM DC (kg)": 35, "3RM Squat (kg)": 85, "3RM Tirage (kg)": 50 },
-                "Mai":       { "1RM DC (kg)": 55, "1RM Tirage (kg)": 40 }
-            }
-        },
-        "Zoé": {
-            poste: "1re Ligne",
-            sessions: {
-                "Septembre": { 
-                    "Poids (kg)": 63.9, "Yo-yo level 1": 920, 
-                    "1RM DC (kg)": 17, "1RM Tirage (kg)": 50, "1RM SDT (kg)": 40, "1RM Hip Thrust (kg)": 100, 
-                    "10m (s)": 2.07, "20m (s)": 3.65, "25m (s)": 4.55, "50m (s)": 8.64
-                },
-                "Novembre":  { "Poids (kg)": 63.7, "Yo-yo level 1": 920, "10m (s)": 1.89, "20m (s)": 3.37, "25m (s)":
+"Alina": { poste:"1re Ligne", sessions:{
+  "Novembre": {"Poids":70.7,"Yo-yo":560,"1RM DC":42.5,"1RM Tirage":50,"1RM SDT":95,"1RM HT":125,"10m":2.04,"20m":3.66,"Broad":170},
+  "Janvier": {"Poids":70.4,"Yo-yo":480,"3RM DC":37.5,"3RM Tirage":85,"10m":2.15,"20m":3.75,"30m":5.38,"40m":7.05,"Broad":157},
+  "Mai": {"1RM DC":42.5,"30m":5.38,"40m":7.05}
+}},
+"Amaia": { poste:"Demi-mêlée", sessions:{
+  "Septembre": {"Poids":61.5,"Yo-yo":1480,"1RM DC":37.5,"1RM Tirage":47.5,"1RM SDT":75,"1RM HT":125,"10m":1.97,"20m":3.43},
+  "Novembre": {"Poids":61.7,"Yo-yo":1480,"1RM DC":45,"1RM Tirage":50,"1RM SDT":125,"1RM HT":120,"10m":1.82,"20m":3.26,"Broad":200},
+  "Janvier": {"Poids":62.8,"Yo-yo":1240,"3RM DC":45,"3RM Squat":45,"3RM Tirage":45,"10m":1.81,"20m":3.17,"30m":4.49,"40m":5.87,"Broad":191},
+  "Mai": {"1RM DC":45,"1RM Tirage":45}
+}},
+"Andréa": { poste:"1re Ligne", sessions:{
+  "Septembre": {"Poids":77.1,"Yo-yo":560,"1RM DC":52.5,"10m":2.02,"20m":3.52},
+  "Novembre": {"Poids":76,"Yo-yo":560,"1RM DC":60},
+  "Janvier": {"Yo-yo":400,"3RM DC":48,"10m":1.97,"20m":3.41,"30m":4.78,"40m":6.06,"Broad":166}
+}},
+"Annaelle": { poste:"1re Ligne", sessions:{
+  "Septembre": {"Poids":89.2,"Yo-yo":440,"1RM DC":45,"1RM Tirage":60,"1RM SDT":120,"1RM HT":150},
+  "Novembre": {"Poids":86.65,"1RM DC":53,"1RM Tirage":60,"1RM SDT":130,"1RM HT":165},
+  "Janvier": {"Poids":86.65,"Yo-yo":440,"3RM DC":53,"3RM Tirage":55,"10m":2.02,"20m":3.5,"30m":4.96,"40m":6.53,"Broad":157}
+}},
+"Augustine": { poste:"3e Ligne", sessions:{
+  "Septembre": {"Poids":63.4,"Yo-yo":1080,"1RM DC":45,"1RM Tirage":48,"1RM SDT":100,"1RM HT":110,"10m":1.95,"20m":3.39},
+  "Novembre": {"Poids":65,"Yo-yo":1080,"1RM DC":50,"1RM Tirage":60,"1RM SDT":110,"1RM HT":150,"10m":1.84,"20m":3.22,"Broad":210},
+  "Janvier": {"Poids":65.4,"Yo-yo":1160,"3RM DC":53,"3RM Squat":60,"3RM Tirage":55,"10m":1.95,"20m":3.29,"30m":4.63,"40m":5.95,"Broad":198},
+  "Mai": {"Yo-yo":1160,"1RM DC":55,"10m":1.95,"20m":3.29,"30m":4.63,"40m":5.95}
+}},
+"Calliopée": { poste:"3e Ligne", sessions:{
+  "Septembre": {"Poids":63.4,"1RM DC":45,"1RM Tirage":48,"1RM SDT":100,"1RM HT":110,"10m":1.95,"20m":3.39},
+  "Novembre": {"Poids":65,"1RM DC":50,"1RM Tirage":60,"1RM SDT":110,"1RM HT":150,"10m":1.96,"20m":3.46},
+  "Mai": {"1RM DC":40,"1RM Tirage":53}
+}},
+"Camille": { poste:"1re Ligne", sessions:{
+  "Septembre": {"Poids":72.5,"Yo-yo":400,"1RM DC":12.5,"1RM Tirage":35,"1RM SDT":40,"1RM HT":80},
+  "Novembre": {"Poids":72,"Yo-yo":400},
+  "Janvier": {"3RM Tirage":50}
+}},
+"Charlotte": { poste:"Ailier/Arrière", sessions:{
+  "Septembre": {"Poids":59.3,"10m":1.92,"20m":3.32},
+  "Novembre": {"Poids":59.6,"Yo-yo":1400,"1RM DC":45,"1RM Tirage":47.5,"1RM SDT":125,"1RM HT":150,"10m":1.82,"20m":3.19},
+  "Janvier": {"Poids":61.25,"3RM DC":45,"3RM Tirage":45,"10m":1.93,"20m":3.31,"30m":4.61,"40m":5.94},
+  "Mai": {"1RM DC":45,"30m":4.61,"40m":5.94}
+}},
+"Ciara": { poste:"3e Ligne", sessions:{
+  "Septembre": {"Poids":59,"Yo-yo":680,"1RM DC":16,"1RM Tirage":30,"1RM SDT":42.5,"1RM HT":70,"10m":2.13,"20m":3.73,"Broad":180},
+  "Novembre": {"Poids":61,"Yo-yo":680,"1RM DC":35,"1RM Tirage":45,"1RM SDT":110,"1RM HT":90,"10m":2.00,"20m":3.53,"Broad":199},
+  "Janvier": {"Poids":62.3,"Yo-yo":960,"3RM DC":40,"3RM Tirage":40,"10m":1.85,"20m":3.24,"30m":4.62,"40m":6.05,"Broad":184},
+  "Mai": {"1RM DC":42.5,"1RM Tirage":45,"30m":4.62,"40m":6.05}
+}},
+"Clara": { poste:"Ailier/Arrière", sessions:{
+  "Septembre": {"Poids":65.9,"Yo-yo":960,"1RM DC":37.5,"1RM Tirage":37.5,"1RM SDT":70,"10m":1.71,"20m":3.10},
+  "Novembre": {"Poids":68,"Yo-yo":960,"1RM DC":42.5,"1RM Tirage":50,"1RM SDT":90,"1RM HT":120,"10m":1.79,"20m":3.12,"Broad":215},
+  "Janvier": {"Yo-yo":960,"10m":1.73,"20m":2.99,"30m":4.20,"40m":5.47,"Broad":214},
+  "Mai": {"1RM DC":45,"30m":4.20,"40m":5.47}
+}},
+"Danaé": { poste:"2e Ligne", sessions:{
+  "Septembre": {"1RM DC":17,"1RM Tirage":42.5,"1RM SDT":40,"1RM HT":80,"10m":2.13,"20m":3.72,"Broad":178},
+  "Novembre": {"Poids":65,"1RM DC":17,"1RM Tirage":45,"1RM SDT":45,"1RM HT":80,"10m":2.13,"20m":3.72},
+  "Janvier": {"Poids":65.4,"3RM Squat":45}
+}},
+"Elyna": { poste:"1re Ligne", sessions:{
+  "Septembre": {"Poids":80.1,"Yo-yo":560},
+  "Novembre": {"Poids":79.5,"Yo-yo":560,"10m":1.98,"20m":3.54},
+  "Janvier": {"10m":1.96,"20m":3.44,"30m":4.94,"40m":6.47}
+}},
+"Emilie": { poste:"3e Ligne", sessions:{
+  "Septembre": {"Poids":71.4,"Yo-yo":640,"1RM DC":16.5,"1RM Tirage":45,"1RM SDT":45,"1RM HT":95,"10m":2.04,"20m":3.59,"Broad":187},
+  "Novembre": {"Poids":72.6,"Yo-yo":640,"1RM DC":50,"1RM Tirage":55,"1RM SDT":130,"10m":1.90,"20m":3.36},
+  "Janvier": {"Poids":74.8,"Yo-yo":840,"3RM DC":47.5,"3RM Squat":90,"3RM Tirage":55,"10m":1.84,"20m":3.28,"30m":4.64,"40m":6.09,"Broad":187}
+}},
+"Faustine": { poste:"1re Ligne", sessions:{
+  "Septembre": {"Poids":72.3,"Yo-yo":440,"1RM DC":14,"1RM Tirage":40,"1RM SDT":50,"1RM HT":90,"10m":2.15,"20m":3.84,"Broad":180},
+  "Novembre": {"Poids":70,"Yo-yo":440,"1RM DC":45,"1RM Tirage":50,"1RM SDT":112.5,"1RM HT":90,"10m":2.08,"20m":3.73},
+  "Janvier": {"Poids":73,"3RM DC":50,"3RM Tirage":50}
+}},
+"Ines": { poste:"2e Ligne", sessions:{
+  "Septembre": {"Poids":61.1,"1RM DC":13,"1RM Tirage":30,"1RM SDT":40,"1RM HT":75,"10m":2.19,"20m":3.88,"Broad":153},
+  "Novembre": {"Poids":64,"Broad":172},
+  "Janvier": {"Poids":68.25,"Yo-yo":400,"3RM DC":37.5,"3RM Squat":35,"3RM Tirage":40,"10m":2.11,"20m":3.66,"30m":5.19,"40m":6.79},
+  "Mai": {"1RM DC":35,"1RM Tirage":45}
+}},
+"Ines R": { poste:"Demi-mêlée", sessions:{
+  "Septembre": {"Poids":54.55,"Yo-yo":1040,"1RM DC":17,"1RM Tirage":40,"1RM SDT":35,"1RM HT":75,"10m":2.08,"20m":3.66,"Broad":196},
+  "Novembre": {"Poids":54.1,"Yo-yo":1040,"1RM DC":40,"1RM Tirage":45,"1RM SDT":90,"1RM HT":130,"10m":1.90,"20m":3.38},
+  "Janvier": {"Yo-yo":1120,"3RM DC":30,"3RM Squat":65,"3RM Tirage":40,"10m":1.87,"20m":3.27,"30m":4.61,"40m":6.06,"Broad":200}
+}},
+"Jade": { poste:"3e Ligne", sessions:{
+  "Septembre": {"Poids":54.5,"Yo-yo":1000,"1RM DC":15.5,"1RM Tirage":32.5,"1RM SDT":40,"1RM HT":75,"10m":2.19,"20m":3.92,"Broad":160},
+  "Novembre": {"Poids":55,"Yo-yo":1000,"1RM DC":35,"1RM Tirage":55,"1RM SDT":100,"1RM HT":110,"10m":2.01,"20m":3.58,"Broad":190},
+  "Janvier": {"Poids":51.25,"Yo-yo":960,"3RM DC":40,"3RM Squat":85,"3RM Tirage":50,"10m":1.96,"20m":3.47,"30m":4.93,"40m":6.53,"Broad":178},
+  "Mai": {"Yo-yo":640,"1RM DC":42.5,"1RM Tirage":55,"30m":4.93,"40m":6.53,"Broad":178}
+}},
+"Kélia": { poste:"Centre", sessions:{
+  "Septembre": {"Poids":60.2,"Yo-yo":960,"1RM DC":16.5,"1RM Tirage":32.5,"1RM SDT":35,"1RM HT":70,"10m":1.91,"20m":3.32},
+  "Novembre": {"Poids":59.6,"Yo-yo":960,"1RM DC":35,"1RM Tirage":42.5,"1RM SDT":100,"10m":1.77,"20m":3.14},
+  "Janvier": {"Yo-yo":1000,"10m":1.79,"20m":3.11,"30m":4.39,"40m":5.71,"Broad":215},
+  "Mai": {"Yo-yo":960,"30m":4.39,"40m":5.71,"Broad":215}
+}},
+"Kira": { poste:"1re Ligne", sessions:{
+  "Septembre": {"Poids":83.7,"Yo-yo":560,"1RM DC":15.5,"1RM Tirage":50,"1RM SDT":55,"1RM HT":70,"10m":2.30,"20m":3.95},
+  "Novembre": {"Poids":83.9,"Yo-yo":560,"1RM DC":60,"1RM Tirage":55,"Broad":187},
+  "Janvier": {"Poids":85.4,"Yo-yo":360,"3RM DC":52.5,"3RM Squat":85,"3RM Tirage":50,"10m":1.95,"20m":3.45,"30m":4.89,"40m":6.43,"Broad":163},
+  "Mai": {"Yo-yo":560,"1RM DC":60,"1RM Tirage":60,"30m":4.89,"40m":6.43,"Broad":163}
+}},
+"Lily B": { poste:"3e Ligne", sessions:{
+  "Novembre": {"Poids":62.6,"Yo-yo":1200,"1RM DC":50,"1RM Tirage":60,"1RM SDT":110,"1RM HT":150,"10m":1.89,"20m":3.31,"Broad":202},
+  "Janvier": {"Poids":64.5,"Yo-yo":960,"3RM DC":52.5,"3RM Squat":105,"3RM Tirage":60,"10m":1.90,"20m":3.30,"30m":4.63,"40m":5.95}
+}},
+"Lily N": { poste:"1re Ligne", sessions:{
+  "Novembre": {"Poids":67,"Yo-yo":760,"1RM DC":50,"1RM Tirage":42.5,"1RM SDT":100,"1RM HT":160,"10m":1.94,"20m":3.42,"Broad":202},
+  "Janvier": {"Poids":67.8,"Yo-yo":960,"3RM DC":52.5,"3RM Squat":80,"3RM Tirage":50,"10m":1.93,"20m":3.40,"30m":4.81,"40m":6.34,"Broad":196}
+}},
+"Loréana": { poste:"1re Ligne", sessions:{
+  "Novembre": {"Poids":84,"Yo-yo":440,"1RM SDT":125,"1RM HT":145},
+  "Janvier": {"Yo-yo":480,"3RM DC":48,"3RM Squat":110,"3RM Tirage":55,"10m":1.93,"20m":3.39,"30m":4.81,"40m":6.34,"Broad":202},
+  "Mai": {"Yo-yo":480,"1RM DC":65,"1RM Tirage":55,"30m":4.81,"40m":6.34,"Broad":202}
+}},
+"Louane D": { poste:"Ailier/Arrière", sessions:{
+  "Septembre": {"10m":1.84,"20m":3.26},
+  "Novembre": {"Poids":55.6,"1RM DC":50,"1RM Tirage":55,"1RM SDT":122.5,"1RM HT":140,"10m":1.80,"20m":3.18},
+  "Janvier": {"Poids":58.25,"3RM DC":48,"3RM Tirage":50,"10m":1.77,"20m":3.09,"30m":4.35,"40m":5.66,"Broad":202},
+  "Mai": {"1RM DC":53,"1RM Tirage":90,"30m":4.35,"40m":5.66,"Broad":202}
+}},
+"Louanne Dom": { poste:"Centre", sessions:{
+  "Novembre": {"Poids":70.3,"Yo-yo":760,"1RM DC":60,"1RM Tirage":55,"1RM SDT":120,"10m":1.91,"20m":3.37},
+  "Janvier": {"Poids":69.9,"Yo-yo":800,"3RM DC":60,"3RM Squat":90,"3RM Tirage":57.5,"10m":1.87,"20m":3.25,"30m":4.55,"40m":5.98,"Broad":207},
+  "Mai": {"Yo-yo":800,"1RM DC":65,"1RM Tirage":90,"30m":4.55,"40m":5.98,"Broad":207}
+}},
+"Lylou": { poste:"2e Ligne", sessions:{
+  "Novembre": {"Poids":74.5,"Yo-yo":440,"1RM DC":45,"1RM Tirage":55,"1RM SDT":110,"1RM HT":110,"10m":1.96,"20m":3.50,"Broad":200},
+  "Janvier": {"Yo-yo":680}
+}},
+"Maëna": { poste:"Ailier/Arrière", sessions:{
+  "Novembre": {"Yo-yo":880,"10m":1.92,"20m":3.30},
+  "Janvier": {"Poids":58.6,"3RM Tirage":55,"10m":1.86,"20m":3.23,"30m":4.55,"40m":5.82},
+  "Mai": {"3RM Squat":80}
+}},
+"Malaury": { poste:"3e Ligne", sessions:{
+  "Novembre": {"Poids":63.3,"Yo-yo":1040,"1RM DC":50,"1RM Tirage":50,"1RM SDT":105,"1RM HT":145,"10m":1.96,"20m":3.47},
+  "Janvier": {"Yo-yo":960,"3RM DC":50,"3RM Squat":85,"3RM Tirage":45,"10m":1.89,"20m":3.35,"30m":4.71,"40m":6.22,"Broad":166},
+  "Mai": {"Yo-yo":960,"1RM DC":52.5,"1RM Tirage":53,"30m":4.71,"40m":6.22}
+}},
+"Margaux": { poste:"Centre", sessions:{
+  "Novembre": {"Poids":70,"Yo-yo":560,"10m":1.78,"20m":3.17}
+}},
+"Mathilde": { poste:"Demi-Ouverture", sessions:{
+  "Septembre": {"Poids":74.3,"Yo-yo":360},
+  "Novembre": {"Poids":78.9,"Yo-yo":360,"1RM SDT":130}
+}},
+"Maylis": { poste:"3e Ligne", sessions:{
+  "Septembre": {"Poids":54.9,"Yo-yo":1040,"1RM DC":17,"1RM Tirage":37.5,"1RM SDT":49,"1RM HT":80,"10m":1.97,"20m":3.47,"Broad":175},
+  "Novembre": {"Poids":56.4,"Yo-yo":1040,"1RM DC":42.5,"1RM Tirage":52.5,"1RM SDT":110,"1RM HT":100,"10m":1.88,"20m":3.39},
+  "Janvier": {"3RM DC":42.5,"3RM Tirage":47.5,"10m":1.79,"20m":3.14,"30m":4.41,"40m":5.82},
+  "Mai": {"1RM DC":60,"1RM Tirage":45}
+}},
+"Méloée": { poste:"Demi-Ouverture", sessions:{
+  "Septembre": {"Poids":65.4,"Yo-yo":760,"1RM DC":16.5,"1RM Tirage":55,"1RM SDT":55,"1RM HT":110,"10m":1.99,"20m":3.43},
+  "Novembre": {"Poids":67.4,"Yo-yo":760,"1RM DC":60,"1RM Tirage":63,"1RM SDT":135,"1RM HT":150,"10m":1.87,"20m":3.27},
+  "Janvier": {"3RM DC":55,"3RM Tirage":60},
+  "Mai": {"1RM DC":55,"1RM Tirage":60}
+}},
+"Morgane": { poste:"Ailier/Arrière", sessions:{
+  "Septembre": {"Poids":65.1,"Yo-yo":1080,"1RM DC":17,"1RM Tirage":35,"1RM SDT":55,"1RM HT":90,"10m":1.95,"20m":3.37},
+  "Novembre": {"Poids":64.6,"Yo-yo":1080,"1RM DC":47.5,"1RM Tirage":55,"1RM SDT":62.5,"1RM HT":145,"10m":1.83,"20m":3.24},
+  "Janvier": {"3RM DC":45,"3RM Squat":105,"3RM Tirage":60},
+  "Mai": {"Yo-yo":960,"1RM DC":60,"30m":4.79,"40m":6.13}
+}},
+"Romane": { poste:"Demi-Ouverture", sessions:{
+  "Septembre": {"Poids":58.1,"Yo-yo":720,"1RM DC":15.5,"1RM Tirage":35,"1RM SDT":42.5,"1RM HT":75,"10m":1.99,"20m":3.52,"Broad":189},
+  "Novembre": {"Poids":59.4,"10m":1.83,"20m":3.26},
+  "Janvier": {"3RM DC":45,"3RM Tirage":42.5,"10m":1.79,"20m":3.15,"30m":4.43,"40m":5.83},
+  "Mai": {"1RM DC":45,"1RM Tirage":50,"30m":4.43,"40m":5.83}
+}},
+"Shayna": { poste:"3e Ligne", sessions:{
+  "Septembre": {"Poids":66.3,"Yo-yo":640,"1RM DC":14,"1RM Tirage":38,"1RM SDT":38.5,"1RM HT":80,"10m":2.19,"20m":3.88,"Broad":164},
+  "Novembre": {"Poids":66.2,"Yo-yo":640,"1RM DC":40,"1RM Tirage":50,"1RM SDT":80,"1RM HT":110,"10m":2.06,"20m":3.75},
+  "Janvier": {"3RM DC":35,"3RM Squat":85,"3RM Tirage":50,"10m":2.07,"20m":3.62,"30m":5.17,"40m":6.75},
+  "Mai": {"1RM DC":55,"1RM Tirage":40}
+}},
+"Zoé": { poste:"1re Ligne", sessions:{
+  "Septembre": {"Poids":63.9,"Yo-yo":920,"1RM DC":17,"1RM Tirage":50,"1RM SDT":40,"1RM HT":100,"10m":2.07,"20m":3.65,"Broad":167},
+  "Novembre": {"Poids":63.7,"Yo-yo":920,"1RM DC":55,"1RM Tirage":60,"1RM SDT":100,"1RM HT":125,"10m":1.89,"20m":3.37},
+  "Janvier": {"Poids":68.15,"Yo-yo":960,"3RM DC":55,"3RM Squat":110,"3RM Tirage":60,"10m":1.86,"20m":3.26,"30m":4.59,"40m":6.02,"Broad":189}
+}}
+};
+
+const SESSION_ORDER = ["Septembre","Novembre","Janvier","Mai"];
+const METRIC_UNITS = {"Poids":"kg","Yo-yo":"m","1RM DC":"kg","1RM Tirage":"kg","1RM SDT":"kg","1RM HT":"kg","3RM DC":"kg","3RM Squat":"kg","3RM Tirage":"kg","10m":"s","20m":"s","30m":"s","40m":"s","Broad":"cm"};
+// Pour ces métriques, baisser = meilleur
+const LOWER_IS_BETTER = ["10m","20m","30m","40m"];
+
+let charts = [];
+
+// ============================================================
+// 🚀 INIT
+// ============================================================
+window.addEventListener('DOMContentLoaded', () => {
+  const sel = document.getElementById('sel-player');
+  Object.keys(DATA).sort().forEach(n => {
+    const o = document.createElement('option');
+    o.value = n; o.textContent = n;
+    sel.appendChild(o);
+  });
+  sel.addEventListener('change', render);
+  document.getElementById('sel-session').addEventListener('change', render);
+});
+
+// ============================================================
+// 📈 RENDER
+// ============================================================
+function render() {
+  const name = document.getElementById('sel-player').value;
+  const sessionFilter = document.getElementById('sel-session').value;
+
+  if (!name) {
+    document.getElementById('welcome').style.display = 'block';
+    document.getElementById('dashboard').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('welcome').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+
+  const player = DATA[name];
+  document.getElementById('ph-name').textContent = name;
+  document.getElementById('ph-info').textContent = `Poste : ${player.poste}`;
+  document.getElementById('ph-badges').innerHTML = `<span class="badge">${player.poste}</span>`;
+
+  // Sessions présentes ordonnées
+  const sessions = SESSION_ORDER.filter(s => player.sessions[s]);
+
+  // Collecter toutes les métriques
+  const allMetrics = new Set();
+  sessions.forEach(s => Object.keys(player.sessions[s]).forEach(m => allMetrics.add(m)));
+  const metrics = [...allMetrics];
+
+  // STATS CARDS
+  const statsHTML = metrics.map(m => {
+    const values = sessions.map(s => player.sessions[s][m]).filter(v => v !== undefined && v !== 0);
+    if (values.length === 0) return '';
+    const last = values[values.length-1];
+    const first = values[0];
+    let evo = '';
+    if (values.length > 1 && first !== 0) {
+      const diff = last - first;
+      const pct = (diff/first*100).toFixed(1);
+      const better = LOWER_IS_BETTER.includes(m) ? diff < 0 : diff > 0;
+      const cls = diff === 0 ? 'neu' : (better ? 'pos' : 'neg');
+      const arrow = diff === 0 ? '→' : (diff > 0 ? '▲' : '▼');
+      evo = `<div class="evo ${cls}">${arrow} ${pct}%</div>`;
+    }
+    return `<div class="stat-card">
+      <div class="label">${m}</div>
+      <div class="value">${last}</div>
+      <div class="unit">${METRIC_UNITS[m]||''}</div>
+      ${evo}
+    </div>`;
+  }).join('');
+  document.getElementById('stats-grid').innerHTML = statsHTML || '<p style="color:#a0a0c0">Aucune donnée</p>';
+
+  // CHARTS
+  charts.forEach(c => c.destroy());
+  charts = [];
+  const chartsContainer = document.getElementById('charts-grid');
+  chartsContainer.innerHTML = '';
+
+  metrics.forEach(m => {
+    const values = sessions.map(s => player.sessions[s][m] ?? null);
+    const valid = values.filter(v => v !== null && v !== 0);
+    if (valid.length < 2) return;
+
+    const card = document.createElement('div');
+    card.className = 'chart-card';
+    card.innerHTML = `<h3>${m} (${METRIC_UNITS[m]||''})</h3><canvas></canvas>`;
+    chartsContainer.appendChild(card);
+
+    const ctx = card.querySelector('canvas').getContext('2d');
+    charts.push(new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: sessions,
+        datasets: [{
+          label: m,
+          data: values,
+          borderColor: '#e94560',
+          backgroundColor: 'rgba(233,69,96,0.2)',
+          borderWidth: 3,
+          tension: 0.3,
+          pointRadius: 5,
+          pointBackgroundColor: '#fff'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#a0a0c0' } } },
+        scales: {
+          x: { ticks: { color: '#a0a0c0' }, grid: { color: '#2a2a4e' } },
+          y: { ticks: { color: '#a0a0c0' }, grid: { color: '#2a2a4e' } }
+        }
+      }
+    }));
+  });
+
+  // TABLE
+  let tableHTML = '<table><thead><tr><th>Métrique</th>';
+  sessions.forEach(s => tableHTML += `<th>${s}</th>`);
+  tableHTML += '</tr></thead><tbody>';
+  metrics.forEach(m => {
+    tableHTML += `<tr><td><strong>${m}</strong></td>`;
+    sessions.forEach(s => {
+      const v = player.sessions[s][m];
+      tableHTML += `<td>${v !== undefined ? v : '—'}</td>`;
+    });
+    tableHTML += '</tr>';
+  });
+  tableHTML += '</tbody></table>';
+  document.getElementById('history-table').innerHTML = tableHTML;
+}
+</script>
+
+</body>
+</html>
