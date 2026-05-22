@@ -2,136 +2,74 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Dashboard U18F 25/26</title>
+<title>U18F 25/26 — Suivi Physique</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-:root{--bg:#0d1117;--card:#161b22;--card2:#1f2630;--border:#30363d;--accent:#e94560;--accent2:#f5a623;--ok:#2ea043;--ko:#da3633;--muted:#8b949e;--text:#e6edf3}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);padding:16px;min-height:100vh}
-.header{background:linear-gradient(135deg,#e94560,#c13651);padding:18px;border-radius:12px;margin-bottom:16px;text-align:center}
-.header h1{font-size:1.4rem}
-.controls{background:var(--card);padding:14px;border-radius:10px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:14px;align-items:center}
-.controls label{font-weight:600;color:var(--muted);font-size:.85rem}
-select{background:var(--card2);color:var(--text);border:1px solid var(--border);padding:8px 12px;border-radius:6px;font-size:.9rem;min-width:200px}
-.pchk{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border:2px solid var(--border);border-radius:16px;cursor:pointer;font-size:.82rem;color:var(--muted);transition:all .2s;user-select:none}
-.pchk.active{border-color:var(--accent);color:var(--accent);background:rgba(233,69,96,.08)}
-.pchk input{display:none}
-.periods{display:flex;gap:8px;flex-wrap:wrap}
-.cats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:5px}
-.cat{background:var(--card2);border:2px solid var(--border);border-radius:10px;padding:18px 14px;cursor:pointer;text-align:center;transition:all .2s}
-.cat:hover{border-color:var(--accent);transform:translateY(-2px)}
-.cat .ico{font-size:1.8rem;margin-bottom:6px}
-.cat .name{font-weight:600;font-size:.9rem}
-.cat .desc{color:var(--muted);font-size:.75rem;margin-top:3px}
-.section{background:var(--card);border-radius:12px;padding:20px;margin-bottom:16px}
-.section h2{margin-bottom:14px;font-size:1.05rem}
-.section h3{margin:18px 0 10px;color:var(--accent2);font-size:.95rem}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
-.stat{background:var(--card2);padding:14px;border-radius:8px;border-left:3px solid var(--accent)}
-.stat .label{font-size:.75rem;color:var(--muted);margin-bottom:4px}
-.stat .val{font-size:1.3rem;font-weight:700;color:var(--accent)}
-.stat .unit{font-size:.75rem;color:var(--muted);margin-left:3px}
-.evo{font-size:.75rem;margin-top:4px;font-weight:600}
-.evo.pos{color:var(--ok)}
-.evo.neg{color:var(--ko)}
-table{width:100%;border-collapse:collapse;margin-top:8px;font-size:.85rem}
-th,td{padding:9px 10px;text-align:center;border-bottom:1px solid var(--border)}
-th{background:var(--card2);color:var(--accent2);font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.5px}
-td:first-child,th:first-child{text-align:left}
-tr:hover td{background:rgba(255,255,255,.02)}
-.pos{color:var(--ok);font-weight:600}
-.neg{color:var(--ko);font-weight:600}
-.chart-wrap{background:var(--card2);border-radius:8px;padding:12px;margin-top:10px;height:300px;position:relative}
-.back{background:var(--card2);color:var(--text);border:1px solid var(--border);padding:8px 16px;border-radius:6px;cursor:pointer;margin-bottom:12px;font-size:.85rem}
-.back:hover{border-color:var(--accent);color:var(--accent)}
-.subtitle{color:var(--muted);font-size:.8rem;margin-top:4px}
-.tbl-wrap{overflow-x:auto;margin-top:8px}
-  .tabBtn{background:var(--card);color:var(--muted);border:2px solid var(--border);padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;font-size:.9rem;transition:all .2s}
-.tabBtn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-.tabBtn:hover{color:var(--text)}
-.rank{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--card2);border-radius:8px;margin-bottom:6px;border-left:4px solid var(--border)}
-.rank.top1{border-left-color:#ffd700}
-.rank.top2{border-left-color:#c0c0c0}
-.rank.top3{border-left-color:#cd7f32}
-.rank.me{background:rgba(233,69,96,.15);border-left-color:var(--accent)}
-.rank .pos{font-size:1.2rem;font-weight:700;min-width:40px;color:var(--accent2)}
-.rank .nm{flex:1;font-weight:600}
-.rank .ps{color:var(--muted);font-size:.82rem;margin-right:10px}
-.rank .vl{font-weight:700;color:var(--accent2);font-size:1.05rem}
-.cmpChip{padding:6px 12px;border:2px solid var(--border);border-radius:16px;cursor:pointer;font-size:.82rem;color:var(--muted);user-select:none;transition:all .2s}
-.cmpChip.active{border-color:var(--accent);color:var(--text);background:rgba(233,69,96,.15)}
-.cmpChip:hover{color:var(--text)}
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+  body { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); min-height: 100vh; padding: 20px; color: #333; }
+  .container { max-width: 1400px; margin: 0 auto; }
+  h1 { color: white; text-align: center; margin-bottom: 30px; font-size: 2.2em; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+  .selectors { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin-bottom: 25px; display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: center; }
+  .selectors label { font-weight: 600; color: #1e3c72; margin-right: 8px; }
+  .selectors select { padding: 10px 15px; border: 2px solid #2a5298; border-radius: 8px; font-size: 1em; background: white; cursor: pointer; }
+  .selectors select:hover { background: #f0f4ff; }
+  .dashboard { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin-bottom: 25px; }
+  .player-header { text-align: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 3px solid #2a5298; }
+  .player-header h2 { color: #1e3c72; font-size: 2em; }
+  .player-header .poste { color: #666; font-size: 1.1em; margin-top: 5px; font-style: italic; }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+  .stat-card { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 18px; border-radius: 12px; text-align: center; border-left: 5px solid #2a5298; }
+  .stat-card .label { font-size: 0.85em; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+  .stat-card .value { font-size: 1.8em; font-weight: bold; color: #1e3c72; margin: 8px 0; }
+  .stat-card .evolution { font-size: 0.9em; font-weight: 600; }
+  .up { color: #27ae60; }
+  .down { color: #e74c3c; }
+  .neutral { color: #888; }
+  .categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 25px; }
+  .cat-btn { padding: 14px; background: white; border: 2px solid #2a5298; color: #1e3c72; border-radius: 10px; cursor: pointer; font-size: 1em; font-weight: 600; transition: all 0.3s; }
+  .cat-btn:hover { background: #2a5298; color: white; transform: translateY(-2px); }
+  .cat-btn.active { background: #1e3c72; color: white; }
+  .category-content { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+  .category-content h3 { color: #1e3c72; margin-bottom: 20px; font-size: 1.5em; border-bottom: 2px solid #2a5298; padding-bottom: 10px; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
+  th { background: #2a5298; color: white; padding: 12px; text-align: left; }
+  td { padding: 10px 12px; border-bottom: 1px solid #e0e0e0; }
+  tr:hover { background: #f8f9fa; }
+  .chart-container { position: relative; height: 350px; margin-top: 20px; margin-bottom: 30px; }
+  .sub-title { color: #2a5298; font-size: 1.15em; font-weight: 600; margin: 25px 0 12px 0; }
+  .empty { color: #aaa; font-style: italic; }
 </style>
 </head>
 <body>
-
-<div class="header">
-  <h1>🏉 Dashboard U18F — Saison 25/26</h1>
-  <div class="subtitle">Suivi individuel des performances</div>
+<div class="container">
+  <h1>🏉 U18F 25/26 — Suivi Physique</h1>
+  
+  <div class="selectors">
+    <div><label>Joueuse :</label><select id="playerSelect"></select></div>
+    <div><label>Période 1 :</label><select id="period1"></select></div>
+    <div><label>Période 2 :</label><select id="period2"></select></div>
+  </div>
+  
+  <div class="dashboard">
+    <div class="player-header">
+      <h2 id="playerName">—</h2>
+      <div class="poste" id="playerPoste">—</div>
+    </div>
+    <div class="stats-grid" id="statsGrid"></div>
+  </div>
+  
+  <div class="categories">
+    <button class="cat-btn active" data-cat="anthropo">📏 Anthropométrie</button>
+    <button class="cat-btn" data-cat="endurance">🏃 Endurance</button>
+    <button class="cat-btn" data-cat="force">💪 Force</button>
+    <button class="cat-btn" data-cat="vitesse">⚡ Vitesse</button>
+    <button class="cat-btn" data-cat="puissance">🦘 Puissance</button>
+  </div>
+  
+  <div class="category-content" id="categoryContent"></div>
 </div>
-
-<div class="tabs" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
-  <button class="tabBtn active" data-tab="indiv" onclick="setTab('indiv')">👤 Individuel</button>
-  <button class="tabBtn" data-tab="leader" onclick="setTab('leader')">🏆 Leaderboard</button>
-  <button class="tabBtn" data-tab="compare" onclick="setTab('compare')">⚔️ Comparaison</button>
-</div>
-
-<div id="ctrlIndiv" class="controls">
-  <label>Joueuse :</label>
-  <select id="selJ" onchange="render()"></select>
-  <label>Périodes :</label>
-  <div class="periods" id="periods"></div>
-</div>
-
-<div id="ctrlLeader" class="controls" style="display:none">
-  <label>Mouvement :</label>
-  <select id="selMove"></select>
-  <label>Période :</label>
-  <select id="selPeriodL"></select>
-  <label>Filtre poste :</label>
-  <select id="selPoste"><option value="">Tous les postes</option></select>
-</div>
-
-<div id="ctrlCompare" class="controls" style="display:none;flex-direction:column;align-items:flex-start">
-  <label>Joueuses à comparer (clique pour sélectionner) :</label>
-  <div id="cmpPlayers" style="display:flex;flex-wrap:wrap;gap:6px"></div>
-  <label style="margin-top:8px">Période :</label>
-  <select id="selPeriodC"></select>
-</div>
-
-<div id="content"></div>
-
 
 <script>
-// ====== CONFIG ======
-const PERIODS = ['Septembre','Novembre','Janvier','Mai'];
-const LABELS = {
-  taille:'Taille', poids:'Poids', yoyo:'Yo-yo (m)', palier:'Palier',
-  dc_1rm:'1RM DC', tirage_1rm:'1RM Tirage', sdt_1rm:'1RM SDT',
-  dc_3rm:'3RM DC', squat_3rm:'3RM Squat', tirage_3rm:'3RM Tirage',
-  v10:'10m', v20:'20m', v25:'25m', v30:'30m', v40:'40m', v50:'50m',
-  broad:'Broad Jump'
-};
-const UNITS = {
-  taille:'cm', poids:'kg', yoyo:'m', palier:'',
-  dc_1rm:'kg', tirage_1rm:'kg', sdt_1rm:'kg',
-  dc_3rm:'kg', squat_3rm:'kg', tirage_3rm:'kg',
-  v10:'s', v20:'s', v25:'s', v30:'s', v40:'s', v50:'s',
-  broad:'cm'
-};
-// indicateurs où DIMINUER = mieux
-const INVERT = ['v10','v20','v25','v30','v40','v50'];
-
-const CATS = {
-  vitesse:{ico:'⚡',name:'Vitesse',desc:'Sprints 10-50m',keys:['v10','v20','v25','v30','v40','v50']},
-  force:{ico:'💪',name:'Force',desc:'1RM & 3RM',keys:['dc_1rm','tirage_1rm','sdt_1rm','dc_3rm','squat_3rm','tirage_3rm']},
-  endurance:{ico:'🏃',name:'Endurance',desc:'Yo-yo test',keys:['yoyo','palier']},
-  explo:{ico:'🚀',name:'Explosivité',desc:'Broad Jump',keys:['broad']},
-  anthro:{ico:'📏',name:'Anthropométrie',desc:'Taille / Poids',keys:['taille','poids']}
-};
-</script>
-<script>
-// ====== DONNÉES (extraites de ton Excel) ======
 const DATA = {
   "Alina": {
     poste: "1re Ligne",
@@ -376,439 +314,237 @@ const DATA = {
     Mai:       { yoyo: 840, palier: 15.2, dc: 62.5, tirage: 60, broad: 195, v10: 1.92, v20: 3.34, v30: 4.69, v40: 6.03 }
   }
 };
+const PERIODS = ["Septembre", "Novembre", "Janvier", "Mai"];
 
-// distances pour calcul m/s par sprint
-const DIST = {v10:10,v20:20,v25:25,v30:30,v40:40,v50:50};
+const CATEGORIES = {
+  anthropo: {
+    title: "📏 Anthropométrie",
+    fields: [
+      { key: "taille", label: "Taille", unit: "cm", betterUp: true },
+      { key: "poids", label: "Poids", unit: "kg", betterUp: null }
+    ]
+  },
+  endurance: {
+    title: "🏃 Endurance",
+    fields: [
+      { key: "palier", label: "Yo-Yo Palier", unit: "", betterUp: true },
+      { key: "yoyo", label: "Yo-Yo Distance", unit: "m", betterUp: true }
+    ]
+  },
+  force: {
+    title: "💪 Force",
+    fields: [
+      { key: "dc", label: "1RM Développé Couché", unit: "kg", betterUp: true },
+      { key: "tirage", label: "1RM Tirage", unit: "kg", betterUp: true },
+      { key: "sdt", label: "1RM Soulevé de Terre", unit: "kg", betterUp: true },
+      { key: "squat", label: "3RM Squat", unit: "kg", betterUp: true },
+      { key: "hipthrust", label: "1RM Hip Thrust", unit: "kg", betterUp: true }
+    ]
+  },
+  vitesse: {
+    title: "⚡ Vitesse",
+    fields: [
+      { key: "v10", label: "10m", unit: "s", betterUp: false },
+      { key: "v20", label: "20m", unit: "s", betterUp: false },
+      { key: "v25", label: "25m", unit: "s", betterUp: false },
+      { key: "v30", label: "30m", unit: "s", betterUp: false },
+      { key: "v40", label: "40m", unit: "s", betterUp: false },
+      { key: "v50", label: "50m", unit: "s", betterUp: false }
+    ]
+  },
+  puissance: {
+    title: "🦘 Puissance",
+    fields: [
+      { key: "broad", label: "Broad Jump", unit: "cm", betterUp: true }
+    ]
+  }
+};
 
-let selectedPeriods = [...PERIODS];
-let selectedCat = null;
+let currentCategory = "anthropo";
 let charts = [];
-</script>
-<script>
-// ====== INIT ======
-function initUI(){
-  const sel = document.getElementById('selJ');
-  Object.keys(DATA).sort().forEach(n=>{
-    const o=document.createElement('option');o.value=n;o.textContent=n+' ('+DATA[n].poste+')';sel.appendChild(o);
+
+function getVal(player, period, key) {
+  const d = DATA[player]?.[period];
+  if (!d) return null;
+  const v = d[key];
+  return (v === undefined || v === null || v === 0) ? null : v;
+}
+
+function fmt(v, unit) {
+  if (v === null) return '<span class="empty">—</span>';
+  return v + (unit ? " " + unit : "");
+}
+
+function evolution(v1, v2, betterUp) {
+  if (v1 === null || v2 === null) return { txt: "", cls: "neutral" };
+  const diff = v2 - v1;
+  if (diff === 0) return { txt: "= 0", cls: "neutral" };
+  const sign = diff > 0 ? "+" : "";
+  const pct = ((diff / v1) * 100).toFixed(1);
+  let cls = "neutral";
+  if (betterUp === true)  cls = diff > 0 ? "up" : "down";
+  if (betterUp === false) cls = diff < 0 ? "up" : "down";
+  return { txt: `${sign}${diff.toFixed(2)} (${sign}${pct}%)`, cls };
+}
+
+function initSelectors() {
+  const pSel = document.getElementById("playerSelect");
+  Object.keys(DATA).sort().forEach(n => {
+    const o = document.createElement("option");
+    o.value = n; o.textContent = n;
+    pSel.appendChild(o);
   });
-  const pc = document.getElementById('periods');
-  PERIODS.forEach(p=>{
-    const lbl=document.createElement('label');
-    lbl.className='pchk active';
-    lbl.innerHTML=`<input type="checkbox" checked value="${p}">${p}`;
-    lbl.querySelector('input').addEventListener('change',e=>{
-      if(e.target.checked){selectedPeriods.push(p);lbl.classList.add('active');}
-      else{selectedPeriods=selectedPeriods.filter(x=>x!==p);lbl.classList.remove('active');}
-      selectedPeriods.sort((a,b)=>PERIODS.indexOf(a)-PERIODS.indexOf(b));
-      render();
+  const p1 = document.getElementById("period1");
+  const p2 = document.getElementById("period2");
+  PERIODS.forEach(p => {
+    p1.innerHTML += `<option value="${p}">${p}</option>`;
+    p2.innerHTML += `<option value="${p}">${p}</option>`;
+  });
+  p1.value = "Septembre";
+  p2.value = "Mai";
+  pSel.addEventListener("change", render);
+  p1.addEventListener("change", render);
+  p2.addEventListener("change", render);
+  document.querySelectorAll(".cat-btn").forEach(b => {
+    b.addEventListener("click", () => {
+      document.querySelectorAll(".cat-btn").forEach(x => x.classList.remove("active"));
+      b.classList.add("active");
+      currentCategory = b.dataset.cat;
+      renderCategory();
     });
-    pc.appendChild(lbl);
   });
 }
 
-function getVal(j,p,k){
-  const s = DATA[j].stats[p];
-  return s && s[k]!=null ? s[k] : null;
+function render() {
+  const player = document.getElementById("playerSelect").value;
+  document.getElementById("playerName").textContent = player;
+  document.getElementById("playerPoste").textContent = DATA[player]?.poste || "";
+  renderDashboard();
+  renderCategory();
 }
 
-function fmt(v,k){
-  if(v==null) return '—';
-  const u = UNITS[k]||'';
-  return (typeof v==='number'?(+v.toFixed(2)):v)+(u?' '+u:'');
+function renderDashboard() {
+  const player = document.getElementById("playerSelect").value;
+  const p1 = document.getElementById("period1").value;
+  const p2 = document.getElementById("period2").value;
+  const grid = document.getElementById("statsGrid");
+  grid.innerHTML = "";
+  const keyStats = [
+    { key: "poids", label: "Poids", unit: "kg", betterUp: null },
+    { key: "yoyo", label: "Yo-Yo", unit: "m", betterUp: true },
+    { key: "dc", label: "DC", unit: "kg", betterUp: true },
+    { key: "squat", label: "Squat", unit: "kg", betterUp: true },
+    { key: "v10", label: "10m", unit: "s", betterUp: false },
+    { key: "broad", label: "Broad Jump", unit: "cm", betterUp: true }
+  ];
+  keyStats.forEach(s => {
+    const v1 = getVal(player, p1, s.key);
+    const v2 = getVal(player, p2, s.key);
+    const ev = evolution(v1, v2, s.betterUp);
+    grid.innerHTML += `
+      <div class="stat-card">
+        <div class="label">${s.label}</div>
+        <div class="value">${v2 !== null ? v2 + " " + s.unit : "—"}</div>
+        <div class="evolution ${ev.cls}">${ev.txt || "—"}</div>
+      </div>`;
+  });
 }
 
-function evolBadge(first,last,key){
-  if(first==null||last==null) return '<span class="muted">—</span>';
-  const d = last-first;
-  if(Math.abs(d)<0.001) return '<span>=</span>';
-  const better = INVERT.includes(key) ? d<0 : d>0;
-  const sign = d>0?'+':'';
-  return `<span class="${better?'pos':'neg'}">${sign}${d.toFixed(2)} ${UNITS[key]||''}</span>`;
-}
+function renderCategory() {
+  charts.forEach(c => c.destroy());
+  charts = [];
+  const player = document.getElementById("playerSelect").value;
+  const cat = CATEGORIES[currentCategory];
+  const container = document.getElementById("categoryContent");
+  let html = `<h3>${cat.title}</h3>`;
 
-function destroyCharts(){charts.forEach(c=>c.destroy());charts=[];}
-
-// ====== RENDU PRINCIPAL ======
-function render(){
-  destroyCharts();
-  const j = document.getElementById('selJ').value;
-  const content = document.getElementById('content');
-  if(selectedCat){renderCat(j); return;}
-
-  // Vue d'ensemble : cartes catégories + évolution globale par unité
-  let html = `<div class="section"><h2>👤 ${j} — ${DATA[j].poste}</h2>
-    <div class="cats">`;
-  Object.entries(CATS).forEach(([k,c])=>{
-    html += `<div class="cat" onclick="openCat('${k}')">
-      <div class="ico">${c.ico}</div>
-      <div class="name">${c.name}</div>
-      <div class="desc">${c.desc}</div></div>`;
+  // Regrouper champs par unité pour les graphiques
+  const unitGroups = {};
+  cat.fields.forEach(f => {
+    if (!unitGroups[f.unit]) unitGroups[f.unit] = [];
+    unitGroups[f.unit].push(f);
   });
-  html += `</div></div>`;
-
-  // Évolution globale — regroupée par unité
-  html += `<div class="section"><h2>📊 Évolution globale</h2>`;
-  
-  // Récupérer toutes les clés présentes pour cette joueuse
-  const allKeys = new Set();
-  selectedPeriods.forEach(p=>{
-    const s = DATA[j].stats[p];
-    if(s) Object.keys(s).forEach(k=>{if(LABELS[k]) allKeys.add(k);});
-  });
-
-  // Grouper par unité
-  const byUnit = {};
-  allKeys.forEach(k=>{
-    const u = UNITS[k]||'autre';
-    if(!byUnit[u]) byUnit[u]=[];
-    byUnit[u].push(k);
-  });
-
-  const unitOrder = ['kg','cm','m','s',''];
-  const unitNames = {kg:'Charges (kg)', cm:'Distances (cm)', m:'Distance (m)', s:'Temps (s)', '':'Palier'};
-
-  unitOrder.forEach(u=>{
-    if(!byUnit[u]||byUnit[u].length===0) return;
-    const keys = byUnit[u].sort((a,b)=>Object.keys(LABELS).indexOf(a)-Object.keys(LABELS).indexOf(b));
-    html += `<h3>${unitNames[u]||u}</h3><div class="tbl-wrap"><table>
-      <thead><tr><th>Indicateur</th>`;
-    selectedPeriods.forEach(p=>html+=`<th>${p}</th>`);
-    html += `<th>Évolution</th></tr></thead><tbody>`;
-    keys.forEach(k=>{
-      html += `<tr><td><strong>${LABELS[k]}</strong></td>`;
-      const vals = selectedPeriods.map(p=>getVal(j,p,k));
-      vals.forEach(v=>html+=`<td>${fmt(v,k)}</td>`);
-      const firstV = vals.find(v=>v!=null);
-      const lastV = [...vals].reverse().find(v=>v!=null);
-      html += `<td>${vals.filter(v=>v!=null).length>=2 ? evolBadge(firstV,lastV,k) : '—'}</td></tr>`;
-    });
-    html += `</tbody></table></div>`;
-  });
-
-  if(allKeys.size===0) html += `<p class="subtitle">Aucune donnée pour les périodes sélectionnées.</p>`;
-  html += `</div>`;
-
-  content.innerHTML = html;
-}
-
-// ====== VUE CATÉGORIE ======
-function renderCat(j){
-  destroyCharts();
-  const cat = CATS[selectedCat];
-  const content = document.getElementById('content');
-  let html = `<button class="back" onclick="closeCat()">← Retour</button>
-    <div class="section"><h2>${cat.ico} ${cat.name} — ${j}</h2>`;
 
   // Tableau principal
-  html += `<div class="tbl-wrap"><table><thead><tr><th>Indicateur</th>`;
-  selectedPeriods.forEach(p=>html+=`<th>${p}</th>`);
-  html += `<th>Évolution</th></tr></thead><tbody>`;
-  
-  const presentKeys = cat.keys.filter(k=>{
-    return selectedPeriods.some(p=>getVal(j,p,k)!=null);
+  html += `<table><thead><tr><th>Test</th>`;
+  PERIODS.forEach(p => html += `<th>${p}</th>`);
+  html += `<th>Évolution (Sept→Mai)</th></tr></thead><tbody>`;
+  cat.fields.forEach(f => {
+    html += `<tr><td><strong>${f.label}</strong></td>`;
+    PERIODS.forEach(p => html += `<td>${fmt(getVal(player, p, f.key), f.unit)}</td>`);
+    const ev = evolution(getVal(player, "Septembre", f.key), getVal(player, "Mai", f.key), f.betterUp);
+    html += `<td class="${ev.cls}"><strong>${ev.txt || "—"}</strong></td></tr>`;
   });
+  html += `</tbody></table>`;
 
-  presentKeys.forEach(k=>{
-    html += `<tr><td><strong>${LABELS[k]}</strong></td>`;
-    const vals = selectedPeriods.map(p=>getVal(j,p,k));
-    vals.forEach(v=>html+=`<td>${fmt(v,k)}</td>`);
-    const firstV = vals.find(v=>v!=null);
-    const lastV = [...vals].reverse().find(v=>v!=null);
-    html += `<td>${vals.filter(v=>v!=null).length>=2 ? evolBadge(firstV,lastV,k) : '—'}</td></tr>`;
-  });
-  html += `</tbody></table></div>`;
-
-  // === Spécial VITESSE : tableau m/s et km/h ===
-  if(selectedCat==='vitesse' && presentKeys.length>0){
-    html += `<h3>🚀 Vitesse moyenne (m/s)</h3><div class="tbl-wrap"><table><thead><tr><th>Sprint</th>`;
-    selectedPeriods.forEach(p=>html+=`<th>${p}</th>`);
-    html += `<th>Évolution</th></tr></thead><tbody>`;
-    presentKeys.forEach(k=>{
-      const dist = DIST[k];
-      html += `<tr><td><strong>${LABELS[k]}</strong></td>`;
-      const ms = selectedPeriods.map(p=>{
-        const t = getVal(j,p,k);
-        return t!=null && t>0 ? dist/t : null;
-      });
-      ms.forEach(v=>html+=`<td>${v!=null?v.toFixed(2)+' m/s':'—'}</td>`);
-      const f = ms.find(v=>v!=null), l = [...ms].reverse().find(v=>v!=null);
-      if(f!=null && l!=null && ms.filter(v=>v!=null).length>=2){
-        const d=l-f, better=d>0;
-        html += `<td><span class="${better?'pos':'neg'}">${d>0?'+':''}${d.toFixed(2)} m/s</span></td>`;
-      } else html+=`<td>—</td>`;
-      html+=`</tr>`;
-    });
-    html += `</tbody></table></div>`;
-
-    html += `<h3>🏁 Vitesse moyenne (km/h)</h3><div class="tbl-wrap"><table><thead><tr><th>Sprint</th>`;
-    selectedPeriods.forEach(p=>html+=`<th>${p}</th>`);
+  // Si Vitesse : ajouter tableaux m/s et km/h
+  if (currentCategory === "vitesse") {
+    html += `<div class="sub-title">📊 Vitesse moyenne (m/s)</div>`;
+    html += `<table><thead><tr><th>Distance</th>`;
+    PERIODS.forEach(p => html += `<th>${p}</th>`);
     html += `</tr></thead><tbody>`;
-    presentKeys.forEach(k=>{
-      const dist = DIST[k];
-      html += `<tr><td><strong>${LABELS[k]}</strong></td>`;
-      selectedPeriods.forEach(p=>{
-        const t = getVal(j,p,k);
-        const kmh = t!=null && t>0 ? (dist/t)*3.6 : null;
-        html += `<td>${kmh!=null?kmh.toFixed(2)+' km/h':'—'}</td>`;
+    cat.fields.forEach(f => {
+      const dist = parseInt(f.key.replace("v",""));
+      html += `<tr><td><strong>${f.label}</strong></td>`;
+      PERIODS.forEach(p => {
+        const t = getVal(player, p, f.key);
+        html += `<td>${t ? (dist/t).toFixed(2) + " m/s" : '<span class="empty">—</span>'}</td>`;
       });
-      html+=`</tr>`;
-    });
-    html += `</tbody></table></div>`;
-  }
-
-  // === Graphiques ===
-  presentKeys.forEach((k,i)=>{
-    const id = 'chart_'+i;
-    html += `<h3>${LABELS[k]} (${UNITS[k]||''})</h3>
-      <div class="chart-wrap"><canvas id="${id}"></canvas></div>`;
-  });
-
-  html += `</div>`;
-  content.innerHTML = html;
-
-  // Rendu Chart.js
-  presentKeys.forEach((k,i)=>{
-    const ctx = document.getElementById('chart_'+i);
-    const data = selectedPeriods.map(p=>getVal(j,p,k));
-    const c = new Chart(ctx,{
-      type:'line',
-      data:{
-        labels:selectedPeriods,
-        datasets:[{
-          label:LABELS[k]+' ('+(UNITS[k]||'')+')',
-          data,
-          borderColor:'#e94560',
-          backgroundColor:'rgba(233,69,96,.15)',
-          tension:.3,
-          fill:true,
-          pointRadius:6,
-          pointBackgroundColor:'#f5a623',
-          spanGaps:true
-        }]
-      },
-      options:{
-        responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{labels:{color:'#e6edf3'}}},
-        scales:{
-          x:{ticks:{color:'#8b949e'},grid:{color:'#30363d'}},
-          y:{ticks:{color:'#8b949e'},grid:{color:'#30363d'},reverse:INVERT.includes(k)}
-        }
-      }
-    });
-    charts.push(c);
-  });
-}
-
-function openCat(k){selectedCat=k;render();window.scrollTo(0,0);}
-function closeCat(){selectedCat=null;render();}
-
-// ====== ÉTAT GLOBAL ======
-let currentTab = 'indiv';
-let cmpSelected = []; // joueuses sélectionnées pour comparaison
-
-// ====== INIT NOUVEAUX CONTRÔLES ======
-function initExtras(){
-  // Mouvements (toutes les clés de LABELS)
-  const selMove = document.getElementById('selMove');
-  Object.entries(LABELS).forEach(([k,v])=>{
-    const o=document.createElement('option');o.value=k;o.textContent=v+(UNITS[k]?' ('+UNITS[k]+')':'');
-    selMove.appendChild(o);
-  });
-  selMove.value='dc_1rm';
-  selMove.onchange=renderLeader;
-
-  // Périodes leaderboard
-  const selPL = document.getElementById('selPeriodL');
-  PERIODS.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;selPL.appendChild(o);});
-  selPL.value='Janvier';
-  selPL.onchange=renderLeader;
-
-  // Postes (uniques)
-  const postes = [...new Set(Object.values(DATA).map(d=>d.poste).filter(Boolean))].sort();
-  const selP = document.getElementById('selPoste');
-  postes.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;selP.appendChild(o);});
-  selP.onchange=renderLeader;
-
-  // Comparaison : chips joueuses
-  const cmpDiv = document.getElementById('cmpPlayers');
-  Object.keys(DATA).sort().forEach(n=>{
-    const c=document.createElement('div');
-    c.className='cmpChip';c.textContent=n;
-    c.onclick=()=>{
-      if(cmpSelected.includes(n)){cmpSelected=cmpSelected.filter(x=>x!==n);c.classList.remove('active');}
-      else{cmpSelected.push(n);c.classList.add('active');}
-      renderCompare();
-    };
-    cmpDiv.appendChild(c);
-  });
-
-  // Période comparaison
-  const selPC = document.getElementById('selPeriodC');
-  PERIODS.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;selPC.appendChild(o);});
-  selPC.value='Janvier';
-  selPC.onchange=renderCompare;
-}
-
-// ====== TABS ======
-function setTab(t){
-  currentTab=t;
-  document.querySelectorAll('.tabBtn').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
-  document.getElementById('ctrlIndiv').style.display = t==='indiv'?'flex':'none';
-  document.getElementById('ctrlLeader').style.display = t==='leader'?'flex':'none';
-  document.getElementById('ctrlCompare').style.display = t==='compare'?'flex':'none';
-  destroyCharts();
-  if(t==='indiv') render();
-  else if(t==='leader') renderLeader();
-  else renderCompare();
-}
-
-// ====== LEADERBOARD ======
-function renderLeader(){
-  destroyCharts();
-  const move = document.getElementById('selMove').value;
-  const period = document.getElementById('selPeriodL').value;
-  const posteFilter = document.getElementById('selPoste').value;
-  const content = document.getElementById('content');
-
-  let list = Object.entries(DATA)
-    .filter(([n,d])=>!posteFilter || d.poste===posteFilter)
-    .map(([n,d])=>({nom:n,poste:d.poste,val:d.stats[period]?.[move]}))
-    .filter(x=>x.val!=null);
-
-  list.sort((a,b)=>INVERT.includes(move) ? a.val-b.val : b.val-a.val);
-
-  let html = `<div class="section"><h2>🏆 Classement — ${LABELS[move]} (${period})${posteFilter?' • '+posteFilter:''}</h2>`;
-  if(list.length===0){
-    html += `<p class="subtitle">Aucune donnée pour ces critères.</p></div>`;
-    content.innerHTML=html;return;
-  }
-
-  // Si vitesse : afficher aussi m/s et km/h
-  const isSpeed = DIST[move]!=null;
-
-  list.forEach((p,i)=>{
-    const cls = i===0?'top1':i===1?'top2':i===2?'top3':'';
-    const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1);
-    let extra = '';
-    if(isSpeed){
-      const ms = (DIST[move]/p.val).toFixed(2);
-      const kmh = ((DIST[move]/p.val)*3.6).toFixed(1);
-      extra = ` <span style="color:var(--muted);font-size:.82rem">(${ms} m/s • ${kmh} km/h)</span>`;
-    }
-    html += `<div class="rank ${cls}">
-      <div class="pos">${medal}</div>
-      <div class="nm">${p.nom}</div>
-      <div class="ps">${p.poste||''}</div>
-      <div class="vl">${p.val} ${UNITS[move]||''}${extra}</div>
-    </div>`;
-  });
-  html += `</div>`;
-  content.innerHTML = html;
-}
-
-// ====== COMPARAISON ======
-function renderCompare(){
-  destroyCharts();
-  const period = document.getElementById('selPeriodC').value;
-  const content = document.getElementById('content');
-
-  if(cmpSelected.length<1){
-    content.innerHTML = `<div class="section"><h2>⚔️ Comparaison</h2>
-      <p class="subtitle">Sélectionne au moins 1 joueuse ci-dessus pour commencer la comparaison.</p></div>`;
-    return;
-  }
-
-  // Toutes les clés présentes pour les joueuses sélectionnées sur cette période
-  const allKeys = new Set();
-  cmpSelected.forEach(j=>{
-    const s = DATA[j].stats[period];
-    if(s) Object.keys(s).forEach(k=>{if(LABELS[k]) allKeys.add(k);});
-  });
-
-  let html = `<div class="section"><h2>⚔️ Comparaison — ${period}</h2>`;
-
-  if(allKeys.size===0){
-    html += `<p class="subtitle">Aucune donnée pour ces joueuses sur cette période.</p></div>`;
-    content.innerHTML=html;return;
-  }
-
-  // Grouper par unité
-  const byUnit = {};
-  allKeys.forEach(k=>{const u=UNITS[k]||'autre';if(!byUnit[u])byUnit[u]=[];byUnit[u].push(k);});
-  const unitOrder = ['kg','cm','m','s',''];
-  const unitNames = {kg:'Charges (kg)',cm:'Distances (cm)',m:'Distance (m)',s:'Temps (s)','':'Palier'};
-
-  unitOrder.forEach(u=>{
-    if(!byUnit[u]||byUnit[u].length===0) return;
-    const keys = byUnit[u].sort((a,b)=>Object.keys(LABELS).indexOf(a)-Object.keys(LABELS).indexOf(b));
-    html += `<h3>${unitNames[u]||u}</h3><div class="tbl-wrap"><table>
-      <thead><tr><th>Indicateur</th>`;
-    cmpSelected.forEach(j=>html+=`<th>${j}<br><span style="color:var(--muted);font-weight:400;font-size:.75rem">${DATA[j].poste||''}</span></th>`);
-    html += `<th>Meilleure</th></tr></thead><tbody>`;
-    keys.forEach(k=>{
-      html += `<tr><td><strong>${LABELS[k]}</strong></td>`;
-      const vals = cmpSelected.map(j=>DATA[j].stats[period]?.[k]);
-      const valid = vals.filter(v=>v!=null);
-      let best = null;
-      if(valid.length>0) best = INVERT.includes(k) ? Math.min(...valid) : Math.max(...valid);
-      vals.forEach(v=>{
-        const isBest = v!=null && v===best && valid.length>1;
-        html += `<td style="${isBest?'color:#2ea043;font-weight:700':''}">${v!=null?v+(UNITS[k]?' '+UNITS[k]:''):'—'}</td>`;
-      });
-      const bestIdx = vals.indexOf(best);
-      html += `<td style="color:var(--accent2);font-weight:600">${bestIdx>=0?cmpSelected[bestIdx]:'—'}</td>`;
       html += `</tr>`;
     });
-    html += `</tbody></table></div>`;
+    html += `</tbody></table>`;
+
+    html += `<div class="sub-title">📊 Vitesse moyenne (km/h)</div>`;
+    html += `<table><thead><tr><th>Distance</th>`;
+    PERIODS.forEach(p => html += `<th>${p}</th>`);
+    html += `</tr></thead><tbody>`;
+    cat.fields.forEach(f => {
+      const dist = parseInt(f.key.replace("v",""));
+      html += `<tr><td><strong>${f.label}</strong></td>`;
+      PERIODS.forEach(p => {
+        const t = getVal(player, p, f.key);
+        html += `<td>${t ? ((dist/t)*3.6).toFixed(2) + " km/h" : '<span class="empty">—</span>'}</td>`;
+      });
+      html += `</tr>`;
+    });
+    html += `</tbody></table>`;
+  }
+
+  // Graphiques : un par groupe d'unité
+  Object.keys(unitGroups).forEach((unit, idx) => {
+    html += `<div class="sub-title">📈 Évolution ${unit ? "(" + unit + ")" : ""}</div>`;
+    html += `<div class="chart-container"><canvas id="chart_${idx}"></canvas></div>`;
   });
 
-  // Graphique radar si >=2 joueuses et plusieurs métriques
-  if(cmpSelected.length>=2 && allKeys.size>=3){
-    html += `<h3>📊 Profil comparatif (normalisé)</h3>
-      <div class="chart-wrap" style="height:400px"><canvas id="radarCmp"></canvas></div>
-      <p class="subtitle" style="margin-top:6px;font-size:.78rem">Valeurs normalisées 0-100 (100 = meilleure perf entre joueuses sélectionnées)</p>`;
-  }
+  container.innerHTML = html;
 
-  html += `</div>`;
-  content.innerHTML = html;
-
-  // Radar
-  if(cmpSelected.length>=2 && allKeys.size>=3){
-    const keys = [...allKeys];
-    const colors = ['#e94560','#f5a623','#2ea043','#58a6ff','#bc8cff','#ff7b72','#79c0ff'];
-    const datasets = cmpSelected.map((j,i)=>{
-      const data = keys.map(k=>{
-        const v = DATA[j].stats[period]?.[k];
-        if(v==null) return 0;
-        const allV = cmpSelected.map(x=>DATA[x].stats[period]?.[k]).filter(x=>x!=null);
-        if(allV.length===0) return 0;
-        const mn = Math.min(...allV), mx = Math.max(...allV);
-        if(mx===mn) return 100;
-        return INVERT.includes(k) ? ((mx-v)/(mx-mn))*100 : ((v-mn)/(mx-mn))*100;
-      });
-      return {label:j,data,borderColor:colors[i%colors.length],backgroundColor:colors[i%colors.length]+'33',borderWidth:2};
+  // Création des charts
+  Object.keys(unitGroups).forEach((unit, idx) => {
+    const ctx = document.getElementById(`chart_${idx}`);
+    const datasets = unitGroups[unit].map((f, i) => {
+      const colors = ["#2a5298","#e74c3c","#27ae60","#f39c12","#8e44ad","#16a085"];
+      return {
+        label: f.label,
+        data: PERIODS.map(p => getVal(player, p, f.key)),
+        borderColor: colors[i % colors.length],
+        backgroundColor: colors[i % colors.length] + "33",
+        borderWidth: 3, tension: 0.3, spanGaps: true
+      };
     });
-    const ctx = document.getElementById('radarCmp');
-    const c = new Chart(ctx,{
-      type:'radar',
-      data:{labels:keys.map(k=>LABELS[k]),datasets},
-      options:{
-        responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{labels:{color:'#e6edf3'}}},
-        scales:{r:{
-          angleLines:{color:'#30363d'},grid:{color:'#30363d'},
-          pointLabels:{color:'#e6edf3',font:{size:11}},
-          ticks:{color:'#8b949e',backdropColor:'transparent'},
-          suggestedMin:0,suggestedMax:100
-        }}
+    const chart = new Chart(ctx, {
+      type: "line",
+      data: { labels: PERIODS, datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: "top" } },
+        scales: { y: { beginAtZero: false } }
       }
     });
-    charts.push(c);
-  }
+    charts.push(chart);
+  });
 }
 
-initExtras();
-initUI();
+initSelectors();
 render();
 </script>
 </body>
