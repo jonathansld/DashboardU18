@@ -2,742 +2,747 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>U18F 25/26 — Suivi Physique</title>
+<title>Dashboard U18F 25/26</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
-  :root {
-    --bg: #0d1117;
-    --card: #161b22;
-    --card2: #1c2128;
-    --border: #30363d;
-    --accent: #e94560;
-    --blue: #0f3460;
-    --blue2: #2a5298;
-    --gold: #f5a623;
-    --ok: #2ea043;
-    --ko: #da3633;
-    --txt: #e6edf3;
-    --muted: #8b949e;
-  }
-  body {
-    background: var(--bg);
-    min-height: 100vh;
-    padding: 20px;
-    color: var(--txt);
-  }
-  .container { max-width: 1400px; margin: 0 auto; }
-  h1 {
-    color: var(--txt);
-    text-align: center;
-    margin-bottom: 30px;
-    font-size: 2.2em;
-    letter-spacing: 2px;
-    background: linear-gradient(135deg, #1a1a2e, var(--blue));
-    padding: 25px;
-    border-radius: 15px;
-    border: 1px solid var(--border);
-    border-bottom: 3px solid var(--accent);
-  }
-
-  .selectors {
-    background: var(--card);
-    padding: 25px;
-    border-radius: 15px;
-    border: 1px solid var(--border);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    margin-bottom: 25px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    align-items: center;
-    justify-content: center;
-  }
-  .selectors label {
-    font-weight: 600;
-    color: var(--gold);
-    margin-right: 8px;
-    text-transform: uppercase;
-    font-size: 0.85em;
-    letter-spacing: 1px;
-  }
-  .selectors select {
-    padding: 10px 15px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 1em;
-    background: var(--card2);
-    color: var(--txt);
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .selectors select:hover {
-    border-color: var(--accent);
-    background: var(--bg);
-  }
-
-  .dashboard {
-    background: var(--card);
-    padding: 30px;
-    border-radius: 15px;
-    border: 1px solid var(--border);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    margin-bottom: 25px;
-  }
-  .player-header {
-    text-align: center;
-    margin-bottom: 25px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid var(--border);
-  }
-  .player-header h2 {
-    color: var(--txt);
-    font-size: 2em;
-    letter-spacing: 1px;
-  }
-  .player-header .poste {
-    color: var(--gold);
-    font-size: 1.1em;
-    margin-top: 5px;
-    font-style: italic;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-  }
-
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    margin-bottom: 25px;
-  }
-  .stat-card {
-    background: var(--card2);
-    padding: 18px;
-    border-radius: 12px;
-    text-align: center;
-    border: 1px solid var(--border);
-    border-left: 4px solid var(--accent);
-    transition: transform 0.2s;
-  }
-  .stat-card:hover { transform: translateY(-3px); }
-  .stat-card .label {
-    font-size: 0.8em;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-  }
-  .stat-card .value {
-    font-size: 1.8em;
-    font-weight: bold;
-    color: var(--txt);
-    margin: 8px 0;
-  }
-  .stat-card .evolution {
-    font-size: 0.9em;
-    font-weight: 600;
-  }
-  .up { color: var(--ok); }
-  .down { color: var(--ko); }
-  .neutral { color: var(--muted); }
-
-  .categories {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 12px;
-    margin-bottom: 25px;
-  }
-  .cat-btn {
-    padding: 14px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    color: var(--txt);
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 1em;
-    font-weight: 600;
-    transition: all 0.3s;
-  }
-  .cat-btn:hover {
-    background: var(--blue);
-    border-color: var(--blue2);
-    transform: translateY(-2px);
-  }
-  .cat-btn.active {
-    background: linear-gradient(135deg, var(--blue), var(--blue2));
-    color: white;
-    border-color: var(--accent);
-    box-shadow: 0 4px 15px rgba(233,69,96,0.3);
-  }
-
-  .category-content {
-    background: var(--card);
-    padding: 25px;
-    border-radius: 15px;
-    border: 1px solid var(--border);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-  }
-  .category-content h3 {
-    color: var(--txt);
-    margin-bottom: 20px;
-    font-size: 1.5em;
-    border-bottom: 2px solid var(--accent);
-    padding-bottom: 10px;
-    letter-spacing: 1px;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 25px;
-    background: var(--card2);
-    border-radius: 10px;
-    overflow: hidden;
-  }
-  th {
-    background: linear-gradient(135deg, var(--blue), var(--blue2));
-    color: white;
-    padding: 12px;
-    text-align: left;
-    text-transform: uppercase;
-    font-size: 0.85em;
-    letter-spacing: 1px;
-  }
-  td {
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--border);
-    color: var(--txt);
-  }
-  tr:hover td { background: rgba(42, 82, 152, 0.15); }
-  tr:last-child td { border-bottom: none; }
-
-  .chart-container {
-    position: relative;
-    height: 350px;
-    margin-top: 20px;
-    margin-bottom: 30px;
-    background: var(--card2);
-    padding: 15px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-  }
-  .sub-title {
-    color: var(--gold);
-    font-size: 1.15em;
-    font-weight: 600;
-    margin: 25px 0 12px 0;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    border-left: 4px solid var(--accent);
-    padding-left: 12px;
-  }
-  .empty { color: var(--muted); font-style: italic; }
+:root{--bg:#0d1117;--card:#161b22;--card2:#1f2630;--border:#30363d;--accent:#e94560;--accent2:#f5a623;--ok:#2ea043;--ko:#da3633;--muted:#8b949e;--text:#e6edf3}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);padding:16px;min-height:100vh}
+.header{background:linear-gradient(135deg,#e94560,#c13651);padding:18px;border-radius:12px;margin-bottom:16px;text-align:center}
+.header h1{font-size:1.4rem}
+.controls{background:var(--card);padding:14px;border-radius:10px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+.controls label{font-weight:600;color:var(--muted);font-size:.85rem}
+select{background:var(--card2);color:var(--text);border:1px solid var(--border);padding:8px 12px;border-radius:6px;font-size:.9rem;min-width:200px}
+.pchk{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border:2px solid var(--border);border-radius:16px;cursor:pointer;font-size:.82rem;color:var(--muted);transition:all .2s;user-select:none}
+.pchk.active{border-color:var(--accent);color:var(--accent);background:rgba(233,69,96,.08)}
+.pchk input{display:none}
+.periods{display:flex;gap:8px;flex-wrap:wrap}
+.cats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:5px}
+.cat{background:var(--card2);border:2px solid var(--border);border-radius:10px;padding:18px 14px;cursor:pointer;text-align:center;transition:all .2s}
+.cat:hover{border-color:var(--accent);transform:translateY(-2px)}
+.cat .ico{font-size:1.8rem;margin-bottom:6px}
+.cat .name{font-weight:600;font-size:.9rem}
+.cat .desc{color:var(--muted);font-size:.75rem;margin-top:3px}
+.section{background:var(--card);border-radius:12px;padding:20px;margin-bottom:16px}
+.section h2{margin-bottom:14px;font-size:1.05rem}
+.section h3{margin:18px 0 10px;color:var(--accent2);font-size:.95rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.stat{background:var(--card2);padding:14px;border-radius:8px;border-left:3px solid var(--accent)}
+.stat .label{font-size:.75rem;color:var(--muted);margin-bottom:4px}
+.stat .val{font-size:1.3rem;font-weight:700;color:var(--accent)}
+.stat .unit{font-size:.75rem;color:var(--muted);margin-left:3px}
+.evo{font-size:.75rem;margin-top:4px;font-weight:600}
+.evo.pos{color:var(--ok)}
+.evo.neg{color:var(--ko)}
+table{width:100%;border-collapse:collapse;margin-top:8px;font-size:.85rem}
+th,td{padding:9px 10px;text-align:center;border-bottom:1px solid var(--border)}
+th{background:var(--card2);color:var(--accent2);font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.5px}
+td:first-child,th:first-child{text-align:left}
+tr:hover td{background:rgba(255,255,255,.02)}
+.pos{color:var(--ok);font-weight:600}
+.neg{color:var(--ko);font-weight:600}
+.chart-wrap{background:var(--card2);border-radius:8px;padding:12px;margin-top:10px;height:300px;position:relative}
+.back{background:var(--card2);color:var(--text);border:1px solid var(--border);padding:8px 16px;border-radius:6px;cursor:pointer;margin-bottom:12px;font-size:.85rem}
+.back:hover{border-color:var(--accent);color:var(--accent)}
+.subtitle{color:var(--muted);font-size:.8rem;margin-top:4px}
+.tbl-wrap{overflow-x:auto;margin-top:8px}
+  .tabBtn{background:var(--card);color:var(--muted);border:2px solid var(--border);padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;font-size:.9rem;transition:all .2s}
+.tabBtn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tabBtn:hover{color:var(--text)}
+.rank{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--card2);border-radius:8px;margin-bottom:6px;border-left:4px solid var(--border)}
+.rank.top1{border-left-color:#ffd700}
+.rank.top2{border-left-color:#c0c0c0}
+.rank.top3{border-left-color:#cd7f32}
+.rank.me{background:rgba(233,69,96,.15);border-left-color:var(--accent)}
+.rank .pos{font-size:1.2rem;font-weight:700;min-width:40px;color:var(--accent2)}
+.rank .nm{flex:1;font-weight:600}
+.rank .ps{color:var(--muted);font-size:.82rem;margin-right:10px}
+.rank .vl{font-weight:700;color:var(--accent2);font-size:1.05rem}
+.cmpChip{padding:6px 12px;border:2px solid var(--border);border-radius:16px;cursor:pointer;font-size:.82rem;color:var(--muted);user-select:none;transition:all .2s}
+.cmpChip.active{border-color:var(--accent);color:var(--text);background:rgba(233,69,96,.15)}
+.cmpChip:hover{color:var(--text)}
 </style>
 </head>
 <body>
-<div class="container">
-  <h1>🏉 U18F 25/26 — Suivi Physique</h1>
-  
-  <div class="selectors">
-    <div><label>Joueuse :</label><select id="playerSelect"></select></div>
-    <div><label>Période 1 :</label><select id="period1"></select></div>
-    <div><label>Période 2 :</label><select id="period2"></select></div>
-  </div>
-  
-  <div class="dashboard">
-    <div class="player-header">
-      <h2 id="playerName">—</h2>
-      <div class="poste" id="playerPoste">—</div>
-    </div>
-    <div class="stats-grid" id="statsGrid"></div>
-  </div>
-  
-  <div class="categories">
-    <button class="cat-btn active" data-cat="anthropo">📏 Anthropométrie</button>
-    <button class="cat-btn" data-cat="endurance">🏃 Endurance</button>
-    <button class="cat-btn" data-cat="force">💪 Force</button>
-    <button class="cat-btn" data-cat="vitesse">⚡ Vitesse</button>
-    <button class="cat-btn" data-cat="puissance">🦘 Puissance</button>
-  </div>
-  
-  <div class="category-content" id="categoryContent"></div>
+
+<div class="header">
+  <h1>🏉 Dashboard U18F — Saison 25/26</h1>
+  <div class="subtitle">Suivi individuel des performances</div>
 </div>
 
+<div class="tabs" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+  <button class="tabBtn active" data-tab="indiv" onclick="setTab('indiv')">👤 Individuel</button>
+  <button class="tabBtn" data-tab="leader" onclick="setTab('leader')">🏆 Leaderboard</button>
+  <button class="tabBtn" data-tab="compare" onclick="setTab('compare')">⚔️ Comparaison</button>
+</div>
+
+<div id="ctrlIndiv" class="controls">
+  <label>Joueuse :</label>
+  <select id="selJ" onchange="render()"></select>
+  <label>Périodes :</label>
+  <div class="periods" id="periods"></div>
+</div>
+
+<div id="ctrlLeader" class="controls" style="display:none">
+  <label>Mouvement :</label>
+  <select id="selMove"></select>
+  <label>Période :</label>
+  <select id="selPeriodL"></select>
+  <label>Filtre poste :</label>
+  <select id="selPoste"><option value="">Tous les postes</option></select>
+</div>
+
+<div id="ctrlCompare" class="controls" style="display:none;flex-direction:column;align-items:flex-start">
+  <label>Joueuses à comparer (clique pour sélectionner) :</label>
+  <div id="cmpPlayers" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+  <label style="margin-top:8px">Période :</label>
+  <select id="selPeriodC"></select>
+</div>
+
+<div id="content"></div>
+
+
 <script>
+// ====== CONFIG ======
+const PERIODS = ['Septembre','Novembre','Janvier','Mai'];
+const LABELS = {
+  taille:'Taille', poids:'Poids', yoyo:'Yo-yo (m)', palier:'Palier',
+  dc_1rm:'1RM DC', tirage_1rm:'1RM Tirage', sdt_1rm:'1RM SDT',
+  dc_3rm:'3RM DC', squat_3rm:'3RM Squat', tirage_3rm:'3RM Tirage',
+  v10:'10m', v20:'20m', v25:'25m', v30:'30m', v40:'40m', v50:'50m',
+  broad:'Broad Jump'
+};
+const UNITS = {
+  taille:'cm', poids:'kg', yoyo:'m', palier:'',
+  dc_1rm:'kg', tirage_1rm:'kg', sdt_1rm:'kg',
+  dc_3rm:'kg', squat_3rm:'kg', tirage_3rm:'kg',
+  v10:'s', v20:'s', v25:'s', v30:'s', v40:'s', v50:'s',
+  broad:'cm'
+};
+// indicateurs où DIMINUER = mieux
+const INVERT = ['v10','v20','v25','v30','v40','v50'];
+
+const CATS = {
+  vitesse:{ico:'⚡',name:'Vitesse',desc:'Sprints 10-50m',keys:['v10','v20','v25','v30','v40','v50']},
+  force:{ico:'💪',name:'Force',desc:'1RM & 3RM',keys:['dc_1rm','tirage_1rm','sdt_1rm','dc_3rm','squat_3rm','tirage_3rm']},
+  endurance:{ico:'🏃',name:'Endurance',desc:'Yo-yo test',keys:['yoyo','palier']},
+  explo:{ico:'🚀',name:'Explosivité',desc:'Broad Jump',keys:['broad']},
+  anthro:{ico:'📏',name:'Anthropométrie',desc:'Taille / Poids',keys:['taille','poids']}
+};
+</script>
+<script>
+// ====== DONNÉES (extraites de ton Excel) ======
 const DATA = {
-  "Alina": {
-    poste: "1re Ligne",
-    Septembre: { poids: 70.4, yoyo: 560, palier: 15, dc: 37.5, tirage: 42.5, sdt: 85, v10: 2.11, v20: 3.76, v25: 4.60, v50: 8.78, broad: 170 },
-    Novembre:  { poids: 70.7, yoyo: 560, palier: 14.1, dc: 42.5, tirage: 50, sdt: 95, hipthrust: 125, v10: 2.04, v20: 3.66, v25: 4.44, v50: 8.41 },
-    Janvier:   { poids: 70.4, yoyo: 480, palier: 14.4, squat: 70, v10: 2.15, v20: 3.75, v30: 5.38, v40: 7.05 },
-    Mai:       { yoyo: 480, palier: 14.1, dc: 42.5, tirage: 50, broad: 182, v10: 2.10, v20: 3.70, v30: 5.18, v40: 6.76 }
-  },
-  "Amaia": {
-    poste: "Demi-mêlée",
-    Septembre: { poids: 61.5, yoyo: 1480, palier: 17, dc: 37.5, tirage: 47.5, sdt: 75, v10: 1.97, v20: 3.43, v25: 4.28, v50: 7.74, broad: 193 },
-    Novembre:  { poids: 61.7, yoyo: 1480, palier: 13.3, dc: 45, tirage: 50, sdt: 125, hipthrust: 120, v10: 1.82, v20: 3.26, v25: 3.92, v50: 7.27, broad: 200 },
-    Janvier:   { poids: 62.8, yoyo: 1240, palier: 16.4, dc: 50, squat: 70, v10: 1.81, v20: 3.17, v30: 4.49, v40: 5.87, broad: 191 },
-    Mai:       { yoyo: 1120, palier: 16.1, dc: 52.5, tirage: 50, broad: 200, v10: 1.88, v20: 3.26, v30: 4.56, v40: 5.88 }
-  },
-  "Andréa": {
-    poste: "1re Ligne",
-    Septembre: { poids: 77.1, yoyo: 560, dc: 52.5, v10: 2.02, v20: 3.52, v25: 4.30, v50: 8.11, broad: 193 },
-    Novembre:  { poids: 76, yoyo: 560, palier: 15.2, dc: 60 },
-    Janvier:   { yoyo: 400, palier: 13.3, dc: 90, v10: 1.97, v20: 3.41, v30: 4.78, v40: 6.06, broad: 166 }
-  },
-  "Annaelle": {
-    poste: "1re Ligne",
-    Septembre: { poids: 89.2, yoyo: 440, palier: 13.5, dc: 45, tirage: 60, sdt: 95, v10: 2.23, v20: 3.90, v25: 4.88, v50: 9.39, broad: 170 },
-    Novembre:  { poids: 87.4, yoyo: 440, palier: 21.5, dc: 50, tirage: 60, sdt: 125, hipthrust: 140, v10: 2.11, v20: 3.70, v25: 4.60, v50: 8.71 },
-    Janvier:   { poids: 86.65, yoyo: 440, palier: 13.4, dc: 53, v10: 2.02, v20: 3.50, v30: 4.96, v40: 6.53, broad: 157 },
-    Mai:       { yoyo: 440, palier: 13.4, dc: 55, tirage: 60 }
-  },
-  "Augustine": {
-    poste: "3e Ligne",
-    Septembre: { poids: 64, yoyo: 1400, palier: 18.5, dc: 50, tirage: 50, sdt: 105, v10: 1.94, v20: 3.32, v25: 4.07, v50: 7.50, broad: 202 },
-    Novembre:  { poids: 64.1, yoyo: 1400, palier: 9.8, dc: 58, tirage: 55, sdt: 130, hipthrust: 165, v10: 1.84, v20: 3.22, v25: 3.98, v50: 7.21, broad: 210 },
-    Janvier:   { poids: 65.4, yoyo: 1160, palier: 15.8, dc: 60, squat: 85, v10: 1.95, v20: 3.29, v30: 4.63, v40: 5.95, broad: 198 },
-    Mai:       { yoyo: 1080, palier: 15.8, dc: 55, tirage: 58, broad: 195, v10: 1.91, v20: 3.26, v30: 4.59, v40: 5.87 }
-  },
-  "Calliopée": {
-    poste: "3e Ligne",
-    Septembre: { poids: 63.4, palier: 17.5, dc: 45, tirage: 48, sdt: 100, v10: 1.95, v20: 3.39, v25: 4.11, v50: 7.71 },
-    Novembre:  { poids: 65, dc: 50, tirage: 60, sdt: 110, hipthrust: 150, v10: 1.96, v20: 3.46, v25: 4.24, v50: 7.90 },
-    Mai:       { dc: 40, tirage: 53, broad: 205, v10: 1.94, v20: 3.44, v30: 4.87, v40: 6.27 }
-  },
-  "Camille": {
-    poste: "1re Ligne",
-    Septembre: { poids: 72.5, yoyo: 400, palier: 12.5, dc: 35, tirage: 40, sdt: 80 },
-    Novembre:  { yoyo: 400 }
-  },
-  "Candice": {
-    poste: "Centre",
-    Septembre: { poids: 65.5, yoyo: 560, v10: 1.99, v20: 3.53, v25: 4.15, v50: 7.93, broad: 197 }
-  },
-  "Charlotte": {
-    poste: "Ailier/arrière",
-    Septembre: { poids: 59.3, yoyo: 1400, palier: 18.5, dc: 37.5, tirage: 45, sdt: 90, v10: 1.92, v20: 3.32, broad: 187 },
-    Novembre:  { poids: 59.6, yoyo: 1400, palier: 14.6, dc: 45, tirage: 47.5, sdt: 125, hipthrust: 150, v10: 1.82, v20: 3.19, v25: 3.91, v50: 7.14 },
-    Janvier:   { poids: 61.25, dc: 45, v10: 1.93, v20: 3.31, v30: 4.61, v40: 5.94 },
-    Mai:       { dc: 45, tirage: 50, broad: 209, v10: 1.80, v20: 3.13, v30: 4.39, v40: 5.60 }
-  },
-  "Ciara": {
-    poste: "3e Ligne",
-    Septembre: { poids: 59, yoyo: 680, palier: 16, dc: 30, tirage: 42.5, sdt: 70, v10: 2.13, v20: 3.73, v25: 4.41, v50: 8.49, broad: 180 },
-    Novembre:  { poids: 61, yoyo: 680, palier: 12.1, dc: 35, tirage: 45, sdt: 110, hipthrust: 90, v10: 2.00, v20: 3.53, v25: 4.19, v50: 7.80, broad: 199 },
-    Janvier:   { poids: 62.3, yoyo: 960, palier: 15.5, dc: 42.5, squat: 70, v10: 1.85, v20: 3.24, v30: 4.62, v40: 6.05, broad: 184 },
-    Mai:       { dc: 42.5, tirage: 45 }
-  },
-  "Clara": {
-    poste: "Ailier/arrière",
-    Septembre: { poids: 65.9, yoyo: 960, dc: 37.5, tirage: 37.5, sdt: 70, v10: 1.71, v20: 3.10, v25: 3.73, v50: 6.94 },
-    Novembre:  { poids: 68, yoyo: 960, palier: 12.7, dc: 42.5, tirage: 50, sdt: 90, hipthrust: 120, v10: 1.79, v20: 3.12, v25: 3.76, v50: 6.93, broad: 215 },
-    Janvier:   { yoyo: 960, v10: 1.73, v20: 2.99, v30: 4.20, v40: 5.47, broad: 214 }
-  },
-  "Danaé": {
-    poste: "2e Ligne",
-    Septembre: { palier: 17, dc: 42.5, tirage: 40, sdt: 80, v10: 2.13, v20: 3.72, v25: 4.43, v50: 8.36, broad: 178 },
-    Novembre:  { poids: 65, palier: 11.8, dc: 45, tirage: 45 },
-    Janvier:   { poids: 65.4, dc: 45 },
-    Mai:       { dc: 40, tirage: 40 }
-  },
-  "Elyna": {
-    poste: "1re Ligne",
-    Septembre: { poids: 80.1, yoyo: 560 },
-    Novembre:  { poids: 79.5, yoyo: 560, v10: 1.98, v20: 3.54, v25: 4.20, v50: 8.00 },
-    Janvier:   { v10: 1.96, v20: 3.44, v30: 4.94, v40: 6.47 },
-    Mai:       { broad: 190, v10: 1.93, v20: 3.40, v30: 4.85, v40: 6.27 }
-  },
-  "Emilie": {
-    poste: "3e Ligne",
-    Septembre: { poids: 71.4, yoyo: 640, palier: 16.5, dc: 45, tirage: 45, sdt: 95, v10: 2.04, v20: 3.59, v25: 4.33, v50: 8.09, broad: 187 },
-    Novembre:  { poids: 72.6, yoyo: 640, palier: 14.6, dc: 50, tirage: 55, sdt: 130, hipthrust: 160, v10: 1.90, v20: 3.36, v25: 4.15, v50: 7.71 },
-    Janvier:   { poids: 74.8, yoyo: 840, palier: 15.1, dc: 50, squat: 80, v10: 1.84, v20: 3.28, v30: 4.64, v40: 6.09, broad: 187 },
-    Mai:       { yoyo: 840, palier: 15.2, dc: 53, tirage: 60, broad: 189, v10: 1.87, v20: 3.30, v30: 4.64, v40: 5.97 }
-  },
-  "Faustine": {
-    poste: "3e Ligne",
-    Septembre: { poids: 72.3, yoyo: 440, palier: 14, dc: 40, tirage: 50, sdt: 90, v10: 2.15, v20: 3.84, v25: 4.73, v50: 9.18, broad: 180 },
-    Novembre:  { poids: 70, yoyo: 440, palier: 13.9, dc: 45, tirage: 52.5, sdt: 112.5, hipthrust: 110, v10: 2.08, v20: 3.73, v25: 4.50, v50: 8.49, broad: 179 },
-    Janvier:   { poids: 73 },
-    Mai:       { dc: 55, tirage: 57.5 }
-  },
-  "Ines": {
-    poste: "2e Ligne",
-    Septembre: { poids: 61.1, palier: 13, dc: 30, tirage: 40, sdt: 75, v10: 2.19, v20: 3.88, v25: 4.67, v50: 9.66, broad: 153 },
-    Novembre:  { poids: 64, palier: 11.3, broad: 172 },
-    Janvier:   { poids: 68.25, yoyo: 400, dc: 32.5, squat: 40, v10: 2.11, v20: 3.66, v30: 5.19, v40: 6.79 },
-    Mai:       { dc: 35, tirage: 45 }
-  },
-  "Ines R": {
-    poste: "Demi-mêlée",
-    Septembre: { poids: 54.55, yoyo: 1040, palier: 17, dc: 40, tirage: 35, sdt: 75, v10: 2.08, v20: 3.66, v25: 4.44, v50: 8.38, broad: 196 },
-    Novembre:  { poids: 54.1, yoyo: 1040, palier: 14.7, dc: 40, tirage: 45, sdt: 90, hipthrust: 130, v10: 1.90, v20: 3.38, v25: 4.19, v50: 7.86 },
-    Janvier:   { yoyo: 1120, dc: 40, squat: 60, v10: 1.87, v20: 3.27, v30: 4.61, v40: 6.06, broad: 200 },
-    Mai:       { yoyo: 880, palier: 15.3, dc: 40, tirage: 40, broad: 193, v10: 1.95, v20: 3.48, v30: 4.86, v40: 6.31 }
-  },
-  "Jade": {
-    poste: "3e Ligne",
-    Septembre: { poids: 54.5, yoyo: 1000, palier: 15.5, dc: 32.5, tirage: 40, sdt: 75, v10: 2.19, v20: 3.92, v25: 4.68, v50: 8.92, broad: 160 },
-    Novembre:  { poids: 55, yoyo: 1000, palier: 10.2, dc: 35, tirage: 55, sdt: 100, hipthrust: 110, v10: 2.01, v20: 3.58, v25: 4.30, v50: 8.17, broad: 190 },
-    Janvier:   { poids: 51.25, yoyo: 960, palier: 15.5, dc: 45, squat: 75, v10: 1.96, v20: 3.47, v30: 4.93, v40: 6.53, broad: 178 },
-    Mai:       { yoyo: 640, palier: 14.5, dc: 42.5, tirage: 55, broad: 184, v10: 1.95, v20: 3.45, v30: 4.89, v40: 6.37 }
-  },
-  "Kélia": {
-    poste: "Centre",
-    Septembre: { poids: 60.2, yoyo: 960, palier: 16.5, dc: 32.5, tirage: 35, sdt: 70, v10: 1.91, v20: 3.32, v25: 3.97, v50: 7.38, broad: 207 },
-    Novembre:  { poids: 59.6, yoyo: 960, dc: 35, tirage: 42.5, sdt: 100, v10: 1.77, v20: 3.14, v25: 3.82, v50: 7.08 },
-    Janvier:   { yoyo: 1000, v10: 1.79, v20: 3.11, v30: 4.39, v40: 5.71, broad: 215 }
-  },
-  "Kira": {
-    poste: "1re Ligne",
-    Septembre: { poids: 83.7, yoyo: 560, palier: 15.5, dc: 50, tirage: 55, sdt: 70, v10: 2.30, v20: 3.95, v25: 4.67, v50: 8.65, broad: 166 },
-    Novembre:  { poids: 83.9, yoyo: 560, palier: 15, dc: 60, tirage: 55, broad: 187 },
-    Janvier:   { poids: 85.4, yoyo: 360, dc: 57.5, squat: 90, v10: 1.95, v20: 3.45, v30: 4.89, v40: 6.43, broad: 163 },
-    Mai:       { yoyo: 560, palier: 14.3, dc: 60, tirage: 60, broad: 174, v10: 2.01, v20: 3.69, v30: 5.00, v40: 6.41 }
-  },
-  "Lily B": {
-    poste: "3e Ligne",
-    Septembre: { poids: 59.4, yoyo: 1200, palier: 17.5, dc: 40, tirage: 50, sdt: 100, v10: 2.00, v20: 3.53, v25: 4.26, v50: 8.04, broad: 190 },
-    Novembre:  { poids: 62.6, yoyo: 1200, palier: 19.1, dc: 50, tirage: 60, sdt: 110, hipthrust: 150, v10: 1.89, v20: 3.31, v25: 3.96, v50: 7.28, broad: 202 },
-    Janvier:   { poids: 64.5, yoyo: 960, palier: 15.5, dc: 55, v10: 1.90, v20: 3.30, v30: 4.63, v40: 5.95 },
-    Mai:       { yoyo: 920, palier: 15.4, dc: 62.5, tirage: 67.5, broad: 211, v10: 1.89, v20: 3.24, v30: 4.52, v40: 5.81 }
-  },
-  "Lily N": {
-    poste: "1re Ligne",
-    Septembre: { poids: 68.3, yoyo: 760, palier: 16.5, dc: 45, tirage: 50, sdt: 92.5, v10: 2.03, v20: 3.55, v25: 4.35, v50: 8.24, broad: 193 },
-    Novembre:  { poids: 67, yoyo: 760, palier: 14.2, dc: 50, tirage: 42.5, sdt: 100, hipthrust: 160, v10: 1.94, v20: 3.42, v25: 4.27, v50: 8.01, broad: 202 },
-    Janvier:   { poids: 67.8, yoyo: 960, palier: 15.5, dc: 55, v10: 1.93, v20: 3.40, v30: 4.81, v40: 6.34, broad: 196 },
-    Mai:       { yoyo: 800, palier: 15.1, dc: 55, tirage: 55, broad: 210, v10: 1.97, v20: 3.44, v30: 4.84, v40: 6.26 }
-  },
-  "Loréana": {
-    poste: "1re Ligne",
-    Septembre: { poids: 81.3, yoyo: 440, palier: 13.5, dc: 45, tirage: 55, sdt: 95, v10: 2.04, v20: 3.59, v25: 4.38, v50: 8.18, broad: 180 },
-    Novembre:  { poids: 84, yoyo: 440, palier: 17.6, sdt: 125, hipthrust: 145 },
-    Janvier:   { palier: 13.3, yoyo: 480, dc: 55, squat: 90, v10: 1.93, v20: 3.39, v30: 4.81, v40: 6.34, broad: 202 },
-    Mai:       { yoyo: 360, palier: 13.2, dc: 50, tirage: 55, broad: 200, v10: 1.92, v20: 3.38, v30: 4.73, v40: 6.07 }
-  },
-  "Louane D": {
-    poste: "Ailier/arrière",
-    Septembre: { poids: 55.6, dc: 50, tirage: 45, sdt: 100, v10: 1.84, v20: 3.26, v25: 3.96, v50: 7.48, broad: 199 },
-    Novembre:  { poids: 55.6, palier: 16, dc: 50, tirage: 55, sdt: 122.5, hipthrust: 140, v10: 1.80, v20: 3.18, v25: 3.80, v50: 7.09 },
-    Janvier:   { poids: 58.25, dc: 53, squat: 90, v10: 1.77, v20: 3.09, v30: 4.35, v40: 5.66, broad: 202 },
-    Mai:       { dc: 55, tirage: 55, broad: 208, v10: 1.85, v20: 3.22, v30: 4.53, v40: 5.84 }
-  },
-  "Louanne Dom": {
-    poste: "Centre",
-    Septembre: { poids: 69.2, yoyo: 760, palier: 15.5, dc: 55, tirage: 55, sdt: 90, v10: 2.08, v20: 3.59, v25: 4.31, v50: 7.98, broad: 200 },
-    Novembre:  { poids: 70.3, yoyo: 760, palier: 13.1, dc: 60, tirage: 55, sdt: 120, v10: 1.91, v20: 3.37, v25: 4.10, v50: 7.48 },
-    Janvier:   { poids: 69.9, yoyo: 800, palier: 15.1, dc: 65, squat: 90, v10: 1.87, v20: 3.25, v30: 4.55, v40: 5.98, broad: 207 },
-    Mai:       { yoyo: 720, palier: 14.7, dc: 67.5, tirage: 65 }
-  },
-  "Lylou": {
-    poste: "2e Ligne",
-    Septembre: { poids: 71.9, yoyo: 440, palier: 15.5, dc: 42.5, tirage: 49, sdt: 80, v10: 2.05, v20: 3.68, v25: 4.41, v50: 8.50, broad: 185 },
-    Novembre:  { poids: 74.5, yoyo: 440, palier: 15.7, dc: 45, tirage: 55, sdt: 110, hipthrust: 110, v10: 1.96, v20: 3.50, v25: 4.34, v50: 8.10, broad: 200 },
-    Janvier:   { palier: 14.6, yoyo: 680, dc: 50 },
-    Mai:       { dc: 50, tirage: 55 }
-  },
-  "Maëna": {
-    poste: "Ailier/arrière",
-    Septembre: { poids: 60.1, yoyo: 880, palier: 15.5, dc: 37.5, tirage: 50, sdt: 80, v10: 1.92, v20: 3.30, v25: 3.99, v50: 7.36, broad: 203 },
-    Novembre:  { yoyo: 880, palier: 20.4, hipthrust: 52.5 },
-    Janvier:   { poids: 58.6, dc: 52.5, v10: 1.86, v20: 3.23, v30: 4.55, v40: 5.82 },
-    Mai:       { yoyo: 600, palier: 14.4, dc: 55, tirage: 57.5, broad: 223, v10: 1.87, v20: 3.31, v30: 4.42, v40: 5.63 }
-  },
-  "Malaury": {
-    poste: "3e Ligne",
-    Septembre: { poids: 64.7, yoyo: 1040, palier: 16.5, dc: 43, tirage: 50, sdt: 85, v10: 2.02, v20: 3.52, v25: 4.41, v50: 8.47, broad: 183 },
-    Novembre:  { poids: 63.3, yoyo: 1040, palier: 13.1, dc: 50, tirage: 50, sdt: 105, hipthrust: 145, v10: 1.96, v20: 3.47, v25: 4.30, v50: 8.07 },
-    Janvier:   { poids: 64.7, yoyo: 960, palier: 15.5, dc: 53, squat: 85, v10: 1.89, v20: 3.35, v30: 4.71, v40: 6.22, broad: 185 },
-    Mai:       { yoyo: 880, palier: 15.3, dc: 53, tirage: 48, broad: 197, v10: 1.94, v20: 3.54, v30: 4.80, v40: 6.20 }
-  },
-  "Margaux": {
-    poste: "Centre",
-    Septembre: { poids: 69.9, yoyo: 560, dc: 42.5, tirage: 52.5, sdt: 100, v10: 1.94, v20: 3.39, v25: 4.07, v50: 7.62, broad: 202 },
-    Novembre:  { poids: 70, yoyo: 560, v10: 1.78, v20: 3.17, v25: 4.00, v50: 7.40 },
-    Janvier:   { v10: 1.74, v20: 3.06, v30: 4.33, v40: 5.74, broad: 210 }
-  },
-  "Mathilde": {
-    poste: "Demi-Ouverture",
-    Septembre: { poids: 74.3, yoyo: 360 },
-    Novembre:  { taille: 78.9, yoyo: 360, hipthrust: 130 },
-    Janvier:   { yoyo: 240, v10: 2.00, v20: 3.47, v30: 4.91, v40: 6.35 },
-    Mai:       { dc: 50, tirage: 55, v10: 1.96, v20: 3.43, v30: 4.79, v40: 6.13 }
-  },
-  "Maylis": {
-    poste: "Ailier/arrière",
-    Septembre: { poids: 54.9, yoyo: 1040, palier: 17, dc: 37.5, tirage: 49, sdt: 80, v10: 1.97, v20: 3.47, v25: 4.28, v50: 8.02, broad: 175 },
-    Novembre:  { poids: 56.4, yoyo: 1040, palier: 19.9, dc: 42.5, tirage: 52.5, sdt: 110, hipthrust: 100, v10: 1.88, v20: 3.39, v25: 3.95, v50: 7.39 },
-    Janvier:   { yoyo: 960, palier: 15.5, dc: 45, squat: 60, v10: 1.79, v20: 3.14, v30: 4.41, v40: 5.82, broad: 185 },
-    Mai:       { yoyo: 840, palier: 15.2, dc: 45, broad: 191, v10: 1.81, v20: 3.22, v30: 4.51, v40: 5.87 }
-  },
-  "Méloée": {
-    poste: "Demi-Ouverture",
-    Septembre: { poids: 65.4, yoyo: 760, palier: 16.5, dc: 55, tirage: 55, sdt: 110, v10: 1.99, v20: 3.43, v25: 4.12, v50: 7.61, broad: 192 },
-    Novembre:  { poids: 67.4, yoyo: 760, palier: 14.2, dc: 60, tirage: 63, sdt: 135, hipthrust: 150, v10: 1.87, v20: 3.27, v25: 4.01, v50: 7.34 },
-    Janvier:   { poids: 68.8, yoyo: 800, palier: 15.1, dc: 60, squat: 100, v10: 1.86, v20: 3.18, v30: 4.45, v40: 5.80, broad: 200 },
-    Mai:       { yoyo: 760, palier: 14.8, dc: 60, tirage: 63, broad: 223, v10: 1.90, v20: 3.31, v30: 4.55, v40: 5.81 }
-  },
-  "Morgane": {
-    poste: "Centre",
-    Septembre: { poids: 65.1, yoyo: 1080, palier: 17, dc: 35, tirage: 55, sdt: 90, v10: 1.95, v20: 3.37, v25: 4.10, v50: 7.69, broad: 192 },
-    Novembre:  { poids: 64.6, yoyo: 1080, palier: 16.8, dc: 47.5, tirage: 62.5, sdt: 145, hipthrust: 140, v10: 1.83, v20: 3.24, v25: 3.96, v50: 7.38 },
-    Janvier:   { poids: 66.5, yoyo: 960, palier: 15.5, dc: 80, v10: 1.97, v20: 3.41, v30: 4.79, v40: 6.13 },
-    Mai:       { yoyo: 760, palier: 14.8, dc: 50, broad: 198, v10: 1.88, v20: 3.28, v30: 4.61, v40: 5.91 }
-  },
-  "Romane": {
-    poste: "Demi-Ouverture",
-    Septembre: { poids: 58.1, yoyo: 720, palier: 15.5, dc: 35, tirage: 42.5, sdt: 75, v10: 1.99, v20: 3.52, v25: 4.22, v50: 8.03, broad: 189 },
-    Novembre:  { poids: 59.4, yoyo: 720, palier: 16.5, dc: 42.5, tirage: 50, sdt: 110, hipthrust: 140, v10: 1.83, v20: 3.26, v25: 3.97, v50: 7.37 },
-    Janvier:   { poids: 59.4, dc: 42.5, squat: 70, v10: 1.79, v20: 3.15, v30: 4.43, v40: 5.83, broad: 209 },
-    Mai:       { yoyo: 680, palier: 14.6, dc: 45, tirage: 55, broad: 207, v10: 1.83, v20: 3.29, v30: 4.60, v40: 5.97 }
-  },
-  "Shayna": {
-    poste: "3e Ligne",
-    Septembre: { poids: 66.3, yoyo: 640, palier: 14, dc: 38, tirage: 38.5, sdt: 80, v10: 2.19, v20: 3.88, broad: 164 },
-    Novembre:  { poids: 66.2, yoyo: 640, palier: 14, dc: 40, tirage: 50, sdt: 110, hipthrust: 140, v10: 2.06, v20: 3.75, v25: 4.75, v50: 8.50 },
-    Janvier:   { poids: 68.05, dc: 40, squat: 80, v10: 2.07, v20: 3.62, v30: 5.17, v40: 6.75 },
-    Mai:       { yoyo: 640, palier: 14.5, dc: 40, tirage: 40, broad: 187, v10: 2.00, v20: 3.52, v30: 5.00, v40: 6.51 }
-  },
-  "Zoé": {
-    poste: "1re Ligne",
-    Septembre: { poids: 63.9, yoyo: 920, palier: 17, dc: 50, tirage: 40, sdt: 100, v10: 2.07, v20: 3.65, v25: 4.55, v50: 8.64, broad: 167 },
-    Novembre:  { poids: 63.7, yoyo: 920, palier: 19.8, dc: 55, tirage: 60, sdt: 125, hipthrust: 145, v10: 1.89, v20: 3.37, v25: 4.21, v50: 7.93 },
-    Janvier:   { poids: 68.15, yoyo: 960, palier: 15.5, dc: 60, squat: 90, v10: 1.86, v20: 3.26, v30: 4.59, v40: 6.02, broad: 189 },
-    Mai:       { yoyo: 840, palier: 15.2, dc: 62.5, tirage: 60, broad: 195, v10: 1.92, v20: 3.34, v30: 4.69, v40: 6.03 }
-  }
-};
-const PERIODS = ["Septembre", "Novembre", "Janvier", "Mai"];
-
-const CATEGORIES = {
-  anthropo: {
-    title: "📏 Anthropométrie",
-    fields: [
-      { key: "taille", label: "Taille", unit: "cm", betterUp: true },
-      { key: "poids", label: "Poids", unit: "kg", betterUp: null }
-    ]
-  },
-  endurance: {
-    title: "🏃 Endurance",
-    fields: [
-      { key: "palier", label: "Yo-Yo Palier", unit: "", betterUp: true },
-      { key: "yoyo", label: "Yo-Yo Distance", unit: "m", betterUp: true }
-    ]
-  },
-  force: {
-    title: "💪 Force",
-    fields: [
-      { key: "dc", label: "1RM Développé Couché", unit: "kg", betterUp: true },
-      { key: "tirage", label: "1RM Tirage", unit: "kg", betterUp: true },
-      { key: "sdt", label: "1RM Soulevé de Terre", unit: "kg", betterUp: true },
-      { key: "squat", label: "3RM Squat", unit: "kg", betterUp: true },
-      { key: "hipthrust", label: "1RM Hip Thrust", unit: "kg", betterUp: true }
-    ]
-  },
-  vitesse: {
-    title: "⚡ Vitesse",
-    fields: [
-      { key: "v10", label: "10m", unit: "s", betterUp: false },
-      { key: "v20", label: "20m", unit: "s", betterUp: false },
-      { key: "v25", label: "25m", unit: "s", betterUp: false },
-      { key: "v30", label: "30m", unit: "s", betterUp: false },
-      { key: "v40", label: "40m", unit: "s", betterUp: false },
-      { key: "v50", label: "50m", unit: "s", betterUp: false }
-    ]
-  },
-  puissance: {
-    title: "🦘 Puissance",
-    fields: [
-      { key: "broad", label: "Broad Jump", unit: "cm", betterUp: true }
-    ]
-  }
+"Alina": {poste:"1re Ligne", stats:{
+  Septembre:{taille:157,poids:70.4,yoyo:560,palier:15,dc_1rm:37.5,tirage_1rm:42.5,sdt_1rm:85,v10:2.11,v20:3.76,v25:4.6,v50:8.78,broad:170},
+  Novembre:{poids:70.7,yoyo:560,dc_1rm:42.5,tirage_1rm:50,sdt_1rm:95,v10:2.04,v20:3.66,v25:4.44,v50:8.41},
+  Janvier:{taille:157,poids:62.5,yoyo:480,palier:14.1,dc_3rm:37.5,squat_3rm:85,tirage_3rm:40,v10:2.15,v20:3.75,v30:5.38,v40:7.05,broad:153},
+  Mai:{poids:57,yoyo:480,palier:14.1,dc_3rm:42.5,tirage_3rm:50,v10:2.15,v20:3.75,v30:5.38,v40:7.05,broad:153}
+}},
+"Amaia": {poste:"Demi-melée", stats:{
+  Septembre:{taille:175,poids:61.5,yoyo:1480,palier:17,dc_1rm:37.5,tirage_1rm:47.5,sdt_1rm:75,v10:1.97,v20:3.43,v25:4.28,v50:7.74,broad:193},
+  Novembre:{poids:61.7,yoyo:1480,dc_1rm:45,tirage_1rm:50,sdt_1rm:125,v10:1.82,v20:3.26,v25:3.92,v50:7.27},
+  Janvier:{poids:60,yoyo:1120,dc_3rm:45,squat_3rm:45,tirage_3rm:45,v10:1.81,v20:3.17,v30:4.49,v40:5.87,broad:191},
+  Mai:{yoyo:1120,palier:16.1,dc_3rm:52.5,tirage_3rm:50,v10:1.81,v20:3.17,v30:4.49,v40:5.87,broad:191}
+}},
+"Andréa": {poste:"1re Ligne", stats:{
+  Septembre:{taille:193,poids:77.1,yoyo:560,dc_1rm:52.5,tirage_1rm:57.5,v10:2.02,v20:3.52,v25:4.3,v50:8.11,broad:193},
+  Novembre:{poids:76},
+  Janvier:{dc_3rm:48}
+}},
+"Annaelle": {poste:"1re Ligne", stats:{
+  Septembre:{taille:170,poids:89.2,yoyo:440,palier:13.5,dc_1rm:45,tirage_1rm:60,sdt_1rm:95,v10:2.23,v20:3.9,v25:4.88,v50:9.39,broad:170},
+  Novembre:{poids:87.4,yoyo:440,dc_1rm:50,tirage_1rm:60,sdt_1rm:125,v10:2.11,v20:3.7,v25:4.6,v50:8.71},
+  Janvier:{taille:164,dc_3rm:60,tirage_3rm:55,v10:2.02,v20:3.5,v30:4.96,v40:6.53,broad:157},
+  Mai:{poids:85,yoyo:440,palier:13.4,dc_3rm:55,tirage_3rm:60,v10:2.02,v20:3.5,v30:4.96,v40:6.53,broad:157}
+}},
+"Augustine": {poste:"3e Ligne", stats:{
+  Septembre:{taille:202,poids:64,yoyo:1400,palier:18.5,dc_1rm:50,tirage_1rm:50,sdt_1rm:105,v10:1.94,v20:3.32,v25:4.07,v50:7.5,broad:202},
+  Novembre:{poids:64.1,yoyo:1400,dc_1rm:58,tirage_1rm:55,sdt_1rm:130,v10:1.84,v20:3.22,v25:3.98,v50:7.21},
+  Janvier:{taille:164,yoyo:1080,palier:15.8,v10:1.95,v20:3.29,v30:4.63,v40:5.95,broad:198},
+  Mai:{yoyo:1080,palier:15.8,dc_3rm:55,tirage_3rm:58,v10:1.95,v20:3.29,v30:4.63,v40:5.95,broad:198}
+}},
+"Calliopée": {poste:"3e Ligne", stats:{
+  Septembre:{poids:63.4,palier:17.5,dc_1rm:45,tirage_1rm:48,sdt_1rm:100,v10:1.95,v20:3.39,v25:4.11,v50:7.71},
+  Novembre:{poids:65,dc_1rm:50,tirage_1rm:60,sdt_1rm:110,v10:1.96,v20:3.46,v25:4.24,v50:7.9},
+  Mai:{dc_3rm:40,tirage_3rm:53}
+}},
+"Camille": {poste:"1re Ligne", stats:{
+  Septembre:{poids:72},
+  Janvier:{taille:162}
+}},
+"Charlotte": {poste:"Ailier/arrière", stats:{
+  Septembre:{v10:1.92,v20:3.32,v25:3.91,v50:7.14},
+  Novembre:{v10:1.82,v20:3.19},
+  Janvier:{v10:1.93,v20:3.31,v30:4.61,v40:5.94},
+  Mai:{dc_3rm:45,tirage_3rm:50,v10:1.93,v20:3.31,v30:4.61,v40:5.94}
+}},
+"Ciara": {poste:"3e Ligne", stats:{
+  Janvier:{poids:62.3,palier:15.5,yoyo:960,dc_3rm:42.5,tirage_3rm:40,v10:1.85,v20:3.24,v30:4.62,v40:6.05,broad:184},
+  Mai:{dc_3rm:42.5,tirage_3rm:45,v10:1.85,v20:3.24,v30:4.62,v40:6.05,broad:184}
+}},
+"Clara": {poste:"Ailier/arrière", stats:{
+  Septembre:{v10:1.71,v20:3.1,v25:3.73,v50:6.94},
+  Janvier:{yoyo:960,v10:1.73,v20:2.99,v30:4.2,v40:5.47,broad:214}
+}},
+"Danaé": {poste:"2e Ligne", stats:{
+  Janvier:{poids:65.4,dc_3rm:45},
+  Mai:{dc_3rm:40,tirage_3rm:40}
+}},
+"Elyna": {poste:"1re Ligne", stats:{
+  Janvier:{v10:1.96,v20:3.44,v30:4.94,v40:6.47}
+}},
+"Emilie": {poste:"3e Ligne", stats:{
+  Janvier:{poids:74.8,palier:15.1,yoyo:840,dc_3rm:50,tirage_3rm:80,v10:1.84,v20:3.28,v30:4.64,v40:6.09,broad:187},
+  Mai:{palier:15.2,yoyo:840,dc_3rm:53,tirage_3rm:60,v10:1.84,v20:3.28,v30:4.64,v40:6.09,broad:187}
+}},
+"Faustine": {poste:"1re Ligne", stats:{
+  Janvier:{poids:73,taille:161,dc_3rm:50,tirage_3rm:50},
+  Mai:{dc_3rm:55,tirage_3rm:57.5}
+}},
+"Ines": {poste:"2e Ligne", stats:{
+  Novembre:{poids:64,palier:11.3,yoyo:0,broad:172},
+  Janvier:{poids:68.25,yoyo:400,dc_3rm:32.5,tirage_3rm:40,v10:2.11,v20:3.66,v30:5.19,v40:6.79},
+  Mai:{dc_3rm:35,tirage_3rm:45,v10:2.11,v20:3.66,v30:5.19,v40:6.79}
+}},
+"Ines R": {poste:"Demi-melée", stats:{
+  Septembre:{taille:158,poids:54.55,yoyo:1040,palier:17,dc_1rm:40,tirage_1rm:35,sdt_1rm:75,v10:2.08,v20:3.66,v25:4.44,v50:8.38,broad:196},
+  Novembre:{poids:54.1,yoyo:1040,palier:14.7,dc_1rm:40,tirage_1rm:45,sdt_1rm:130,v10:1.9,v20:3.38,v25:4.19,v50:7.86},
+  Janvier:{yoyo:1120,dc_3rm:30,squat_3rm:65,tirage_3rm:40,v10:1.87,v20:3.27,v30:4.61,v40:6.06,broad:200},
+  Mai:{yoyo:880,palier:15.3,dc_3rm:40,tirage_3rm:40,v10:1.87,v20:3.27,v30:4.61,v40:6.06,broad:200}
+}},
+"Jade": {poste:"3e Ligne", stats:{
+  Septembre:{taille:160,poids:54.5,yoyo:1000,palier:15.5,dc_1rm:32.5,tirage_1rm:40,sdt_1rm:75,v10:2.19,v20:3.92,v25:4.68,v50:8.92,broad:160},
+  Novembre:{poids:55,yoyo:1000,palier:10.2,dc_1rm:35,tirage_1rm:55,sdt_1rm:100,v10:2.01,v20:3.58,v25:4.3,v50:8.17,broad:190},
+  Janvier:{poids:51.25,palier:15.5,yoyo:960,taille:161,dc_3rm:40,squat_3rm:85,tirage_3rm:50,v10:1.96,v20:3.47,v30:4.93,v40:6.53,broad:178},
+  Mai:{palier:14.5,yoyo:640,dc_3rm:42.5,tirage_3rm:55,v10:1.96,v20:3.47,v30:4.93,v40:6.53,broad:178}
+}},
+"Kélia": {poste:"Centre", stats:{
+  Septembre:{taille:207,poids:60.2,yoyo:960,palier:16.5,dc_1rm:32.5,tirage_1rm:35,sdt_1rm:70,v10:1.91,v20:3.32,v25:3.97,v50:7.38},
+  Novembre:{poids:59.6,yoyo:960,dc_1rm:35,tirage_1rm:42.5,sdt_1rm:100,v10:1.77,v20:3.14,v25:3.82,v50:7.08},
+  Janvier:{yoyo:1000,v10:1.79,v20:3.11,v30:4.39,v40:5.71},
+  Mai:{v10:1.79,v20:3.11,v30:4.39,v40:5.71,broad:215}
+}},
+"Kira": {poste:"1re Ligne", stats:{
+  Septembre:{taille:166,poids:83.7,yoyo:560,palier:15.5,dc_1rm:50,tirage_1rm:55,sdt_1rm:70,v10:2.3,v20:3.95,v25:4.67,v50:8.65},
+  Novembre:{poids:83.9,yoyo:560,palier:15,dc_1rm:60,tirage_1rm:55,broad:187},
+  Janvier:{taille:167,dc_3rm:52.5,squat_3rm:85,tirage_3rm:50},
+  Mai:{palier:14.3,yoyo:560,dc_3rm:60,tirage_3rm:60,v10:1.95,v20:3.45,v30:4.89,v40:6.43,broad:163}
+}},
+"Lily B": {poste:"3e Ligne", stats:{
+  Septembre:{taille:190,poids:59.4,yoyo:1200,palier:17.5,dc_1rm:40,tirage_1rm:50,sdt_1rm:100,v10:2,v20:3.53,v25:4.26,v50:8.04},
+  Novembre:{poids:62.6,yoyo:1200,palier:19.1,dc_1rm:50,tirage_1rm:60,sdt_1rm:150,v10:1.89,v20:3.31,v25:3.96,v50:7.28,broad:202},
+  Janvier:{taille:162,dc_3rm:52.5,squat_3rm:105,tirage_3rm:60},
+  Mai:{palier:15.4,yoyo:920,dc_3rm:62.5,tirage_3rm:67.5,v10:1.9,v20:3.3,v30:4.63,v40:5.95}
+}},
+"Lily N": {poste:"1re Ligne", stats:{
+  Septembre:{taille:193,poids:68.3,yoyo:760,palier:16.5,dc_1rm:45,tirage_1rm:50,sdt_1rm:92.5,v10:2.03,v20:3.55,v25:4.35,v50:8.24},
+  Novembre:{poids:67,yoyo:760,palier:14.2,dc_1rm:50,tirage_1rm:42.5,sdt_1rm:160,v10:1.94,v20:3.42,v25:4.27,v50:8.01,broad:202},
+  Janvier:{taille:160,dc_3rm:52.5,squat_3rm:80,tirage_3rm:50},
+  Mai:{palier:15.1,yoyo:800,dc_3rm:55,tirage_3rm:55,v10:1.93,v20:3.4,v30:4.81,v40:6.34}
+}},
+"Loréana": {poste:"1re Ligne", stats:{
+  Septembre:{taille:180,poids:81.3,yoyo:440,palier:13.5,dc_1rm:45,sdt_1rm:95,v10:2.04,v20:3.59,v25:4.38,v50:8.18},
+  Novembre:{poids:84,yoyo:440,palier:17.6,sdt_1rm:145},
+  Janvier:{dc_3rm:48,squat_3rm:110,tirage_3rm:55}
+}},
+"Louane D": {poste:"Ailier/arrière", stats:{
+  Septembre:{taille:199,poids:55.6,dc_1rm:50,tirage_1rm:45,sdt_1rm:100,v10:1.84,v20:3.26,v25:3.96,v50:7.48},
+  Novembre:{poids:55.6,dc_1rm:50,tirage_1rm:55,sdt_1rm:140,v10:1.8,v20:3.18,v25:3.8,v50:7.09},
+  Janvier:{dc_3rm:48,tirage_3rm:50}
+}},
+"Louanne Dom": {poste:"Centre", stats:{
+  Novembre:{poids:70.3,yoyo:760,palier:13.1,v10:1.91,v20:3.37,v25:4.1,v50:7.48},
+  Janvier:{taille:168,dc_3rm:60,squat_3rm:90,tirage_3rm:57.5,v10:1.87,v20:3.25,v30:4.55,v40:5.98},
+  Mai:{dc_3rm:65,tirage_3rm:67.5,v10:1.87,v20:3.25,v30:4.55,v40:5.98}
+}},
+"Lylou": {poste:"2e Ligne", stats:{
+  Novembre:{poids:74.5,yoyo:440,palier:15.7,v10:1.96,v20:3.5,v25:4.34,v50:8.1,broad:200},
+  Janvier:{taille:174}
+}},
+"Maëna": {poste:"Ailier/arrière", stats:{
+  Septembre:{v10:1.92,v20:3.3,v25:3.99,v50:7.36},
+  Novembre:{yoyo:880,palier:20.4},
+  Janvier:{taille:162,dc_3rm:45,squat_3rm:80,tirage_3rm:55,v10:1.86,v20:3.23,v30:4.55,v40:5.82},
+  Mai:{dc_3rm:52.5,squat_3rm:105,tirage_3rm:55,v10:1.86,v20:3.23,v30:4.55,v40:5.82}
+}},
+"Malaury": {poste:"3e Ligne", stats:{
+  Novembre:{poids:63.3,yoyo:1040,palier:13.1,dc_1rm:50,tirage_1rm:50,sdt_1rm:145,v10:1.96,v20:3.47,v25:4.3,v50:8.07},
+  Janvier:{taille:166,dc_3rm:50,squat_3rm:85,tirage_3rm:45}
+}},
+"Margaux": {poste:"Centre", stats:{
+  Novembre:{poids:70,yoyo:560,v10:1.78,v20:3.17,v25:4,v50:7.4}
+}},
+"Mathilde": {poste:"Demi-Ouverture", stats:{
+  Septembre:{poids:74.3,yoyo:360},
+  Novembre:{poids:78.9,yoyo:360,sdt_1rm:130}
+}},
+"Maylis": {poste:"Ailier/arrière", stats:{
+  Septembre:{taille:175,poids:54.9,yoyo:1040,palier:17,dc_1rm:37.5,tirage_1rm:49,sdt_1rm:80,v10:1.97,v20:3.47,v25:4.28,v50:8.02},
+  Novembre:{poids:56.4,yoyo:1040,palier:19.9,dc_1rm:42.5,tirage_1rm:52.5,sdt_1rm:100,v10:1.88,v20:3.39,v25:3.95,v50:7.39},
+  Janvier:{taille:160,dc_3rm:42.5,tirage_3rm:47.5}
+}},
+"Méloée": {poste:"Demi-Ouverture", stats:{
+  Septembre:{taille:192,poids:65.4,yoyo:760,palier:16.5,dc_1rm:55,tirage_1rm:55,sdt_1rm:110,v10:1.99,v20:3.43,v25:4.12,v50:7.61},
+  Novembre:{poids:67.4,yoyo:760,palier:14.2,dc_1rm:60,tirage_1rm:63,sdt_1rm:150,v10:1.87,v20:3.27},
+  Janvier:{taille:166,dc_3rm:55,tirage_3rm:60},
+  Mai:{dc_3rm:60,tirage_3rm:60,v10:1.86,v20:3.18,v30:4.45,v40:5.8}
+}},
+"Morgane": {poste:"Ailier/arrière", stats:{
+  Septembre:{taille:192,poids:65.1,yoyo:1080,palier:17,dc_1rm:35,tirage_1rm:55,sdt_1rm:90,v10:1.95,v20:3.37,v25:4.1,v50:7.69},
+  Novembre:{poids:64.6,yoyo:1080,dc_1rm:47.5,tirage_1rm:62.5,sdt_1rm:145,v10:1.83,v20:3.24,v25:3.96,v50:7.38},
+  Janvier:{taille:164,dc_3rm:45,squat_3rm:105,tirage_3rm:60}
+}},
+"Romane": {poste:"Demi-Ouverture", stats:{
+  Septembre:{taille:189,poids:58.1,yoyo:720,palier:15.5,dc_1rm:35,tirage_1rm:42.5,sdt_1rm:75,v10:1.99,v20:3.52,v25:4.22,v50:8.03},
+  Novembre:{poids:59.4,yoyo:720,dc_1rm:42.5,tirage_1rm:50,sdt_1rm:110,v10:1.83,v20:3.26,v25:3.97,v50:7.37},
+  Janvier:{tirage_3rm:45}
+}},
+"Shayna": {poste:"3e Ligne", stats:{
+  Septembre:{taille:164,poids:66.3,yoyo:640,palier:14,dc_1rm:38,tirage_1rm:38.5,sdt_1rm:80,v10:2.19,v20:3.88},
+  Novembre:{poids:66.2,yoyo:640,dc_1rm:40,tirage_1rm:50,sdt_1rm:110,v10:2.06,v20:3.75,v25:4.75,v50:8.5},
+  Janvier:{taille:162,dc_3rm:35,squat_3rm:85,tirage_3rm:50}
+}},
+"Zoé": {poste:"2e Ligne", stats:{
+  Septembre:{taille:167,poids:63.9,yoyo:920,palier:17,dc_1rm:50,tirage_1rm:40,sdt_1rm:100,v10:2.07,v20:3.65,v25:4.55,v50:8.64},
+  Novembre:{poids:63.7,yoyo:920,dc_1rm:55,tirage_1rm:60,sdt_1rm:125,v10:1.89,v20:3.37,v25:4.21,v50:7.93},
+  Janvier:{taille:163,poids:68.15,palier:15.5,yoyo:960,dc_3rm:55,squat_3rm:110,tirage_3rm:60,v10:1.86,v20:3.26,v30:4.59,v40:6.02,broad:189},
+  Mai:{dc_3rm:62.5,tirage_3rm:60,v10:1.86,v20:3.26,v30:4.59,v40:6.02,broad:189}
+}}
 };
 
-let currentCategory = "anthropo";
+// distances pour calcul m/s par sprint
+const DIST = {v10:10,v20:20,v25:25,v30:30,v40:40,v50:50};
+
+let selectedPeriods = [...PERIODS];
+let selectedCat = null;
 let charts = [];
-
-function getVal(player, period, key) {
-  const d = DATA[player]?.[period];
-  if (!d) return null;
-  const v = d[key];
-  return (v === undefined || v === null || v === 0) ? null : v;
-}
-
-function fmt(v, unit) {
-  if (v === null) return '<span class="empty">—</span>';
-  return v + (unit ? " " + unit : "");
-}
-
-function evolution(v1, v2, betterUp) {
-  if (v1 === null || v2 === null) return { txt: "", cls: "neutral" };
-  const diff = v2 - v1;
-  if (diff === 0) return { txt: "= 0", cls: "neutral" };
-  const sign = diff > 0 ? "+" : "";
-  const pct = ((diff / v1) * 100).toFixed(1);
-  let cls = "neutral";
-  if (betterUp === true)  cls = diff > 0 ? "up" : "down";
-  if (betterUp === false) cls = diff < 0 ? "up" : "down";
-  return { txt: `${sign}${diff.toFixed(2)} (${sign}${pct}%)`, cls };
-}
-
-function initSelectors() {
-  const pSel = document.getElementById("playerSelect");
-  Object.keys(DATA).sort().forEach(n => {
-    const o = document.createElement("option");
-    o.value = n; o.textContent = n;
-    pSel.appendChild(o);
+</script>
+<script>
+// ====== INIT ======
+function initUI(){
+  const sel = document.getElementById('selJ');
+  Object.keys(DATA).sort().forEach(n=>{
+    const o=document.createElement('option');o.value=n;o.textContent=n+' ('+DATA[n].poste+')';sel.appendChild(o);
   });
-  const p1 = document.getElementById("period1");
-  const p2 = document.getElementById("period2");
-  PERIODS.forEach(p => {
-    p1.innerHTML += `<option value="${p}">${p}</option>`;
-    p2.innerHTML += `<option value="${p}">${p}</option>`;
-  });
-  p1.value = "Septembre";
-  p2.value = "Mai";
-  pSel.addEventListener("change", render);
-  p1.addEventListener("change", render);
-  p2.addEventListener("change", render);
-  document.querySelectorAll(".cat-btn").forEach(b => {
-    b.addEventListener("click", () => {
-      document.querySelectorAll(".cat-btn").forEach(x => x.classList.remove("active"));
-      b.classList.add("active");
-      currentCategory = b.dataset.cat;
-      renderCategory();
+  const pc = document.getElementById('periods');
+  PERIODS.forEach(p=>{
+    const lbl=document.createElement('label');
+    lbl.className='pchk active';
+    lbl.innerHTML=`<input type="checkbox" checked value="${p}">${p}`;
+    lbl.querySelector('input').addEventListener('change',e=>{
+      if(e.target.checked){selectedPeriods.push(p);lbl.classList.add('active');}
+      else{selectedPeriods=selectedPeriods.filter(x=>x!==p);lbl.classList.remove('active');}
+      selectedPeriods.sort((a,b)=>PERIODS.indexOf(a)-PERIODS.indexOf(b));
+      render();
     });
+    pc.appendChild(lbl);
   });
 }
 
-function render() {
-  const player = document.getElementById("playerSelect").value;
-  document.getElementById("playerName").textContent = player;
-  document.getElementById("playerPoste").textContent = DATA[player]?.poste || "";
-  renderDashboard();
-  renderCategory();
+function getVal(j,p,k){
+  const s = DATA[j].stats[p];
+  return s && s[k]!=null ? s[k] : null;
 }
 
-function renderDashboard() {
-  const player = document.getElementById("playerSelect").value;
-  const p1 = document.getElementById("period1").value;
-  const p2 = document.getElementById("period2").value;
-  const grid = document.getElementById("statsGrid");
-  grid.innerHTML = "";
-  const keyStats = [
-    { key: "poids", label: "Poids", unit: "kg", betterUp: null },
-    { key: "yoyo", label: "Yo-Yo", unit: "m", betterUp: true },
-    { key: "dc", label: "DC", unit: "kg", betterUp: true },
-    { key: "squat", label: "Squat", unit: "kg", betterUp: true },
-    { key: "v10", label: "10m", unit: "s", betterUp: false },
-    { key: "broad", label: "Broad Jump", unit: "cm", betterUp: true }
-  ];
-  keyStats.forEach(s => {
-    const v1 = getVal(player, p1, s.key);
-    const v2 = getVal(player, p2, s.key);
-    const ev = evolution(v1, v2, s.betterUp);
-    grid.innerHTML += `
-      <div class="stat-card">
-        <div class="label">${s.label}</div>
-        <div class="value">${v2 !== null ? v2 + " " + s.unit : "—"}</div>
-        <div class="evolution ${ev.cls}">${ev.txt || "—"}</div>
-      </div>`;
-  });
+function fmt(v,k){
+  if(v==null) return '—';
+  const u = UNITS[k]||'';
+  return (typeof v==='number'?(+v.toFixed(2)):v)+(u?' '+u:'');
 }
 
-function renderCategory() {
-  charts.forEach(c => c.destroy());
-  charts = [];
-  const player = document.getElementById("playerSelect").value;
-  const cat = CATEGORIES[currentCategory];
-  const container = document.getElementById("categoryContent");
-  let html = `<h3>${cat.title}</h3>`;
+function evolBadge(first,last,key){
+  if(first==null||last==null) return '<span class="muted">—</span>';
+  const d = last-first;
+  if(Math.abs(d)<0.001) return '<span>=</span>';
+  const better = INVERT.includes(key) ? d<0 : d>0;
+  const sign = d>0?'+':'';
+  return `<span class="${better?'pos':'neg'}">${sign}${d.toFixed(2)} ${UNITS[key]||''}</span>`;
+}
 
-  // Regrouper champs par unité pour les graphiques
-  const unitGroups = {};
-  cat.fields.forEach(f => {
-    if (!unitGroups[f.unit]) unitGroups[f.unit] = [];
-    unitGroups[f.unit].push(f);
+function destroyCharts(){charts.forEach(c=>c.destroy());charts=[];}
+
+// ====== RENDU PRINCIPAL ======
+function render(){
+  destroyCharts();
+  const j = document.getElementById('selJ').value;
+  const content = document.getElementById('content');
+  if(selectedCat){renderCat(j); return;}
+
+  // Vue d'ensemble : cartes catégories + évolution globale par unité
+  let html = `<div class="section"><h2>👤 ${j} — ${DATA[j].poste}</h2>
+    <div class="cats">`;
+  Object.entries(CATS).forEach(([k,c])=>{
+    html += `<div class="cat" onclick="openCat('${k}')">
+      <div class="ico">${c.ico}</div>
+      <div class="name">${c.name}</div>
+      <div class="desc">${c.desc}</div></div>`;
   });
+  html += `</div></div>`;
+
+  // Évolution globale — regroupée par unité
+  html += `<div class="section"><h2>📊 Évolution globale</h2>`;
+  
+  // Récupérer toutes les clés présentes pour cette joueuse
+  const allKeys = new Set();
+  selectedPeriods.forEach(p=>{
+    const s = DATA[j].stats[p];
+    if(s) Object.keys(s).forEach(k=>{if(LABELS[k]) allKeys.add(k);});
+  });
+
+  // Grouper par unité
+  const byUnit = {};
+  allKeys.forEach(k=>{
+    const u = UNITS[k]||'autre';
+    if(!byUnit[u]) byUnit[u]=[];
+    byUnit[u].push(k);
+  });
+
+  const unitOrder = ['kg','cm','m','s',''];
+  const unitNames = {kg:'Charges (kg)', cm:'Distances (cm)', m:'Distance (m)', s:'Temps (s)', '':'Palier'};
+
+  unitOrder.forEach(u=>{
+    if(!byUnit[u]||byUnit[u].length===0) return;
+    const keys = byUnit[u].sort((a,b)=>Object.keys(LABELS).indexOf(a)-Object.keys(LABELS).indexOf(b));
+    html += `<h3>${unitNames[u]||u}</h3><div class="tbl-wrap"><table>
+      <thead><tr><th>Indicateur</th>`;
+    selectedPeriods.forEach(p=>html+=`<th>${p}</th>`);
+    html += `<th>Évolution</th></tr></thead><tbody>`;
+    keys.forEach(k=>{
+      html += `<tr><td><strong>${LABELS[k]}</strong></td>`;
+      const vals = selectedPeriods.map(p=>getVal(j,p,k));
+      vals.forEach(v=>html+=`<td>${fmt(v,k)}</td>`);
+      const firstV = vals.find(v=>v!=null);
+      const lastV = [...vals].reverse().find(v=>v!=null);
+      html += `<td>${vals.filter(v=>v!=null).length>=2 ? evolBadge(firstV,lastV,k) : '—'}</td></tr>`;
+    });
+    html += `</tbody></table></div>`;
+  });
+
+  if(allKeys.size===0) html += `<p class="subtitle">Aucune donnée pour les périodes sélectionnées.</p>`;
+  html += `</div>`;
+
+  content.innerHTML = html;
+}
+
+// ====== VUE CATÉGORIE ======
+function renderCat(j){
+  destroyCharts();
+  const cat = CATS[selectedCat];
+  const content = document.getElementById('content');
+  let html = `<button class="back" onclick="closeCat()">← Retour</button>
+    <div class="section"><h2>${cat.ico} ${cat.name} — ${j}</h2>`;
 
   // Tableau principal
-  html += `<table><thead><tr><th>Test</th>`;
-  PERIODS.forEach(p => html += `<th>${p}</th>`);
-  html += `<th>Évolution (Sept→Mai)</th></tr></thead><tbody>`;
-  cat.fields.forEach(f => {
-    html += `<tr><td><strong>${f.label}</strong></td>`;
-    PERIODS.forEach(p => html += `<td>${fmt(getVal(player, p, f.key), f.unit)}</td>`);
-    const ev = evolution(getVal(player, "Septembre", f.key), getVal(player, "Mai", f.key), f.betterUp);
-    html += `<td class="${ev.cls}"><strong>${ev.txt || "—"}</strong></td></tr>`;
+  html += `<div class="tbl-wrap"><table><thead><tr><th>Indicateur</th>`;
+  selectedPeriods.forEach(p=>html+=`<th>${p}</th>`);
+  html += `<th>Évolution</th></tr></thead><tbody>`;
+  
+  const presentKeys = cat.keys.filter(k=>{
+    return selectedPeriods.some(p=>getVal(j,p,k)!=null);
   });
-  html += `</tbody></table>`;
 
-  // Si Vitesse : ajouter tableaux m/s et km/h
-  if (currentCategory === "vitesse") {
-    html += `<div class="sub-title">📊 Vitesse moyenne (m/s)</div>`;
-    html += `<table><thead><tr><th>Distance</th>`;
-    PERIODS.forEach(p => html += `<th>${p}</th>`);
-    html += `</tr></thead><tbody>`;
-    cat.fields.forEach(f => {
-      const dist = parseInt(f.key.replace("v",""));
-      html += `<tr><td><strong>${f.label}</strong></td>`;
-      PERIODS.forEach(p => {
-        const t = getVal(player, p, f.key);
-        html += `<td>${t ? (dist/t).toFixed(2) + " m/s" : '<span class="empty">—</span>'}</td>`;
-      });
-      html += `</tr>`;
-    });
-    html += `</tbody></table>`;
+  presentKeys.forEach(k=>{
+    html += `<tr><td><strong>${LABELS[k]}</strong></td>`;
+    const vals = selectedPeriods.map(p=>getVal(j,p,k));
+    vals.forEach(v=>html+=`<td>${fmt(v,k)}</td>`);
+    const firstV = vals.find(v=>v!=null);
+    const lastV = [...vals].reverse().find(v=>v!=null);
+    html += `<td>${vals.filter(v=>v!=null).length>=2 ? evolBadge(firstV,lastV,k) : '—'}</td></tr>`;
+  });
+  html += `</tbody></table></div>`;
 
-    html += `<div class="sub-title">📊 Vitesse moyenne (km/h)</div>`;
-    html += `<table><thead><tr><th>Distance</th>`;
-    PERIODS.forEach(p => html += `<th>${p}</th>`);
-    html += `</tr></thead><tbody>`;
-    cat.fields.forEach(f => {
-      const dist = parseInt(f.key.replace("v",""));
-      html += `<tr><td><strong>${f.label}</strong></td>`;
-      PERIODS.forEach(p => {
-        const t = getVal(player, p, f.key);
-        html += `<td>${t ? ((dist/t)*3.6).toFixed(2) + " km/h" : '<span class="empty">—</span>'}</td>`;
+  // === Spécial VITESSE : tableau m/s et km/h ===
+  if(selectedCat==='vitesse' && presentKeys.length>0){
+    html += `<h3>🚀 Vitesse moyenne (m/s)</h3><div class="tbl-wrap"><table><thead><tr><th>Sprint</th>`;
+    selectedPeriods.forEach(p=>html+=`<th>${p}</th>`);
+    html += `<th>Évolution</th></tr></thead><tbody>`;
+    presentKeys.forEach(k=>{
+      const dist = DIST[k];
+      html += `<tr><td><strong>${LABELS[k]}</strong></td>`;
+      const ms = selectedPeriods.map(p=>{
+        const t = getVal(j,p,k);
+        return t!=null && t>0 ? dist/t : null;
       });
-      html += `</tr>`;
+      ms.forEach(v=>html+=`<td>${v!=null?v.toFixed(2)+' m/s':'—'}</td>`);
+      const f = ms.find(v=>v!=null), l = [...ms].reverse().find(v=>v!=null);
+      if(f!=null && l!=null && ms.filter(v=>v!=null).length>=2){
+        const d=l-f, better=d>0;
+        html += `<td><span class="${better?'pos':'neg'}">${d>0?'+':''}${d.toFixed(2)} m/s</span></td>`;
+      } else html+=`<td>—</td>`;
+      html+=`</tr>`;
     });
-    html += `</tbody></table>`;
+    html += `</tbody></table></div>`;
+
+    html += `<h3>🏁 Vitesse moyenne (km/h)</h3><div class="tbl-wrap"><table><thead><tr><th>Sprint</th>`;
+    selectedPeriods.forEach(p=>html+=`<th>${p}</th>`);
+    html += `</tr></thead><tbody>`;
+    presentKeys.forEach(k=>{
+      const dist = DIST[k];
+      html += `<tr><td><strong>${LABELS[k]}</strong></td>`;
+      selectedPeriods.forEach(p=>{
+        const t = getVal(j,p,k);
+        const kmh = t!=null && t>0 ? (dist/t)*3.6 : null;
+        html += `<td>${kmh!=null?kmh.toFixed(2)+' km/h':'—'}</td>`;
+      });
+      html+=`</tr>`;
+    });
+    html += `</tbody></table></div>`;
   }
 
-  // Graphiques : un par groupe d'unité
-  Object.keys(unitGroups).forEach((unit, idx) => {
-    html += `<div class="sub-title">📈 Évolution ${unit ? "(" + unit + ")" : ""}</div>`;
-    html += `<div class="chart-container"><canvas id="chart_${idx}"></canvas></div>`;
+  // === Graphiques ===
+  presentKeys.forEach((k,i)=>{
+    const id = 'chart_'+i;
+    html += `<h3>${LABELS[k]} (${UNITS[k]||''})</h3>
+      <div class="chart-wrap"><canvas id="${id}"></canvas></div>`;
   });
 
-  container.innerHTML = html;
+  html += `</div>`;
+  content.innerHTML = html;
 
-  // Création des charts
-  Object.keys(unitGroups).forEach((unit, idx) => {
-    const ctx = document.getElementById(`chart_${idx}`);
-    const datasets = unitGroups[unit].map((f, i) => {
-      const colors = ["#2a5298","#e74c3c","#27ae60","#f39c12","#8e44ad","#16a085"];
-      return {
-        label: f.label,
-        data: PERIODS.map(p => getVal(player, p, f.key)),
-        borderColor: colors[i % colors.length],
-        backgroundColor: colors[i % colors.length] + "33",
-        borderWidth: 3, tension: 0.3, spanGaps: true
-      };
-    });
-    const chart = new Chart(ctx, {
-      type: "line",
-      data: { labels: PERIODS, datasets },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { position: "top" } },
-        scales: { y: { beginAtZero: false } }
+  // Rendu Chart.js
+  presentKeys.forEach((k,i)=>{
+    const ctx = document.getElementById('chart_'+i);
+    const data = selectedPeriods.map(p=>getVal(j,p,k));
+    const c = new Chart(ctx,{
+      type:'line',
+      data:{
+        labels:selectedPeriods,
+        datasets:[{
+          label:LABELS[k]+' ('+(UNITS[k]||'')+')',
+          data,
+          borderColor:'#e94560',
+          backgroundColor:'rgba(233,69,96,.15)',
+          tension:.3,
+          fill:true,
+          pointRadius:6,
+          pointBackgroundColor:'#f5a623',
+          spanGaps:true
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{labels:{color:'#e6edf3'}}},
+        scales:{
+          x:{ticks:{color:'#8b949e'},grid:{color:'#30363d'}},
+          y:{ticks:{color:'#8b949e'},grid:{color:'#30363d'},reverse:INVERT.includes(k)}
+        }
       }
     });
-    charts.push(chart);
+    charts.push(c);
   });
 }
 
-initSelectors();
+function openCat(k){selectedCat=k;render();window.scrollTo(0,0);}
+function closeCat(){selectedCat=null;render();}
+
+// ====== ÉTAT GLOBAL ======
+let currentTab = 'indiv';
+let cmpSelected = []; // joueuses sélectionnées pour comparaison
+
+// ====== INIT NOUVEAUX CONTRÔLES ======
+function initExtras(){
+  // Mouvements (toutes les clés de LABELS)
+  const selMove = document.getElementById('selMove');
+  Object.entries(LABELS).forEach(([k,v])=>{
+    const o=document.createElement('option');o.value=k;o.textContent=v+(UNITS[k]?' ('+UNITS[k]+')':'');
+    selMove.appendChild(o);
+  });
+  selMove.value='dc_1rm';
+  selMove.onchange=renderLeader;
+
+  // Périodes leaderboard
+  const selPL = document.getElementById('selPeriodL');
+  PERIODS.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;selPL.appendChild(o);});
+  selPL.value='Janvier';
+  selPL.onchange=renderLeader;
+
+  // Postes (uniques)
+  const postes = [...new Set(Object.values(DATA).map(d=>d.poste).filter(Boolean))].sort();
+  const selP = document.getElementById('selPoste');
+  postes.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;selP.appendChild(o);});
+  selP.onchange=renderLeader;
+
+  // Comparaison : chips joueuses
+  const cmpDiv = document.getElementById('cmpPlayers');
+  Object.keys(DATA).sort().forEach(n=>{
+    const c=document.createElement('div');
+    c.className='cmpChip';c.textContent=n;
+    c.onclick=()=>{
+      if(cmpSelected.includes(n)){cmpSelected=cmpSelected.filter(x=>x!==n);c.classList.remove('active');}
+      else{cmpSelected.push(n);c.classList.add('active');}
+      renderCompare();
+    };
+    cmpDiv.appendChild(c);
+  });
+
+  // Période comparaison
+  const selPC = document.getElementById('selPeriodC');
+  PERIODS.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;selPC.appendChild(o);});
+  selPC.value='Janvier';
+  selPC.onchange=renderCompare;
+}
+
+// ====== TABS ======
+function setTab(t){
+  currentTab=t;
+  document.querySelectorAll('.tabBtn').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
+  document.getElementById('ctrlIndiv').style.display = t==='indiv'?'flex':'none';
+  document.getElementById('ctrlLeader').style.display = t==='leader'?'flex':'none';
+  document.getElementById('ctrlCompare').style.display = t==='compare'?'flex':'none';
+  destroyCharts();
+  if(t==='indiv') render();
+  else if(t==='leader') renderLeader();
+  else renderCompare();
+}
+
+// ====== LEADERBOARD ======
+function renderLeader(){
+  destroyCharts();
+  const move = document.getElementById('selMove').value;
+  const period = document.getElementById('selPeriodL').value;
+  const posteFilter = document.getElementById('selPoste').value;
+  const content = document.getElementById('content');
+
+  let list = Object.entries(DATA)
+    .filter(([n,d])=>!posteFilter || d.poste===posteFilter)
+    .map(([n,d])=>({nom:n,poste:d.poste,val:d.stats[period]?.[move]}))
+    .filter(x=>x.val!=null);
+
+  list.sort((a,b)=>INVERT.includes(move) ? a.val-b.val : b.val-a.val);
+
+  let html = `<div class="section"><h2>🏆 Classement — ${LABELS[move]} (${period})${posteFilter?' • '+posteFilter:''}</h2>`;
+  if(list.length===0){
+    html += `<p class="subtitle">Aucune donnée pour ces critères.</p></div>`;
+    content.innerHTML=html;return;
+  }
+
+  // Si vitesse : afficher aussi m/s et km/h
+  const isSpeed = DIST[move]!=null;
+
+  list.forEach((p,i)=>{
+    const cls = i===0?'top1':i===1?'top2':i===2?'top3':'';
+    const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1);
+    let extra = '';
+    if(isSpeed){
+      const ms = (DIST[move]/p.val).toFixed(2);
+      const kmh = ((DIST[move]/p.val)*3.6).toFixed(1);
+      extra = ` <span style="color:var(--muted);font-size:.82rem">(${ms} m/s • ${kmh} km/h)</span>`;
+    }
+    html += `<div class="rank ${cls}">
+      <div class="pos">${medal}</div>
+      <div class="nm">${p.nom}</div>
+      <div class="ps">${p.poste||''}</div>
+      <div class="vl">${p.val} ${UNITS[move]||''}${extra}</div>
+    </div>`;
+  });
+  html += `</div>`;
+  content.innerHTML = html;
+}
+
+// ====== COMPARAISON ======
+function renderCompare(){
+  destroyCharts();
+  const period = document.getElementById('selPeriodC').value;
+  const content = document.getElementById('content');
+
+  if(cmpSelected.length<1){
+    content.innerHTML = `<div class="section"><h2>⚔️ Comparaison</h2>
+      <p class="subtitle">Sélectionne au moins 1 joueuse ci-dessus pour commencer la comparaison.</p></div>`;
+    return;
+  }
+
+  // Toutes les clés présentes pour les joueuses sélectionnées sur cette période
+  const allKeys = new Set();
+  cmpSelected.forEach(j=>{
+    const s = DATA[j].stats[period];
+    if(s) Object.keys(s).forEach(k=>{if(LABELS[k]) allKeys.add(k);});
+  });
+
+  let html = `<div class="section"><h2>⚔️ Comparaison — ${period}</h2>`;
+
+  if(allKeys.size===0){
+    html += `<p class="subtitle">Aucune donnée pour ces joueuses sur cette période.</p></div>`;
+    content.innerHTML=html;return;
+  }
+
+  // Grouper par unité
+  const byUnit = {};
+  allKeys.forEach(k=>{const u=UNITS[k]||'autre';if(!byUnit[u])byUnit[u]=[];byUnit[u].push(k);});
+  const unitOrder = ['kg','cm','m','s',''];
+  const unitNames = {kg:'Charges (kg)',cm:'Distances (cm)',m:'Distance (m)',s:'Temps (s)','':'Palier'};
+
+  unitOrder.forEach(u=>{
+    if(!byUnit[u]||byUnit[u].length===0) return;
+    const keys = byUnit[u].sort((a,b)=>Object.keys(LABELS).indexOf(a)-Object.keys(LABELS).indexOf(b));
+    html += `<h3>${unitNames[u]||u}</h3><div class="tbl-wrap"><table>
+      <thead><tr><th>Indicateur</th>`;
+    cmpSelected.forEach(j=>html+=`<th>${j}<br><span style="color:var(--muted);font-weight:400;font-size:.75rem">${DATA[j].poste||''}</span></th>`);
+    html += `<th>Meilleure</th></tr></thead><tbody>`;
+    keys.forEach(k=>{
+      html += `<tr><td><strong>${LABELS[k]}</strong></td>`;
+      const vals = cmpSelected.map(j=>DATA[j].stats[period]?.[k]);
+      const valid = vals.filter(v=>v!=null);
+      let best = null;
+      if(valid.length>0) best = INVERT.includes(k) ? Math.min(...valid) : Math.max(...valid);
+      vals.forEach(v=>{
+        const isBest = v!=null && v===best && valid.length>1;
+        html += `<td style="${isBest?'color:#2ea043;font-weight:700':''}">${v!=null?v+(UNITS[k]?' '+UNITS[k]:''):'—'}</td>`;
+      });
+      const bestIdx = vals.indexOf(best);
+      html += `<td style="color:var(--accent2);font-weight:600">${bestIdx>=0?cmpSelected[bestIdx]:'—'}</td>`;
+      html += `</tr>`;
+    });
+    html += `</tbody></table></div>`;
+  });
+
+  // Graphique radar si >=2 joueuses et plusieurs métriques
+  if(cmpSelected.length>=2 && allKeys.size>=3){
+    html += `<h3>📊 Profil comparatif (normalisé)</h3>
+      <div class="chart-wrap" style="height:400px"><canvas id="radarCmp"></canvas></div>
+      <p class="subtitle" style="margin-top:6px;font-size:.78rem">Valeurs normalisées 0-100 (100 = meilleure perf entre joueuses sélectionnées)</p>`;
+  }
+
+  html += `</div>`;
+  content.innerHTML = html;
+
+  // Radar
+  if(cmpSelected.length>=2 && allKeys.size>=3){
+    const keys = [...allKeys];
+    const colors = ['#e94560','#f5a623','#2ea043','#58a6ff','#bc8cff','#ff7b72','#79c0ff'];
+    const datasets = cmpSelected.map((j,i)=>{
+      const data = keys.map(k=>{
+        const v = DATA[j].stats[period]?.[k];
+        if(v==null) return 0;
+        const allV = cmpSelected.map(x=>DATA[x].stats[period]?.[k]).filter(x=>x!=null);
+        if(allV.length===0) return 0;
+        const mn = Math.min(...allV), mx = Math.max(...allV);
+        if(mx===mn) return 100;
+        return INVERT.includes(k) ? ((mx-v)/(mx-mn))*100 : ((v-mn)/(mx-mn))*100;
+      });
+      return {label:j,data,borderColor:colors[i%colors.length],backgroundColor:colors[i%colors.length]+'33',borderWidth:2};
+    });
+    const ctx = document.getElementById('radarCmp');
+    const c = new Chart(ctx,{
+      type:'radar',
+      data:{labels:keys.map(k=>LABELS[k]),datasets},
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{labels:{color:'#e6edf3'}}},
+        scales:{r:{
+          angleLines:{color:'#30363d'},grid:{color:'#30363d'},
+          pointLabels:{color:'#e6edf3',font:{size:11}},
+          ticks:{color:'#8b949e',backdropColor:'transparent'},
+          suggestedMin:0,suggestedMax:100
+        }}
+      }
+    });
+    charts.push(c);
+  }
+}
+
+initExtras();
+initUI();
 render();
 </script>
 </body>
