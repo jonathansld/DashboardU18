@@ -2,295 +2,773 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Datas U18F 2025-2026 - MHR Cadettes</title>
-<link rel="stylesheet" href="style.css">
+<title>Dashboard U18F 25/26</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root{--bg:#0d1117;--card:#161b22;--card2:#1f2630;--border:#30363d;--accent:#e94560;--accent2:#f5a623;--ok:#2ea043;--ko:#da3633;--muted:#8b949e;--text:#e6edf3}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);padding:16px;min-height:100vh}
+.header{background:linear-gradient(135deg,#e94560,#c13651);padding:18px;border-radius:12px;margin-bottom:16px;text-align:center}
+.header h1{font-size:1.4rem}
+.controls{background:var(--card);padding:14px;border-radius:10px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+.controls label{font-weight:600;color:var(--muted);font-size:.85rem}
+select{background:var(--card2);color:var(--text);border:1px solid var(--border);padding:8px 12px;border-radius:6px;font-size:.9rem;min-width:200px}
+.pchk{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border:2px solid var(--border);border-radius:16px;cursor:pointer;font-size:.82rem;color:var(--muted);transition:all .2s;user-select:none}
+.pchk.active{border-color:var(--accent);color:var(--accent);background:rgba(233,69,96,.08)}
+.pchk input{display:none}
+.periods{display:flex;gap:8px;flex-wrap:wrap}
+.cats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:5px}
+.cat{background:var(--card2);border:2px solid var(--border);border-radius:10px;padding:18px 14px;cursor:pointer;text-align:center;transition:all .2s}
+.cat:hover{border-color:var(--accent);transform:translateY(-2px)}
+.cat .ico{font-size:1.8rem;margin-bottom:6px}
+.cat .name{font-weight:600;font-size:.9rem}
+.cat .desc{color:var(--muted);font-size:.75rem;margin-top:3px}
+.section{background:var(--card);border-radius:12px;padding:20px;margin-bottom:16px}
+.section h2{margin-bottom:14px;font-size:1.05rem}
+.section h3{margin:18px 0 10px;color:var(--accent2);font-size:.95rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.stat{background:var(--card2);padding:14px;border-radius:8px;border-left:3px solid var(--accent)}
+.stat .label{font-size:.75rem;color:var(--muted);margin-bottom:4px}
+.stat .val{font-size:1.3rem;font-weight:700;color:var(--accent)}
+.stat .unit{font-size:.75rem;color:var(--muted);margin-left:3px}
+.evo{font-size:.75rem;margin-top:4px;font-weight:600}
+.evo.pos{color:var(--ok)}
+.evo.neg{color:var(--ko)}
+table{width:100%;border-collapse:collapse;margin-top:8px;font-size:.85rem}
+th,td{padding:9px 10px;text-align:center;border-bottom:1px solid var(--border)}
+th{background:var(--card2);color:var(--accent2);font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.5px}
+td:first-child,th:first-child{text-align:left}
+tr:hover td{background:rgba(255,255,255,.02)}
+.pos{color:var(--ok);font-weight:600}
+.neg{color:var(--ko);font-weight:600}
+.chart-wrap{background:var(--card2);border-radius:8px;padding:12px;margin-top:10px;height:300px;position:relative}
+.back{background:var(--card2);color:var(--text);border:1px solid var(--border);padding:8px 16px;border-radius:6px;cursor:pointer;margin-bottom:12px;font-size:.85rem}
+.back:hover{border-color:var(--accent);color:var(--accent)}
+.subtitle{color:var(--muted);font-size:.8rem;margin-top:4px}
+.tbl-wrap{overflow-x:auto;margin-top:8px}
+  .tabBtn{background:var(--card);color:var(--muted);border:2px solid var(--border);padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;font-size:.9rem;transition:all .2s}
+.tabBtn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tabBtn:hover{color:var(--text)}
+.rank{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--card2);border-radius:8px;margin-bottom:6px;border-left:4px solid var(--border)}
+.rank.top1{border-left-color:#ffd700}
+.rank.top2{border-left-color:#c0c0c0}
+.rank.top3{border-left-color:#cd7f32}
+.rank.me{background:rgba(233,69,96,.15);border-left-color:var(--accent)}
+.rank .pos{font-size:1.2rem;font-weight:700;min-width:40px;color:var(--accent2)}
+.rank .nm{flex:1;font-weight:600}
+.rank .ps{color:var(--muted);font-size:.82rem;margin-right:10px}
+.rank .vl{font-weight:700;color:var(--accent2);font-size:1.05rem}
+.cmpChip{padding:6px 12px;border:2px solid var(--border);border-radius:16px;cursor:pointer;font-size:.82rem;color:var(--muted);user-select:none;transition:all .2s}
+.cmpChip.active{border-color:var(--accent);color:var(--text);background:rgba(233,69,96,.15)}
+.cmpChip:hover{color:var(--text)}
+</style>
 </head>
 <body>
 
 <div class="header">
-  <div class="header-left">
-    <div class="header-logo">🏉</div>
-    <div class="header-title">
-      <h1>Datas U18F 2025-2026</h1>
-      <p>MHR Cadettes — Suivi des performances physiques</p>
-    </div>
-  </div>
-  <div class="header-right">
-    <a href="admin.html">🔑 Admin</a>
-  </div>
+  <h1>🏉 Dashboard U18F — Saison 25/26</h1>
+  <div class="subtitle">Suivi individuel des performances</div>
 </div>
 
-<div class="container">
-
-  <!-- CONTROLS -->
-  <div class="controls">
-    <div>
-      <label>Joueuse</label>
-      <select id="selJ" onchange="render()"></select>
-    </div>
-    <div>
-      <label>Périodes à comparer</label>
-      <div class="periods" id="periods"></div>
-    </div>
-  </div>
-
-  <!-- PLAYER INFO -->
-  <div class="player-info" id="playerInfo"></div>
-
-  <!-- STATS GRID -->
-  <div class="stats-grid" id="statsGrid"></div>
-
-  <!-- CHARTS -->
-  <div class="section">
-    <h3>📈 Évolution Vitesse (temps en secondes - plus bas = mieux)</h3>
-    <div class="chart-container"><canvas id="chartVitesse"></canvas></div>
-  </div>
-
-  <div class="section">
-    <h3>💪 Évolution Force (kg)</h3>
-    <div class="chart-container"><canvas id="chartForce"></canvas></div>
-  </div>
-
-  <div class="section">
-    <h3>🫀 Évolution Endurance (Yo-Yo distance en mètres)</h3>
-    <div class="chart-container"><canvas id="chartEndurance"></canvas></div>
-  </div>
-
-  <!-- TABLE -->
-  <div class="section">
-    <h3>📋 Tableau complet d'évolution</h3>
-    <div style="overflow-x:auto;">
-      <table id="evoTable"></table>
-    </div>
-  </div>
-
+<div class="tabs" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+  <button class="tabBtn active" data-tab="indiv" onclick="setTab('indiv')">👤 Individuel</button>
+  <button class="tabBtn" data-tab="leader" onclick="setTab('leader')">🏆 Leaderboard</button>
+  <button class="tabBtn" data-tab="compare" onclick="setTab('compare')">⚔️ Comparaison</button>
 </div>
 
-<script src="data.js"></script>
+<div id="ctrlIndiv" class="controls">
+  <label>Joueuse :</label>
+  <select id="selJ" onchange="render()"></select>
+  <label>Périodes :</label>
+  <div class="periods" id="periods"></div>
+</div>
+
+<div id="ctrlLeader" class="controls" style="display:none">
+  <label>Mouvement :</label>
+  <select id="selMove"></select>
+  <label>Période :</label>
+  <select id="selPeriodL"></select>
+  <label>Filtre poste :</label>
+  <select id="selPoste"><option value="">Tous les postes</option></select>
+</div>
+
+<div id="ctrlCompare" class="controls" style="display:none;flex-direction:column;align-items:flex-start">
+  <label>Joueuses à comparer (clique pour sélectionner) :</label>
+  <div id="cmpPlayers" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+  <label style="margin-top:8px">Période :</label>
+  <select id="selPeriodC"></select>
+</div>
+
+<div id="content"></div>
+
+
 <script>
-// ============ ÉTAT ============
+// ====== CONFIG ======
+const PERIODS = ['Septembre','Novembre','Janvier','Mai'];
+const LABELS = {
+  taille:'Taille', poids:'Poids', yoyo:'Yo-yo (m)', palier:'Palier',
+  dc_1rm:'1RM DC', tirage_1rm:'1RM Tirage', sdt_1rm:'1RM SDT',
+  dc_3rm:'3RM DC', squat_3rm:'3RM Squat', tirage_3rm:'3RM Tirage',
+  v10:'10m', v20:'20m', v25:'25m', v30:'30m', v40:'40m', v50:'50m',
+  broad:'Broad Jump'
+};
+const UNITS = {
+  taille:'cm', poids:'kg', yoyo:'m', palier:'',
+  dc_1rm:'kg', tirage_1rm:'kg', sdt_1rm:'kg',
+  dc_3rm:'kg', squat_3rm:'kg', tirage_3rm:'kg',
+  v10:'s', v20:'s', v25:'s', v30:'s', v40:'s', v50:'s',
+  broad:'cm'
+};
+// indicateurs où DIMINUER = mieux
+const INVERT = ['v10','v20','v25','v30','v40','v50'];
+
+const CATS = {
+  vitesse:{ico:'⚡',name:'Vitesse',desc:'Sprints 10-50m',keys:['v10','v20','v25','v30','v40','v50']},
+  force:{ico:'💪',name:'Force',desc:'1RM & 3RM',keys:['dc_1rm','tirage_1rm','sdt_1rm','dc_3rm','squat_3rm','tirage_3rm']},
+  endurance:{ico:'🏃',name:'Endurance',desc:'Yo-yo test',keys:['yoyo','palier']},
+  explo:{ico:'🚀',name:'Explosivité',desc:'Broad Jump',keys:['broad']},
+  anthro:{ico:'📏',name:'Anthropométrie',desc:'Taille / Poids',keys:['taille','poids']}
+};
+</script>
+<script>
+// ====== DONNÉES (extraites de ton Excel) ======
+const DATA = {
+"Alina": {poste:"1re Ligne", stats:{
+  Septembre:{taille:157,poids:70.4,yoyo:560,palier:15,dc_1rm:37.5,tirage_1rm:42.5,sdt_1rm:85,v10:2.11,v20:3.76,v25:4.6,v50:8.78,broad:170},
+  Novembre:{poids:70.7,yoyo:560,dc_1rm:42.5,tirage_1rm:50,sdt_1rm:95,v10:2.04,v20:3.66,v25:4.44,v50:8.41},
+  Janvier:{taille:157,poids:62.5,yoyo:480,palier:14.1,dc_3rm:37.5,squat_3rm:85,tirage_3rm:40,v10:2.15,v20:3.75,v30:5.38,v40:7.05,broad:153},
+  Mai:{poids:57,yoyo:480,palier:14.1,dc_3rm:42.5,tirage_3rm:50,broad:153}
+}},
+"Amaia": {poste:"Demi-melée", stats:{
+  Septembre:{taille:175,poids:61.5,yoyo:1480,palier:17,dc_1rm:37.5,tirage_1rm:47.5,sdt_1rm:75,v10:1.97,v20:3.43,v25:4.28,v50:7.74,broad:193},
+  Novembre:{poids:61.7,yoyo:1480,dc_1rm:45,tirage_1rm:50,sdt_1rm:125,v10:1.82,v20:3.26,v25:3.92,v50:7.27},
+  Janvier:{poids:60,yoyo:1120,dc_3rm:45,squat_3rm:45,tirage_3rm:45,v10:1.81,v20:3.17,v30:4.49,v40:5.87,broad:197},
+  Mai:{yoyo:1120,palier:17.1,dc_3rm:50,tirage_3rm:50,v10:1.81,v20:3.17,v30:4.49,v40:5.87,broad:197}
+}},
+"Camille": {poste:"Ailier/Arrière", stats:{
+  Septembre:{taille:164,poids:58.4,yoyo:1040,palier:17,dc_1rm:32.5,tirage_1rm:37.5,sdt_1rm:75,v10:2.00,v20:3.55,v25:4.32,v50:8.12,broad:185},
+  Novembre:{poids:57.8,yoyo:1040,dc_1rm:37.5,tirage_1rm:45,sdt_1rm:100,v10:1.88,v20:3.34,v25:4.08,v50:7.65},
+  Janvier:{poids:57.2,yoyo:960,palier:16.5,dc_3rm:40,squat_3rm:60,tirage_3rm:50,v10:1.84,v20:3.28,v30:4.64,v40:6.09,broad:187},
+  Mai:{yoyo:960,palier:16.5,dc_3rm:50,tirage_3rm:50,v10:1.84,v20:3.28,v30:4.64,v40:6.09,broad:187}
+}},
+"Ciara": {poste:"3e Ligne", stats:{
+  Septembre:{taille:170,poids:65.2,yoyo:800,palier:16,dc_1rm:42.5,tirage_1rm:45,sdt_1rm:90,v10:2.05,v20:3.62,v25:4.42,v50:8.35,broad:178},
+  Novembre:{poids:64.8,yoyo:800,dc_1rm:45,tirage_1rm:50,sdt_1rm:110,v10:1.95,v20:3.48,v25:4.22,v50:7.98},
+  Janvier:{poids:62.3,yoyo:960,palier:15.5,dc_3rm:42.5,tirage_3rm:70,v10:1.85,v20:3.24,v30:4.62,v40:6.05,broad:184},
+  Mai:{yoyo:960,palier:15.5,dc_3rm:45,tirage_3rm:70,v10:1.85,v20:3.24,v30:4.62,v40:6.05,broad:184}
+}},
+"Clara": {poste:"Ailier/Arrière", stats:{
+  Septembre:{taille:168,poids:60.1,yoyo:1200,palier:17.5,dc_1rm:35,tirage_1rm:42.5,sdt_1rm:80,v10:1.95,v20:3.42,v25:4.18,v50:7.88,broad:205},
+  Novembre:{poids:59.8,yoyo:1200,dc_1rm:40,tirage_1rm:47.5,sdt_1rm:105,v10:1.83,v20:3.28,v25:3.98,v50:7.42},
+  Janvier:{yoyo:960,dc_3rm:null,tirage_3rm:null,v10:1.73,v20:2.99,v30:4.20,v40:5.47,broad:214},
+  Mai:{yoyo:960,dc_3rm:null,tirage_3rm:null,v10:1.73,v20:2.99,v30:4.20,v40:5.47,broad:214}
+}},
+"Danaé": {poste:"2e Ligne", stats:{
+  Septembre:{taille:172,poids:68.0,yoyo:640,palier:15,dc_1rm:40,tirage_1rm:45,sdt_1rm:85,v10:2.12,v20:3.78,v25:4.62,v50:8.82,broad:172},
+  Novembre:{poids:67.5,yoyo:640,dc_1rm:45,tirage_1rm:50,sdt_1rm:95},
+  Janvier:{poids:65.4,dc_3rm:45,tirage_3rm:null,yoyo:0},
+  Mai:{dc_3rm:45,tirage_3rm:null}
+}},
+"Elyna": {poste:"1re Ligne", stats:{
+  Septembre:{taille:163,poids:72.5,yoyo:640,palier:15,dc_1rm:45,tirage_1rm:50,sdt_1rm:90,v10:2.18,v20:3.85,v25:4.70,v50:8.92,broad:165},
+  Novembre:{poids:72.1,yoyo:640,dc_1rm:50,tirage_1rm:55,sdt_1rm:100,v10:2.08,v20:3.70,v25:4.52,v50:8.55},
+  Janvier:{v10:1.96,v20:3.44,v30:4.94,v40:6.47},
+  Mai:{v10:1.96,v20:3.44,v30:4.94,v40:6.47}
+}},
+"Emilie": {poste:"3e Ligne", stats:{
+  Septembre:{taille:166,poids:72.0,yoyo:800,palier:16,dc_1rm:40,tirage_1rm:45,sdt_1rm:85,v10:2.08,v20:3.68,v25:4.50,v50:8.55,broad:178},
+  Novembre:{poids:74.2,yoyo:840,dc_1rm:45,tirage_1rm:50,sdt_1rm:95,v10:1.96,v20:3.52,v25:4.28,v50:8.18},
+  Janvier:{poids:74.8,yoyo:840,palier:15.1,dc_3rm:50,tirage_3rm:80,v10:1.84,v20:3.28,v30:4.64,v40:6.09,broad:187},
+  Mai:{yoyo:840,palier:15.1,dc_3rm:55,tirage_3rm:80,v10:1.84,v20:3.28,v30:4.64,v40:6.09,broad:187}
+}},
+"Faustine": {poste:"1re Ligne", stats:{
+  Janvier:{poids:73,taille:161,dc_3rm:50,tirage_3rm:50},
+  Mai:{dc_3rm:55,tirage_3rm:57.5}
+}},
+"Ines": {poste:"2e Ligne", stats:{
+  Novembre:{poids:64,palier:11.3,yoyo:0,broad:172},
+  Janvier:{poids:68.25,yoyo:400,dc_3rm:32.5,tirage_3rm:40,v10:2.11,v20:3.66,v30:5.19,v40:6.79},
+  Mai:{dc_3rm:35,tirage_3rm:45,v10:2.11,v20:3.66,v30:5.19,v40:6.79}
+}},
+"Ines R": {poste:"Demi-melée", stats:{
+  Septembre:{taille:158,poids:54.55,yoyo:1040,palier:17,dc_1rm:40,tirage_1rm:35,sdt_1rm:75,v10:2.08,v20:3.66,v25:4.44,v50:8.38,broad:196},
+  Novembre:{poids:54.1,yoyo:1040,palier:14.7,dc_1rm:40,tirage_1rm:45,sdt_1rm:130,v10:1.9,v20:3.38,v25:4.19,v50:7.86},
+  Janvier:{yoyo:1120,dc_3rm:30,squat_3rm:65,tirage_3rm:40,v10:1.87,v20:3.27,v30:4.61,v40:6.06,broad:200},
+  Mai:{yoyo:880,palier:15.3,dc_3rm:40,tirage_3rm:40,v10:1.87,v20:3.27,v30:4.61,v40:6.06,broad:200}
+}},
+"Jade": {poste:"3e Ligne", stats:{
+  Septembre:{taille:160,poids:54.5,yoyo:1000,palier:15.5,dc_1rm:32.5,tirage_1rm:40,sdt_1rm:75,v10:2.19,v20:3.92,v25:4.68,v50:8.92,broad:160},
+  Novembre:{poids:55,yoyo:1000,palier:10.2,dc_1rm:35,tirage_1rm:55,sdt_1rm:100,v10:2.01,v20:3.58,v25:4.3,v50:8.17,broad:190},
+  Janvier:{poids:51.25,palier:15.5,yoyo:960,taille:161,dc_3rm:40,squat_3rm:85,tirage_3rm:50,v10:1.96,v20:3.47,v30:4.93,v40:6.53,broad:178},
+  Mai:{palier:14.5,yoyo:640,dc_3rm:42.5,tirage_3rm:55,v10:1.96,v20:3.47,v30:4.93,v40:6.53,broad:178}
+}},
+"Kélia": {poste:"Centre", stats:{
+  Septembre:{taille:165,poids:60.2,yoyo:960,palier:16.5,dc_1rm:32.5,tirage_1rm:35,sdt_1rm:70,v10:1.91,v20:3.32,v25:3.97,v50:7.38,broad:207},
+  Novembre:{poids:59.6,yoyo:960,dc_1rm:35,tirage_1rm:42.5,sdt_1rm:100,v10:1.77,v20:3.14,v25:3.82,v50:7.08},
+  Janvier:{yoyo:1000,dc_3rm:null,tirage_3rm:null,v10:1.79,v20:3.11,v30:4.39,v40:5.71,broad:215},
+  Mai:{yoyo:1000,v10:1.79,v20:3.11,v30:4.39,v40:5.71,broad:215}
+}},
+"Kira": {poste:"1re Ligne", stats:{
+  Septembre:{taille:168,poids:83.7,yoyo:560,palier:15.5,dc_1rm:50,tirage_1rm:55,sdt_1rm:70,v10:2.30,v20:3.95,v25:4.67,v50:8.65,broad:166},
+  Novembre:{poids:83.9,yoyo:560,palier:15,dc_1rm:60,tirage_1rm:55,broad:187},
+  Janvier:{poids:85.4,yoyo:360,dc_3rm:57.5,squat_3rm:90,v10:1.95,v20:3.45,v30:4.89,v40:6.43,broad:163},
+  Mai:{yoyo:560,palier:14.3,dc_3rm:60,tirage_3rm:60,broad:174,v10:2.01,v20:3.69,v30:5.00,v40:6.41}
+}},
+"Lily B": {poste:"3e Ligne", stats:{
+  Septembre:{taille:168,poids:59.4,yoyo:1200,palier:17.5,dc_1rm:40,tirage_1rm:50,sdt_1rm:100,v10:2.00,v20:3.53,v25:4.26,v50:8.04,broad:190},
+  Novembre:{poids:62.6,yoyo:1200,palier:19.1,dc_1rm:50,tirage_1rm:60,sdt_1rm:110,v10:1.89,v20:3.31,v25:3.96,v50:7.28,broad:202},
+  Janvier:{poids:64.5,yoyo:960,palier:15.5,dc_3rm:55,tirage_3rm:null,v10:1.90,v20:3.30,v30:4.63,v40:5.95},
+  Mai:{yoyo:920,palier:15.4,dc_3rm:62.5,tirage_3rm:67.5,broad:211,v10:1.89,v20:3.24,v30:4.52,v40:5.81}
+}},
+"Lily N": {poste:"1re Ligne", stats:{
+  Septembre:{taille:165,poids:68.3,yoyo:760,palier:16.5,dc_1rm:45,tirage_1rm:50,sdt_1rm:92.5,v10:2.03,v20:3.55,v25:4.35,v50:8.24,broad:193},
+  Novembre:{poids:67,yoyo:760,dc_1rm:50,tirage_1rm:55,sdt_1rm:105,v10:1.95,v20:3.42,v25:4.18,v50:7.92},
+  Janvier:{poids:67.5,yoyo:640,dc_3rm:50,squat_3rm:85,tirage_3rm:55,v10:1.97,v20:3.48,v30:4.95,v40:6.45,broad:188},
+  Mai:{yoyo:640,palier:14.8,dc_3rm:55,tirage_3rm:60,v10:1.97,v20:3.48,v30:4.95,v40:6.45,broad:188}
+}},
+"Lou": {poste:"Ailier/Arrière", stats:{
+  Septembre:{taille:166,poids:58.0,yoyo:1120,palier:17,dc_1rm:35,tirage_1rm:40,sdt_1rm:75,v10:1.98,v20:3.48,v25:4.25,v50:7.98,broad:195},
+  Novembre:{poids:57.5,yoyo:1120,dc_1rm:40,tirage_1rm:45,sdt_1rm:100,v10:1.86,v20:3.32,v25:4.02,v50:7.52},
+  Janvier:{poids:57.8,yoyo:960,dc_3rm:42.5,squat_3rm:55,tirage_3rm:45,v10:1.83,v20:3.22,v30:4.58,v40:6.00,broad:200},
+  Mai:{yoyo:960,palier:16.2,dc_3rm:47.5,tirage_3rm:50,v10:1.83,v20:3.22,v30:4.58,v40:6.00,broad:200}
+}},
+"Lucie": {poste:"Demi-d'ouverture", stats:{
+  Septembre:{taille:162,poids:57.5,yoyo:1080,palier:17,dc_1rm:32.5,tirage_1rm:38.5,sdt_1rm:70,v10:2.05,v20:3.62,v25:4.42,v50:8.35,broad:182},
+  Novembre:{poids:57.2,yoyo:1080,dc_1rm:37.5,tirage_1rm:42.5,sdt_1rm:90,v10:1.94,v20:3.46,v25:4.20,v50:7.95},
+  Janvier:{poids:57.8,yoyo:880,dc_3rm:37.5,squat_3rm:60,tirage_3rm:42.5,v10:1.88,v20:3.30,v30:4.68,v40:6.12,broad:190},
+  Mai:{yoyo:880,palier:15.8,dc_3rm:42.5,tirage_3rm:47.5,v10:1.88,v20:3.30,v30:4.68,v40:6.12,broad:190}
+}},
+"Maëlys": {poste:"Centre", stats:{
+  Septembre:{taille:163,poids:62.0,yoyo:1000,palier:16.5,dc_1rm:37.5,tirage_1rm:42.5,sdt_1rm:80,v10:2.02,v20:3.56,v25:4.35,v50:8.18,broad:188},
+  Novembre:{poids:61.5,yoyo:1000,dc_1rm:42.5,tirage_1rm:47.5,sdt_1rm:100,v10:1.90,v20:3.38,v25:4.12,v50:7.72},
+  Janvier:{poids:61.8,yoyo:840,dc_3rm:42.5,squat_3rm:70,tirage_3rm:47.5,v10:1.86,v20:3.28,v30:4.65,v40:6.08,broad:195},
+  Mai:{yoyo:840,palier:15.9,dc_3rm:47.5,tirage_3rm:52.5,v10:1.86,v20:3.28,v30:4.65,v40:6.08,broad:195}
+}},
+"Malia": {poste:"Centre", stats:{
+  Septembre:{taille:161,poids:64.5,yoyo:720,palier:15.5,dc_1rm:40,tirage_1rm:45,sdt_1rm:85,v10:2.08,v20:3.68,v25:4.50,v50:8.55,broad:175},
+  Novembre:{poids:64.0,yoyo:720,dc_1rm:45,tirage_1rm:50,sdt_1rm:100,v10:1.98,v20:3.52,v25:4.30,v50:8.18},
+  Janvier:{poids:64.2,yoyo:640,dc_3rm:45,squat_3rm:75,tirage_3rm:50,v10:1.94,v20:3.42,v30:4.88,v40:6.38,broad:180},
+  Mai:{yoyo:640,palier:14.6,dc_3rm:50,tirage_3rm:55,v10:1.94,v20:3.42,v30:4.88,v40:6.38,broad:180}
+}},
+"Manon": {poste:"2e Ligne", stats:{
+  Septembre:{taille:173,poids:66.5,yoyo:880,palier:16.5,dc_1rm:40,tirage_1rm:45,sdt_1rm:85,v10:2.06,v20:3.64,v25:4.45,v50:8.42,broad:183},
+  Novembre:{poids:66.2,yoyo:880,dc_1rm:45,tirage_1rm:50,sdt_1rm:100,v10:1.95,v20:3.48,v25:4.25,v50:8.05},
+  Janvier:{poids:65.8,yoyo:760,dc_3rm:45,squat_3rm:80,tirage_3rm:50,v10:1.90,v20:3.35,v30:4.76,v40:6.22,broad:188},
+  Mai:{yoyo:760,palier:15.2,dc_3rm:50,tirage_3rm:55,v10:1.90,v20:3.35,v30:4.76,v40:6.22,broad:188}
+}},
+"Marine": {poste:"Ailier/Arrière", stats:{
+  Septembre:{taille:160,poids:55.5,yoyo:1160,palier:17.5,dc_1rm:32.5,tirage_1rm:38.5,sdt_1rm:72.5,v10:1.96,v20:3.45,v25:4.22,v50:7.92,broad:192},
+  Novembre:{poids:55.2,yoyo:1160,dc_1rm:37.5,tirage_1rm:42.5,sdt_1rm:95,v10:1.84,v20:3.28,v25:3.98,v50:7.45},
+  Janvier:{poids:55.0,yoyo:880,dc_3rm:37.5,squat_3rm:55,tirage_3rm:42.5,v10:1.80,v20:3.18,v30:4.52,v40:5.92,broad:198},
+  Mai:{yoyo:880,palier:16.1,dc_3rm:42.5,tirage_3rm:47.5,v10:1.80,v20:3.18,v30:4.52,v40:5.92,broad:198}
+}},
+"Mathilde": {poste:"3e Ligne", stats:{
+  Septembre:{taille:167,poids:63.5,yoyo:920,palier:16.5,dc_1rm:37.5,tirage_1rm:42.5,sdt_1rm:80,v10:2.04,v20:3.60,v25:4.40,v50:8.32,broad:186},
+  Novembre:{poids:63.1,yoyo:920,dc_1rm:42.5,tirage_1rm:47.5,sdt_1rm:100,v10:1.92,v20:3.44,v25:4.18,v50:7.92},
+  Janvier:{poids:62.8,yoyo:800,dc_3rm:42.5,squat_3rm:75,tirage_3rm:47.5,v10:1.88,v20:3.32,v30:4.71,v40:6.16,broad:191},
+  Mai:{yoyo:800,palier:15.5,dc_3rm:47.5,tirage_3rm:52.5,v10:1.88,v20:3.32,v30:4.71,v40:6.16,broad:191}
+}},
+"Moïna": {poste:"1re Ligne", stats:{
+  Septembre:{taille:162,poids:74.0,yoyo:480,palier:14.5,dc_1rm:45,tirage_1rm:50,sdt_1rm:90,v10:2.22,v20:3.92,v25:4.78,v50:9.05,broad:162},
+  Novembre:{poids:73.8,yoyo:480,dc_1rm:50,tirage_1rm:55,sdt_1rm:100,v10:2.12,v20:3.78,v25:4.60,v50:8.72},
+  Janvier:{poids:73.5,yoyo:400,dc_3rm:52.5,squat_3rm:95,tirage_3rm:55,v10:2.08,v20:3.68,v30:5.25,v40:6.88,broad:158},
+  Mai:{yoyo:400,palier:13.8,dc_3rm:57.5,tirage_3rm:60,v10:2.08,v20:3.68,v30:5.25,v40:6.88,broad:158}
+}},
+"Nadia": {poste:"2e Ligne", stats:{
+  Septembre:{taille:171,poids:67.0,yoyo:720,palier:15.5,dc_1rm:40,tirage_1rm:45,sdt_1rm:85,v10:2.10,v20:3.72,v25:4.55,v50:8.62,broad:176},
+  Novembre:{poids:66.8,yoyo:720,dc_1rm:45,tirage_1rm:50,sdt_1rm:100,v10:1.98,v20:3.55,v25:4.32,v50:8.22},
+  Janvier:{poids:66.5,yoyo:600,dc_3rm:45,squat_3rm:80,tirage_3rm:50,v10:1.93,v20:3.40,v30:4.82,v40:6.30,broad:181},
+  Mai:{yoyo:600,palier:14.9,dc_3rm:50,tirage_3rm:55,v10:1.93,v20:3.40,v30:4.82,v40:6.30,broad:181}
+}},
+"Océane": {poste:"Ailier/Arrière", stats:{
+  Septembre:{taille:163,poids:56.5,yoyo:1240,palier:18,dc_1rm:32.5,tirage_1rm:37.5,sdt_1rm:72.5,v10:1.94,v20:3.40,v25:4.15,v50:7.82,broad:198},
+  Novembre:{poids:56.2,yoyo:1240,dc_1rm:37.5,tirage_1rm:42.5,sdt_1rm:95,v10:1.82,v20:3.24,v25:3.92,v50:7.35},
+  Janvier:{poids:56.0,yoyo:1000,dc_3rm:37.5,squat_3rm:52.5,tirage_3rm:42.5,v10:1.78,v20:3.12,v30:4.42,v40:5.78,broad:205},
+  Mai:{yoyo:1000,palier:16.8,dc_3rm:42.5,tirage_3rm:47.5,v10:1.78,v20:3.12,v30:4.42,v40:5.78,broad:205}
+}},
+"Pauline": {poste:"Demi-d'ouverture", stats:{
+  Septembre:{taille:160,poids:56.0,yoyo:1080,palier:17,dc_1rm:32.5,tirage_1rm:37.5,sdt_1rm:70,v10:2.02,v20:3.56,v25:4.35,v50:8.18,broad:185},
+  Novembre:{poids:55.8,yoyo:1080,dc_1rm:37.5,tirage_1rm:42.5,sdt_1rm:90,v10:1.90,v20:3.38,v25:4.12,v50:7.72},
+  Janvier:{poids:55.5,yoyo:880,dc_3rm:37.5,squat_3rm:57.5,tirage_3rm:42.5,v10:1.85,v20:3.25,v30:4.62,v40:6.05,broad:191},
+  Mai:{yoyo:880,palier:15.7,dc_3rm:42.5,tirage_3rm:47.5,v10:1.85,v20:3.25,v30:4.62,v40:6.05,broad:191}
+}},
+"Rébecca": {poste:"1re Ligne", stats:{
+  Septembre:{taille:164,poids:71.5,yoyo:480,palier:14.5,dc_1rm:42.5,tirage_1rm:47.5,sdt_1rm:85,v10:2.18,v20:3.85,v25:4.70,v50:8.92,broad:163},
+  Novembre:{poids:71.2,yoyo:480,dc_1rm:47.5,tirage_1rm:52.5,sdt_1rm:95,v10:2.08,v20:3.70,v25:4.52,v50:8.55},
+  Janvier:{poids:71.0,yoyo:400,dc_3rm:50,squat_3rm:90,tirage_3rm:52.5,v10:2.05,v20:3.62,v30:5.15,v40:6.75,broad:160},
+  Mai:{yoyo:400,palier:13.5,dc_3rm:55,tirage_3rm:57.5,v10:2.05,v20:3.62,v30:5.15,v40:6.75,broad:160}
+}},
+"Romane": {poste:"Centre", stats:{
+  Septembre:{taille:162,poids:61.0,yoyo:960,palier:16.5,dc_1rm:35,tirage_1rm:40,sdt_1rm:75,v10:2.00,v20:3.52,v25:4.30,v50:8.10,broad:188},
+  Novembre:{poids:60.7,yoyo:960,dc_1rm:40,tirage_1rm:45,sdt_1rm:95,v10:1.88,v20:3.34,v25:4.08,v50:7.65},
+  Janvier:{poids:60.5,yoyo:800,dc_3rm:40,squat_3rm:65,tirage_3rm:45,v10:1.84,v20:3.24,v30:4.60,v40:6.02,broad:193},
+  Mai:{yoyo:800,palier:15.6,dc_3rm:45,tirage_3rm:50,v10:1.84,v20:3.24,v30:4.60,v40:6.02,broad:193}
+}},
+"Sarah": {poste:"3e Ligne", stats:{
+  Septembre:{taille:165,poids:62.5,yoyo:880,palier:16,dc_1rm:37.5,tirage_1rm:42.5,sdt_1rm:80,v10:2.05,v20:3.62,v25:4.42,v50:8.35,broad:184},
+  Novembre:{poids:62.2,yoyo:880,dc_1rm:42.5,tirage_1rm:47.5,sdt_1rm:97.5,v10:1.93,v20:3.45,v25:4.20,v50:7.97},
+  Janvier:{poids:61.8,yoyo:760,dc_3rm:42.5,squat_3rm:72.5,tirage_3rm:47.5,v10:1.88,v20:3.31,v30:4.70,v40:6.14,broad:189},
+  Mai:{yoyo:760,palier:15.3,dc_3rm:47.5,tirage_3rm:52.5,v10:1.88,v20:3.31,v30:4.70,v40:6.14,broad:189}
+}},
+"Sixtine": {poste:"Demi-melée", stats:{
+  Septembre:{taille:159,poids:55.0,yoyo:1160,palier:17.5,dc_1rm:32.5,tirage_1rm:37.5,sdt_1rm:70,v10:1.98,v20:3.48,v25:4.25,v50:7.98,broad:194},
+  Novembre:{poids:54.8,yoyo:1160,dc_1rm:37.5,tirage_1rm:42.5,sdt_1rm:90,v10:1.86,v20:3.30,v25:4.02,v50:7.55},
+  Janvier:{poids:54.5,yoyo:960,dc_3rm:37.5,squat_3rm:55,tirage_3rm:42.5,v10:1.82,v20:3.20,v30:4.55,v40:5.95,broad:200},
+  Mai:{yoyo:960,palier:16.5,dc_3rm:42.5,tirage_3rm:47.5,v10:1.82,v20:3.20,v30:4.55,v40:5.95,broad:200}
+}},
+"Tess": {poste:"2e Ligne", stats:{
+  Septembre:{taille:172,poids:68.5,yoyo:760,palier:16,dc_1rm:42.5,tirage_1rm:47.5,sdt_1rm:87.5,v10:2.08,v20:3.68,v25:4.50,v50:8.55,broad:178},
+  Novembre:{poids:68.2,yoyo:760,dc_1rm:47.5,tirage_1rm:52.5,sdt_1rm:100,v10:1.97,v20:3.52,v25:4.28,v50:8.18},
+  Janvier:{poids:67.8,yoyo:640,dc_3rm:47.5,squat_3rm:87.5,tirage_3rm:52.5,v10:1.92,v20:3.38,v30:4.80,v40:6.28,broad:182},
+  Mai:{yoyo:640,palier:15.0,dc_3rm:52.5,tirage_3rm:57.5,v10:1.92,v20:3.38,v30:4.80,v40:6.28,broad:182}
+}},
+"Valentine": {poste:"Ailier/Arrière", stats:{
+  Septembre:{taille:164,poids:57.5,yoyo:1200,palier:17.5,dc_1rm:33.5,tirage_1rm:38.5,sdt_1rm:80,v10:2.19,v20:3.88,v25:null,broad:164},
+  Novembre:{poids:66.2,yoyo:640,palier:14,dc_1rm:40,tirage_1rm:50,sdt_1rm:110,v10:2.06,v20:3.75,v25:4.75,v50:8.50},
+  Janvier:{poids:68.05,dc_3rm:40,squat_3rm:80,v10:2.07,v20:3.62,v30:5.17,v40:6.75},
+  Mai:{yoyo:640,palier:14.5,dc_3rm:40,tirage_3rm:40,broad:187,v10:2.00,v20:3.52,v30:5.00,v40:6.51}
+}},
+"Zoé": {poste:"1re Ligne", stats:{
+  Septembre:{taille:163,poids:63.9,yoyo:920,palier:17,dc_1rm:50,tirage_1rm:40,sdt_1rm:100,v10:2.07,v20:3.65,v25:4.55,v50:8.64,broad:167},
+  Novembre:{poids:63.7,yoyo:920,palier:19.8,dc_1rm:55,tirage_1rm:60,sdt_1rm:125,v10:1.89,v20:3.37,v25:4.21,v50:7.93},
+  Janvier:{poids:68.15,yoyo:960,palier:15.5,dc_3rm:60,squat_3rm:90,v10:1.86,v20:3.26,v30:4.59,v40:6.02,broad:189},
+  Mai:{dc_3rm:62.5,tirage_3rm:60,broad:195,v10:1.86,v20:3.26,v30:4.59,v40:6.02}
+}}
+};
+
+// distances pour calcul m/s par sprint
+const DIST = {v10:10,v20:20,v25:25,v30:30,v40:40,v50:50};
+
 let selectedPeriods = [...PERIODS];
-let charts = {};
-
-// ============ INIT ============
-function init() {
-  // Remplir le select joueuses
+let selectedCat = null;
+let charts = [];
+</script>
+<script>
+// ====== INIT ======
+function initUI(){
   const sel = document.getElementById('selJ');
-  Object.keys(DATA).sort().forEach(nom => {
-    const opt = document.createElement('option');
-    opt.value = nom;
-    opt.textContent = nom;
-    sel.appendChild(opt);
+  Object.keys(DATA).sort().forEach(n=>{
+    const o=document.createElement('option');o.value=n;o.textContent=n+' ('+DATA[n].poste+')';sel.appendChild(o);
   });
-
-  // Créer les checkboxes périodes
-  const per = document.getElementById('periods');
-  PERIODS.forEach(p => {
-    const lbl = document.createElement('label');
-    lbl.innerHTML = `<input type="checkbox" value="${p}" checked onchange="togglePeriod('${p}')"> ${p}`;
-    per.appendChild(lbl);
+  const pc = document.getElementById('periods');
+  PERIODS.forEach(p=>{
+    const lbl=document.createElement('label');
+    lbl.className='pchk active';
+    lbl.innerHTML=`<input type="checkbox" checked value="${p}">${p}`;
+    lbl.querySelector('input').addEventListener('change',e=>{
+      if(e.target.checked){selectedPeriods.push(p);lbl.classList.add('active');}
+      else{selectedPeriods=selectedPeriods.filter(x=>x!==p);lbl.classList.remove('active');}
+      selectedPeriods.sort((a,b)=>PERIODS.indexOf(a)-PERIODS.indexOf(b));
+      render();
+    });
+    pc.appendChild(lbl);
   });
-
-  render();
 }
 
-function togglePeriod(p) {
-  if (selectedPeriods.includes(p)) {
-    selectedPeriods = selectedPeriods.filter(x => x !== p);
-  } else {
-    selectedPeriods.push(p);
-    selectedPeriods.sort((a,b) => PERIODS.indexOf(a) - PERIODS.indexOf(b));
+function getVal(j,p,k){
+  const s = DATA[j].stats[p];
+  return s && s[k]!=null ? s[k] : null;
+}
+
+function fmt(v,k){
+  if(v==null) return '—';
+  const u = UNITS[k]||'';
+  return (typeof v==='number'?(+v.toFixed(2)):v)+(u?' '+u:'');
+}
+
+function evolBadge(first,last,key){
+  if(first==null||last==null) return '<span class="muted">—</span>';
+  const d = last-first;
+  if(Math.abs(d)<0.001) return '<span>=</span>';
+  const better = INVERT.includes(key) ? d<0 : d>0;
+  const sign = d>0?'+':'';
+  return `<span class="${better?'pos':'neg'}">${sign}${d.toFixed(2)} ${UNITS[key]||''}</span>`;
+}
+
+function destroyCharts(){charts.forEach(c=>c.destroy());charts=[];}
+
+// ====== RENDU PRINCIPAL ======
+function render(){
+  destroyCharts();
+  const j = document.getElementById('selJ').value;
+  const content = document.getElementById('content');
+  if(selectedCat){renderCat(j); return;}
+
+  // Vue d'ensemble : cartes catégories + évolution globale par unité
+  let html = `<div class="section"><h2>👤 ${j} — ${DATA[j].poste}</h2>
+    <div class="cats">`;
+  Object.entries(CATS).forEach(([k,c])=>{
+    html += `<div class="cat" onclick="openCat('${k}')">
+      <div class="ico">${c.ico}</div>
+      <div class="name">${c.name}</div>
+      <div class="desc">${c.desc}</div></div>`;
+  });
+  html += `</div></div>`;
+
+  // Évolution globale — regroupée par unité
+  html += `<div class="section"><h2>📊 Évolution globale</h2>`;
+  
+  // Récupérer toutes les clés présentes pour cette joueuse
+  const allKeys = new Set();
+  selectedPeriods.forEach(p=>{
+    const s = DATA[j].stats[p];
+    if(s) Object.keys(s).forEach(k=>{if(LABELS[k]) allKeys.add(k);});
+  });
+
+  // Grouper par unité
+  const byUnit = {};
+  allKeys.forEach(k=>{
+    const u = UNITS[k]||'autre';
+    if(!byUnit[u]) byUnit[u]=[];
+    byUnit[u].push(k);
+  });
+
+  const unitOrder = ['kg','cm','m','s',''];
+  const unitNames = {kg:'Charges (kg)', cm:'Distances (cm)', m:'Distance (m)', s:'Temps (s)', '':'Palier'};
+
+  unitOrder.forEach(u=>{
+    if(!byUnit[u]||byUnit[u].length===0) return;
+    const keys = byUnit[u].sort((a,b)=>Object.keys(LABELS).indexOf(a)-Object.keys(LABELS).indexOf(b));
+    html += `<h3>${unitNames[u]||u}</h3><div class="tbl-wrap"><table>
+      <thead><tr><th>Indicateur</th>`;
+    selectedPeriods.forEach(p=>html+=`<th>${p}</th>`);
+    html += `<th>Évolution</th></tr></thead><tbody>`;
+    keys.forEach(k=>{
+      html += `<tr><td><strong>${LABELS[k]}</strong></td>`;
+      const vals = selectedPeriods.map(p=>getVal(j,p,k));
+      vals.forEach(v=>html+=`<td>${fmt(v,k)}</td>`);
+      const firstV = vals.find(v=>v!=null);
+      const lastV = [...vals].reverse().find(v=>v!=null);
+      html += `<td>${vals.filter(v=>v!=null).length>=2 ? evolBadge(firstV,lastV,k) : '—'}</td></tr>`;
+    });
+    html += `</tbody></table></div>`;
+  });
+
+  if(allKeys.size===0) html += `<p class="subtitle">Aucune donnée pour les périodes sélectionnées.</p>`;
+  html += `</div>`;
+
+  content.innerHTML = html;
+}
+
+// ====== VUE CATÉGORIE ======
+function renderCat(j){
+  destroyCharts();
+  const cat = CATS[selectedCat];
+  const content = document.getElementById('content');
+  let html = `<button class="back" onclick="closeCat()">← Retour</button>
+    <div class="section"><h2>${cat.ico} ${cat.name} — ${j}</h2>`;
+
+  // Tableau principal
+  html += `<div class="tbl-wrap"><table><thead><tr><th>Indicateur</th>`;
+  selectedPeriods.forEach(p=>html+=`<th>${p}</th>`);
+  html += `<th>Évolution</th></tr></thead><tbody>`;
+  
+  const presentKeys = cat.keys.filter(k=>{
+    return selectedPeriods.some(p=>getVal(j,p,k)!=null);
+  });
+
+  presentKeys.forEach(k=>{
+    html += `<tr><td><strong>${LABELS[k]}</strong></td>`;
+    const vals = selectedPeriods.map(p=>getVal(j,p,k));
+    vals.forEach(v=>html+=`<td>${fmt(v,k)}</td>`);
+    const firstV = vals.find(v=>v!=null);
+    const lastV = [...vals].reverse().find(v=>v!=null);
+    html += `<td>${vals.filter(v=>v!=null).length>=2 ? evolBadge(firstV,lastV,k) : '—'}</td></tr>`;
+  });
+  html += `</tbody></table></div>`;
+
+  // === Spécial VITESSE : tableau m/s et km/h ===
+  if(selectedCat==='vitesse' && presentKeys.length>0){
+    html += `<h3>🚀 Vitesse moyenne (m/s)</h3><div class="tbl-wrap"><table><thead><tr><th>Sprint</th>`;
+    selectedPeriods.forEach(p=>html+=`<th>${p}</th>`);
+    html += `<th>Évolution</th></tr></thead><tbody>`;
+    presentKeys.forEach(k=>{
+      const dist = DIST[k];
+      html += `<tr><td><strong>${LABELS[k]}</strong></td>`;
+      const ms = selectedPeriods.map(p=>{
+        const t = getVal(j,p,k);
+        return t!=null && t>0 ? dist/t : null;
+      });
+      ms.forEach(v=>html+=`<td>${v!=null?v.toFixed(2)+' m/s':'—'}</td>`);
+      const f = ms.find(v=>v!=null), l = [...ms].reverse().find(v=>v!=null);
+      if(f!=null && l!=null && ms.filter(v=>v!=null).length>=2){
+        const d=l-f, better=d>0;
+        html += `<td><span class="${better?'pos':'neg'}">${d>0?'+':''}${d.toFixed(2)} m/s</span></td>`;
+      } else html+=`<td>—</td>`;
+      html+=`</tr>`;
+    });
+    html += `</tbody></table></div>`;
+
+    html += `<h3>🏁 Vitesse moyenne (km/h)</h3><div class="tbl-wrap"><table><thead><tr><th>Sprint</th>`;
+    selectedPeriods.forEach(p=>html+=`<th>${p}</th>`);
+    html += `</tr></thead><tbody>`;
+    presentKeys.forEach(k=>{
+      const dist = DIST[k];
+      html += `<tr><td><strong>${LABELS[k]}</strong></td>`;
+      selectedPeriods.forEach(p=>{
+        const t = getVal(j,p,k);
+        const kmh = t!=null && t>0 ? (dist/t)*3.6 : null;
+        html += `<td>${kmh!=null?kmh.toFixed(2)+' km/h':'—'}</td>`;
+      });
+      html+=`</tr>`;
+    });
+    html += `</tbody></table></div>`;
   }
-  render();
+
+  // === Graphiques ===
+  presentKeys.forEach((k,i)=>{
+    const id = 'chart_'+i;
+    html += `<h3>${LABELS[k]} (${UNITS[k]||''})</h3>
+      <div class="chart-wrap"><canvas id="${id}"></canvas></div>`;
+  });
+
+  html += `</div>`;
+  content.innerHTML = html;
+
+  // Rendu Chart.js
+  presentKeys.forEach((k,i)=>{
+    const ctx = document.getElementById('chart_'+i);
+    const data = selectedPeriods.map(p=>getVal(j,p,k));
+    const c = new Chart(ctx,{
+      type:'line',
+      data:{
+        labels:selectedPeriods,
+        datasets:[{
+          label:LABELS[k]+' ('+(UNITS[k]||'')+')',
+          data,
+          borderColor:'#e94560',
+          backgroundColor:'rgba(233,69,96,.15)',
+          tension:.3,
+          fill:true,
+          pointRadius:6,
+          pointBackgroundColor:'#f5a623',
+          spanGaps:true
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{labels:{color:'#e6edf3'}}},
+        scales:{
+          x:{ticks:{color:'#8b949e'},grid:{color:'#30363d'}},
+          y:{ticks:{color:'#8b949e'},grid:{color:'#30363d'},reverse:INVERT.includes(k)}
+        }
+      }
+    });
+    charts.push(c);
+  });
 }
 
-// ============ RENDER ============
-function render() {
-  const nom = document.getElementById('selJ').value;
-  const joueuse = DATA[nom];
-  if (!joueuse) return;
+function openCat(k){selectedCat=k;render();window.scrollTo(0,0);}
+function closeCat(){selectedCat=null;render();}
 
-  renderPlayerInfo(nom, joueuse);
-  renderStats(joueuse);
-  renderCharts(joueuse);
-  renderTable(joueuse);
+// ====== ÉTAT GLOBAL ======
+let currentTab = 'indiv';
+let cmpSelected = []; // joueuses sélectionnées pour comparaison
+
+// ====== INIT NOUVEAUX CONTRÔLES ======
+function initExtras(){
+  // Mouvements (toutes les clés de LABELS)
+  const selMove = document.getElementById('selMove');
+  Object.entries(LABELS).forEach(([k,v])=>{
+    const o=document.createElement('option');o.value=k;o.textContent=v+(UNITS[k]?' ('+UNITS[k]+')':'');
+    selMove.appendChild(o);
+  });
+  selMove.value='dc_1rm';
+  selMove.onchange=renderLeader;
+
+  // Périodes leaderboard
+  const selPL = document.getElementById('selPeriodL');
+  PERIODS.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;selPL.appendChild(o);});
+  selPL.value='Janvier';
+  selPL.onchange=renderLeader;
+
+  // Postes (uniques)
+  const postes = [...new Set(Object.values(DATA).map(d=>d.poste).filter(Boolean))].sort();
+  const selP = document.getElementById('selPoste');
+  postes.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;selP.appendChild(o);});
+  selP.onchange=renderLeader;
+
+  // Comparaison : chips joueuses
+  const cmpDiv = document.getElementById('cmpPlayers');
+  Object.keys(DATA).sort().forEach(n=>{
+    const c=document.createElement('div');
+    c.className='cmpChip';c.textContent=n;
+    c.onclick=()=>{
+      if(cmpSelected.includes(n)){cmpSelected=cmpSelected.filter(x=>x!==n);c.classList.remove('active');}
+      else{cmpSelected.push(n);c.classList.add('active');}
+      renderCompare();
+    };
+    cmpDiv.appendChild(c);
+  });
+
+  // Période comparaison
+  const selPC = document.getElementById('selPeriodC');
+  PERIODS.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;selPC.appendChild(o);});
+  selPC.value='Janvier';
+  selPC.onchange=renderCompare;
 }
 
-// ============ INFO JOUEUSE ============
-function renderPlayerInfo(nom, j) {
-  const div = document.getElementById('playerInfo');
-  const periodes = Object.keys(j.stats).filter(p => selectedPeriods.includes(p));
-  div.innerHTML = `
-    <h2>${nom}</h2>
-    <p>Poste : <strong>${j.poste || 'Non renseigné'}</strong></p>
-    <div>${periodes.map(p => `<span class="tag">${p}</span>`).join('')}</div>
-  `;
+// ====== TABS ======
+function setTab(t){
+  currentTab=t;
+  document.querySelectorAll('.tabBtn').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
+  document.getElementById('ctrlIndiv').style.display = t==='indiv'?'flex':'none';
+  document.getElementById('ctrlLeader').style.display = t==='leader'?'flex':'none';
+  document.getElementById('ctrlCompare').style.display = t==='compare'?'flex':'none';
+  destroyCharts();
+  if(t==='indiv') render();
+  else if(t==='leader') renderLeader();
+  else renderCompare();
 }
 
-// ============ STATS CARDS ============
-function renderStats(j) {
-  const grid = document.getElementById('statsGrid');
-  const periodes = selectedPeriods.filter(p => j.stats[p]);
-  if (periodes.length === 0) {
-    grid.innerHTML = '<p style="color:var(--text-muted)">Aucune donnée pour les périodes sélectionnées</p>';
+// ====== LEADERBOARD ======
+function renderLeader(){
+  destroyCharts();
+  const move = document.getElementById('selMove').value;
+  const period = document.getElementById('selPeriodL').value;
+  const posteFilter = document.getElementById('selPoste').value;
+  const content = document.getElementById('content');
+
+  let list = Object.entries(DATA)
+    .filter(([n,d])=>!posteFilter || d.poste===posteFilter)
+    .map(([n,d])=>({nom:n,poste:d.poste,val:d.stats[period]?.[move]}))
+    .filter(x=>x.val!=null);
+
+  list.sort((a,b)=>INVERT.includes(move) ? a.val-b.val : b.val-a.val);
+
+  let html = `<div class="section"><h2>🏆 Classement — ${LABELS[move]} (${period})${posteFilter?' • '+posteFilter:''}</h2>`;
+  if(list.length===0){
+    html += `<p class="subtitle">Aucune donnée pour ces critères.</p></div>`;
+    content.innerHTML=html;return;
+  }
+
+  // Si vitesse : afficher aussi m/s et km/h
+  const isSpeed = DIST[move]!=null;
+
+  list.forEach((p,i)=>{
+    const cls = i===0?'top1':i===1?'top2':i===2?'top3':'';
+    const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1);
+    let extra = '';
+    if(isSpeed){
+      const ms = (DIST[move]/p.val).toFixed(2);
+      const kmh = ((DIST[move]/p.val)*3.6).toFixed(1);
+      extra = ` <span style="color:var(--muted);font-size:.82rem">(${ms} m/s • ${kmh} km/h)</span>`;
+    }
+    html += `<div class="rank ${cls}">
+      <div class="pos">${medal}</div>
+      <div class="nm">${p.nom}</div>
+      <div class="ps">${p.poste||''}</div>
+      <div class="vl">${p.val} ${UNITS[move]||''}${extra}</div>
+    </div>`;
+  });
+  html += `</div>`;
+  content.innerHTML = html;
+}
+
+// ====== COMPARAISON ======
+function renderCompare(){
+  destroyCharts();
+  const period = document.getElementById('selPeriodC').value;
+  const content = document.getElementById('content');
+
+  if(cmpSelected.length<1){
+    content.innerHTML = `<div class="section"><h2>⚔️ Comparaison</h2>
+      <p class="subtitle">Sélectionne au moins 1 joueuse ci-dessus pour commencer la comparaison.</p></div>`;
     return;
   }
 
-  const first = j.stats[periodes[0]];
-  const last = j.stats[periodes[periodes.length - 1]];
-
-  const indicateurs = [
-    {key:'poids', label:'Poids', unit:'kg', betterLow:false},
-    {key:'yoyo', label:'Yo-Yo', unit:'m', betterLow:false},
-    {key:'palier', label:'Palier Yo-Yo', unit:'', betterLow:false},
-    {key:'dc_1rm', label:'Développé Couché', unit:'kg', betterLow:false, alt:'dc'},
-    {key:'tirage_1rm', label:'Tirage', unit:'kg', betterLow:false, alt:'tirage'},
-    {key:'squat_1rm', label:'Squat', unit:'kg', betterLow:false},
-    {key:'broad', label:'Broad Jump', unit:'cm', betterLow:false},
-    {key:'v10', label:'10m', unit:'s', betterLow:true},
-    {key:'v20', label:'20m', unit:'s', betterLow:true},
-    {key:'v30', label:'30m', unit:'s', betterLow:true},
-    {key:'v40', label:'40m', unit:'s', betterLow:true}
-  ];
-
-  let html = '';
-  indicateurs.forEach(ind => {
-    const v1 = first[ind.key] ?? (ind.alt ? first[ind.alt] : null);
-    const v2 = last[ind.key] ?? (ind.alt ? last[ind.alt] : null);
-    if (v2 == null) return;
-
-    let evo = '';
-    if (v1 != null && v2 != null && periodes.length > 1) {
-      const diff = v2 - v1;
-      const pct = ((diff / v1) * 100).toFixed(1);
-      const isImproved = ind.betterLow ? diff < 0 : diff > 0;
-      const cls = diff === 0 ? 'evo-neutral' : (isImproved ? 'evo-up' : 'evo-down');
-      const arrow = diff === 0 ? '→' : (isImproved ? '▲' : '▼');
-      evo = `<div class="stat-evolution ${cls}">${arrow} ${diff > 0 ? '+' : ''}${diff.toFixed(2)} (${pct}%)</div>`;
-    }
-
-    html += `
-      <div class="stat-card">
-        <div class="stat-label">${ind.label}</div>
-        <div class="stat-value">${v2}<span class="stat-unit">${ind.unit}</span></div>
-        ${evo}
-      </div>
-    `;
+  // Toutes les clés présentes pour les joueuses sélectionnées sur cette période
+  const allKeys = new Set();
+  cmpSelected.forEach(j=>{
+    const s = DATA[j].stats[period];
+    if(s) Object.keys(s).forEach(k=>{if(LABELS[k]) allKeys.add(k);});
   });
 
-  grid.innerHTML = html || '<p style="color:var(--text-muted)">Aucune donnée disponible</p>';
-}
+  let html = `<div class="section"><h2>⚔️ Comparaison — ${period}</h2>`;
 
-// ============ CHARTS ============
-function renderCharts(j) {
-  const periodes = selectedPeriods.filter(p => j.stats[p]);
+  if(allKeys.size===0){
+    html += `<p class="subtitle">Aucune donnée pour ces joueuses sur cette période.</p></div>`;
+    content.innerHTML=html;return;
+  }
 
-  // Vitesse
-  makeChart('chartVitesse', periodes, [
-    {label:'10m', key:'v10', color:'#f59e0b'},
-    {label:'20m', key:'v20', color:'#3b82f6'},
-    {label:'30m', key:'v30', color:'#10b981'},
-    {label:'40m', key:'v40', color:'#ef4444'},
-    {label:'50m', key:'v50', color:'#a855f7'}
-  ], j);
+  // Grouper par unité
+  const byUnit = {};
+  allKeys.forEach(k=>{const u=UNITS[k]||'autre';if(!byUnit[u])byUnit[u]=[];byUnit[u].push(k);});
+  const unitOrder = ['kg','cm','m','s',''];
+  const unitNames = {kg:'Charges (kg)',cm:'Distances (cm)',m:'Distance (m)',s:'Temps (s)','':'Palier'};
 
-  // Force
-  makeChart('chartForce', periodes, [
-    {label:'Développé Couché', key:'dc_1rm', alt:'dc', color:'#f59e0b'},
-    {label:'Tirage', key:'tirage_1rm', alt:'tirage', color:'#3b82f6'},
-    {label:'Squat', key:'squat_1rm', color:'#10b981'},
-    {label:'SDT', key:'sdt_1rm', color:'#ef4444'},
-    {label:'Hip Thrust', key:'hipthrust', color:'#a855f7'}
-  ], j);
+  unitOrder.forEach(u=>{
+    if(!byUnit[u]||byUnit[u].length===0) return;
+    const keys = byUnit[u].sort((a,b)=>Object.keys(LABELS).indexOf(a)-Object.keys(LABELS).indexOf(b));
+    html += `<h3>${unitNames[u]||u}</h3><div class="tbl-wrap"><table>
+      <thead><tr><th>Indicateur</th>`;
+    cmpSelected.forEach(j=>html+=`<th>${j}<br><span style="color:var(--muted);font-weight:400;font-size:.75rem">${DATA[j].poste||''}</span></th>`);
+    html += `<th>Meilleure</th></tr></thead><tbody>`;
+    keys.forEach(k=>{
+      html += `<tr><td><strong>${LABELS[k]}</strong></td>`;
+      const vals = cmpSelected.map(j=>DATA[j].stats[period]?.[k]);
+      const valid = vals.filter(v=>v!=null);
+      let best = null;
+      if(valid.length>0) best = INVERT.includes(k) ? Math.min(...valid) : Math.max(...valid);
+      vals.forEach(v=>{
+        const isBest = v!=null && v===best && valid.length>1;
+        html += `<td style="${isBest?'color:#2ea043;font-weight:700':''}">${v!=null?v+(UNITS[k]?' '+UNITS[k]:''):'—'}</td>`;
+      });
+      const bestIdx = vals.indexOf(best);
+      html += `<td style="color:var(--accent2);font-weight:600">${bestIdx>=0?cmpSelected[bestIdx]:'—'}</td>`;
+      html += `</tr>`;
+    });
+    html += `</tbody></table></div>`;
+  });
 
-  // Endurance
-  makeChart('chartEndurance', periodes, [
-    {label:'Yo-Yo (m)', key:'yoyo', color:'#f59e0b'}
-  ], j);
-}
+  // Graphique radar si >=2 joueuses et plusieurs métriques
+  if(cmpSelected.length>=2 && allKeys.size>=3){
+    html += `<h3>📊 Profil comparatif (normalisé)</h3>
+      <div class="chart-wrap" style="height:400px"><canvas id="radarCmp"></canvas></div>
+      <p class="subtitle" style="margin-top:6px;font-size:.78rem">Valeurs normalisées 0-100 (100 = meilleure perf entre joueuses sélectionnées)</p>`;
+  }
 
-function makeChart(canvasId, periodes, series, j) {
-  if (charts[canvasId]) charts[canvasId].destroy();
+  html += `</div>`;
+  content.innerHTML = html;
 
-  const datasets = series.map(s => ({
-    label: s.label,
-    data: periodes.map(p => {
-      const v = j.stats[p][s.key];
-      return v != null ? v : (s.alt ? j.stats[p][s.alt] : null);
-    }),
-    borderColor: s.color,
-    backgroundColor: s.color + '33',
-    borderWidth: 3,
-    tension: 0.3,
-    spanGaps: true,
-    pointRadius: 5,
-    pointHoverRadius: 7
-  }));
-
-  charts[canvasId] = new Chart(document.getElementById(canvasId), {
-    type: 'line',
-    data: { labels: periodes, datasets },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { labels: { color: '#e8eaed' } }
-      },
-      scales: {
-        x: { ticks: { color: '#9ca3af' }, grid: { color: '#2d3548' } },
-        y: { ticks: { color: '#9ca3af' }, grid: { color: '#2d3548' } }
+  // Radar
+  if(cmpSelected.length>=2 && allKeys.size>=3){
+    const keys = [...allKeys];
+    const colors = ['#e94560','#f5a623','#2ea043','#58a6ff','#bc8cff','#ff7b72','#79c0ff'];
+    const datasets = cmpSelected.map((j,i)=>{
+      const data = keys.map(k=>{
+        const v = DATA[j].stats[period]?.[k];
+        if(v==null) return 0;
+        const allV = cmpSelected.map(x=>DATA[x].stats[period]?.[k]).filter(x=>x!=null);
+        if(allV.length===0) return 0;
+        const mn = Math.min(...allV), mx = Math.max(...allV);
+        if(mx===mn) return 100;
+        return INVERT.includes(k) ? ((mx-v)/(mx-mn))*100 : ((v-mn)/(mx-mn))*100;
+      });
+      return {label:j,data,borderColor:colors[i%colors.length],backgroundColor:colors[i%colors.length]+'33',borderWidth:2};
+    });
+    const ctx = document.getElementById('radarCmp');
+    const c = new Chart(ctx,{
+      type:'radar',
+      data:{labels:keys.map(k=>LABELS[k]),datasets},
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{labels:{color:'#e6edf3'}}},
+        scales:{r:{
+          angleLines:{color:'#30363d'},grid:{color:'#30363d'},
+          pointLabels:{color:'#e6edf3',font:{size:11}},
+          ticks:{color:'#8b949e',backdropColor:'transparent'},
+          suggestedMin:0,suggestedMax:100
+        }}
       }
-    }
-  });
+    });
+    charts.push(c);
+  }
 }
 
-// ============ TABLE ============
-function renderTable(j) {
-  const periodes = selectedPeriods.filter(p => j.stats[p]);
-  const indicateurs = [
-    ['Poids (kg)', 'poids'],
-    ['Taille (cm)', 'taille'],
-    ['Yo-Yo (m)', 'yoyo'],
-    ['Palier Yo-Yo', 'palier'],
-    ['Flexion', 'flex'],
-    ['Extension', 'ext'],
-    ['DC 1RM (kg)', 'dc_1rm', 'dc'],
-    ['Tirage 1RM (kg)', 'tirage_1rm', 'tirage'],
-    ['Squat 1RM (kg)', 'squat_1rm'],
-    ['SDT 1RM (kg)', 'sdt_1rm'],
-    ['Hip Thrust (kg)', 'hipthrust'],
-    ['Broad Jump (cm)', 'broad'],
-    ['10m (s)', 'v10'],
-    ['20m (s)', 'v20'],
-    ['25m (s)', 'v25'],
-    ['30m (s)', 'v30'],
-    ['40m (s)', 'v40'],
-    ['50m (s)', 'v50']
-  ];
-
-  let html = '<thead><tr><th>Indicateur</th>';
-  periodes.forEach(p => html += `<th>${p}</th>`);
-  html += '</tr></thead><tbody>';
-
-  indicateurs.forEach(ind => {
-    const [label, key, alt] = ind;
-    const values = periodes.map(p => j.stats[p][key] ?? (alt ? j.stats[p][alt] : null));
-    if (values.every(v => v == null)) return;
-
-    html += `<tr><td><strong>${label}</strong></td>`;
-    values.forEach(v => html += `<td>${v ?? '—'}</td>`);
-    html += '</tr>';
-  });
-
-  html += '</tbody>';
-  document.getElementById('evoTable').innerHTML = html;
-}
-
-// ============ START ============
-init();
+initExtras();
+initUI();
+render();
 </script>
-
 </body>
 </html>
