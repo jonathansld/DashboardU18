@@ -131,210 +131,176 @@ const CATS = {
 };
 </script>
 <script>
-// ====== DONNÉES (extraites de ton Excel) ======
-const DATA = {
-"Alina": {poste:"1re Ligne", stats:{
-  Septembre:{taille:157,poids:70.4,yoyo:560,palier:15,dc_1rm:37.5,tirage_1rm:42.5,sdt_1rm:85,v10:2.11,v20:3.76,v25:4.6,v50:8.78,broad:170},
-  Novembre:{poids:70.7,yoyo:560,dc_1rm:42.5,tirage_1rm:50,sdt_1rm:95,v10:2.04,v20:3.66,v25:4.44,v50:8.41},
-  Janvier:{taille:157,poids:62.5,yoyo:480,palier:14.1,dc_3rm:37.5,squat_3rm:85,tirage_3rm:40,v10:2.15,v20:3.75,v30:5.38,v40:7.05,broad:153},
-  Mai:{poids:57,yoyo:480,palier:14.1,dc_3rm:42.5,tirage_3rm:50,broad:153,v10:2.1,v20:3.7,v30:5.18,v40:6.76}
-}},
-"Amaia": {poste:"Demi-melée", stats:{
-  Septembre:{taille:175,poids:61.5,yoyo:1480,palier:17,dc_1rm:37.5,tirage_1rm:47.5,sdt_1rm:75,v10:1.97,v20:3.43,v25:4.28,v50:7.74,broad:193},
-  Novembre:{poids:61.7,yoyo:1480,dc_1rm:45,tirage_1rm:50,sdt_1rm:125,v10:1.82,v20:3.26,v25:3.92,v50:7.27},
-  Janvier:{poids:60,yoyo:1120,dc_3rm:45,squat_3rm:45,tirage_3rm:45,v10:1.81,v20:3.17,v30:4.49,v40:5.87,broad:197},
-  Mai:{yoyo:1120,palier:17.1,dc_3rm:50,tirage_3rm:50,v10:1.81,v20:3.17,v30:4.49,v40:5.87,broad:197}
-}},
-"Camille": {poste:"Ailier/Arrière", stats:{
-  Septembre:{taille:164,poids:58.4,yoyo:1040,palier:17,dc_1rm:32.5,tirage_1rm:37.5,sdt_1rm:75,v10:2.00,v20:3.55,v25:4.32,v50:8.12,broad:185},
-  Novembre:{poids:57.8,yoyo:1040,dc_1rm:37.5,tirage_1rm:45,sdt_1rm:100,v10:1.88,v20:3.34,v25:4.08,v50:7.65},
-  Janvier:{poids:57.2,yoyo:960,palier:16.5,dc_3rm:40,squat_3rm:60,tirage_3rm:50,v10:1.84,v20:3.28,v30:4.64,v40:6.09,broad:187},
-  Mai:{yoyo:960,palier:16.5,dc_3rm:50,tirage_3rm:50,v10:1.84,v20:3.28,v30:4.64,v40:6.09,broad:187}
-}},
-"Ciara": {poste:"3e Ligne", stats:{
-  Septembre:{taille:170,poids:65.2,yoyo:800,palier:16,dc_1rm:42.5,tirage_1rm:45,sdt_1rm:90,v10:2.05,v20:3.62,v25:4.42,v50:8.35,broad:178},
-  Novembre:{poids:64.8,yoyo:800,dc_1rm:45,tirage_1rm:50,sdt_1rm:110,v10:1.95,v20:3.48,v25:4.22,v50:7.98},
-  Janvier:{poids:62.3,yoyo:960,palier:15.5,dc_3rm:42.5,tirage_3rm:70,v10:1.85,v20:3.24,v30:4.62,v40:6.05,broad:184},
-  Mai:{yoyo:960,palier:15.5,dc_3rm:45,tirage_3rm:70,v10:1.85,v20:3.24,v30:4.62,v40:6.05,broad:184}
-}},
-"Clara": {poste:"Ailier/Arrière", stats:{
-  Septembre:{taille:168,poids:60.1,yoyo:1200,palier:17.5,dc_1rm:35,tirage_1rm:42.5,sdt_1rm:80,v10:1.95,v20:3.42,v25:4.18,v50:7.88,broad:205},
-  Novembre:{poids:59.8,yoyo:1200,dc_1rm:40,tirage_1rm:47.5,sdt_1rm:105,v10:1.83,v20:3.28,v25:3.98,v50:7.42},
-  Janvier:{yoyo:960,dc_3rm:null,tirage_3rm:null,v10:1.73,v20:2.99,v30:4.20,v40:5.47,broad:214},
-  Mai:{yoyo:960,dc_3rm:null,tirage_3rm:null,v10:1.73,v20:2.99,v30:4.20,v40:5.47,broad:214}
-}},
-"Danaé": {poste:"2e Ligne", stats:{
-  Septembre:{taille:172,poids:68.0,yoyo:640,palier:15,dc_1rm:40,tirage_1rm:45,sdt_1rm:85,v10:2.12,v20:3.78,v25:4.62,v50:8.82,broad:172},
-  Novembre:{poids:67.5,yoyo:640,dc_1rm:45,tirage_1rm:50,sdt_1rm:95},
-  Janvier:{poids:65.4,dc_3rm:45,tirage_3rm:null,yoyo:0},
-  Mai:{dc_3rm:45,tirage_3rm:null}
-}},
-"Elyna": {poste:"1re Ligne", stats:{
-  Septembre:{taille:163,poids:72.5,yoyo:640,palier:15,dc_1rm:45,tirage_1rm:50,sdt_1rm:90,v10:2.18,v20:3.85,v25:4.70,v50:8.92,broad:165},
-  Novembre:{poids:72.1,yoyo:640,dc_1rm:50,tirage_1rm:55,sdt_1rm:100,v10:2.08,v20:3.70,v25:4.52,v50:8.55},
-  Janvier:{v10:1.96,v20:3.44,v30:4.94,v40:6.47},
-  Mai:{v10:1.96,v20:3.44,v30:4.94,v40:6.47}
-}},
-"Emilie": {poste:"3e Ligne", stats:{
-  Septembre:{taille:166,poids:72.0,yoyo:800,palier:16,dc_1rm:40,tirage_1rm:45,sdt_1rm:85,v10:2.08,v20:3.68,v25:4.50,v50:8.55,broad:178},
-  Novembre:{poids:74.2,yoyo:840,dc_1rm:45,tirage_1rm:50,sdt_1rm:95,v10:1.96,v20:3.52,v25:4.28,v50:8.18},
-  Janvier:{poids:74.8,yoyo:840,palier:15.1,dc_3rm:50,tirage_3rm:80,v10:1.84,v20:3.28,v30:4.64,v40:6.09,broad:187},
-  Mai:{yoyo:840,palier:15.1,dc_3rm:55,tirage_3rm:80,v10:1.84,v20:3.28,v30:4.64,v40:6.09,broad:187}
-}},
-"Faustine": {poste:"1re Ligne", stats:{
-  Janvier:{poids:73,taille:161,dc_3rm:50,tirage_3rm:50},
-  Mai:{dc_3rm:55,tirage_3rm:57.5}
-}},
-"Ines": {poste:"2e Ligne", stats:{
-  Novembre:{poids:64,palier:11.3,yoyo:0,broad:172},
-  Janvier:{poids:68.25,yoyo:400,dc_3rm:32.5,tirage_3rm:40,v10:2.11,v20:3.66,v30:5.19,v40:6.79},
-  Mai:{dc_3rm:35,tirage_3rm:45,v10:2.11,v20:3.66,v30:5.19,v40:6.79}
-}},
-"Ines R": {poste:"Demi-melée", stats:{
-  Septembre:{taille:158,poids:54.55,yoyo:1040,palier:17,dc_1rm:40,tirage_1rm:35,sdt_1rm:75,v10:2.08,v20:3.66,v25:4.44,v50:8.38,broad:196},
-  Novembre:{poids:54.1,yoyo:1040,palier:14.7,dc_1rm:40,tirage_1rm:45,sdt_1rm:130,v10:1.9,v20:3.38,v25:4.19,v50:7.86},
-  Janvier:{yoyo:1120,dc_3rm:30,squat_3rm:65,tirage_3rm:40,v10:1.87,v20:3.27,v30:4.61,v40:6.06,broad:200},
-  Mai:{yoyo:880,palier:15.3,dc_3rm:40,tirage_3rm:40,v10:1.87,v20:3.27,v30:4.61,v40:6.06,broad:200}
-}},
-"Jade": {poste:"3e Ligne", stats:{
-  Septembre:{taille:160,poids:54.5,yoyo:1000,palier:15.5,dc_1rm:32.5,tirage_1rm:40,sdt_1rm:75,v10:2.19,v20:3.92,v25:4.68,v50:8.92,broad:160},
-  Novembre:{poids:55,yoyo:1000,palier:10.2,dc_1rm:35,tirage_1rm:55,sdt_1rm:100,v10:2.01,v20:3.58,v25:4.3,v50:8.17,broad:190},
-  Janvier:{poids:51.25,palier:15.5,yoyo:960,taille:161,dc_3rm:40,squat_3rm:85,tirage_3rm:50,v10:1.96,v20:3.47,v30:4.93,v40:6.53,broad:178},
-  Mai:{palier:14.5,yoyo:640,dc_3rm:42.5,tirage_3rm:55,v10:1.96,v20:3.47,v30:4.93,v40:6.53,broad:178}
-}},
-"Kélia": {poste:"Centre", stats:{
-  Septembre:{taille:165,poids:60.2,yoyo:960,palier:16.5,dc_1rm:32.5,tirage_1rm:35,sdt_1rm:70,v10:1.91,v20:3.32,v25:3.97,v50:7.38,broad:207},
-  Novembre:{poids:59.6,yoyo:960,dc_1rm:35,tirage_1rm:42.5,sdt_1rm:100,v10:1.77,v20:3.14,v25:3.82,v50:7.08},
-  Janvier:{yoyo:1000,dc_3rm:null,tirage_3rm:null,v10:1.79,v20:3.11,v30:4.39,v40:5.71,broad:215},
-  Mai:{yoyo:1000,v10:1.79,v20:3.11,v30:4.39,v40:5.71,broad:215}
-}},
-"Kira": {poste:"1re Ligne", stats:{
-  Septembre:{taille:168,poids:83.7,yoyo:560,palier:15.5,dc_1rm:50,tirage_1rm:55,sdt_1rm:70,v10:2.30,v20:3.95,v25:4.67,v50:8.65,broad:166},
-  Novembre:{poids:83.9,yoyo:560,palier:15,dc_1rm:60,tirage_1rm:55,broad:187},
-  Janvier:{poids:85.4,yoyo:360,dc_3rm:57.5,squat_3rm:90,v10:1.95,v20:3.45,v30:4.89,v40:6.43,broad:163},
-  Mai:{yoyo:560,palier:14.3,dc_3rm:60,tirage_3rm:60,broad:174,v10:2.01,v20:3.69,v30:5.00,v40:6.41}
-}},
-"Lily B": {poste:"3e Ligne", stats:{
-  Septembre:{taille:168,poids:59.4,yoyo:1200,palier:17.5,dc_1rm:40,tirage_1rm:50,sdt_1rm:100,v10:2.00,v20:3.53,v25:4.26,v50:8.04,broad:190},
-  Novembre:{poids:62.6,yoyo:1200,palier:19.1,dc_1rm:50,tirage_1rm:60,sdt_1rm:110,v10:1.89,v20:3.31,v25:3.96,v50:7.28,broad:202},
-  Janvier:{poids:64.5,yoyo:960,palier:15.5,dc_3rm:55,tirage_3rm:null,v10:1.90,v20:3.30,v30:4.63,v40:5.95},
-  Mai:{yoyo:920,palier:15.4,dc_3rm:62.5,tirage_3rm:67.5,broad:211,v10:1.89,v20:3.24,v30:4.52,v40:5.81}
-}},
-"Lily N": {poste:"1re Ligne", stats:{
-  Septembre:{taille:165,poids:68.3,yoyo:760,palier:16.5,dc_1rm:45,tirage_1rm:50,sdt_1rm:92.5,v10:2.03,v20:3.55,v25:4.35,v50:8.24,broad:193},
-  Novembre:{poids:67,yoyo:760,dc_1rm:50,tirage_1rm:55,sdt_1rm:105,v10:1.95,v20:3.42,v25:4.18,v50:7.92},
-  Janvier:{poids:67.5,yoyo:640,dc_3rm:50,squat_3rm:85,tirage_3rm:55,v10:1.97,v20:3.48,v30:4.95,v40:6.45,broad:188},
-  Mai:{yoyo:640,palier:14.8,dc_3rm:55,tirage_3rm:60,v10:1.97,v20:3.48,v30:4.95,v40:6.45,broad:188}
-}},
-"Lou": {poste:"Ailier/Arrière", stats:{
-  Septembre:{taille:166,poids:58.0,yoyo:1120,palier:17,dc_1rm:35,tirage_1rm:40,sdt_1rm:75,v10:1.98,v20:3.48,v25:4.25,v50:7.98,broad:195},
-  Novembre:{poids:57.5,yoyo:1120,dc_1rm:40,tirage_1rm:45,sdt_1rm:100,v10:1.86,v20:3.32,v25:4.02,v50:7.52},
-  Janvier:{poids:57.8,yoyo:960,dc_3rm:42.5,squat_3rm:55,tirage_3rm:45,v10:1.83,v20:3.22,v30:4.58,v40:6.00,broad:200},
-  Mai:{yoyo:960,palier:16.2,dc_3rm:47.5,tirage_3rm:50,v10:1.83,v20:3.22,v30:4.58,v40:6.00,broad:200}
-}},
-"Lucie": {poste:"Demi-d'ouverture", stats:{
-  Septembre:{taille:162,poids:57.5,yoyo:1080,palier:17,dc_1rm:32.5,tirage_1rm:38.5,sdt_1rm:70,v10:2.05,v20:3.62,v25:4.42,v50:8.35,broad:182},
-  Novembre:{poids:57.2,yoyo:1080,dc_1rm:37.5,tirage_1rm:42.5,sdt_1rm:90,v10:1.94,v20:3.46,v25:4.20,v50:7.95},
-  Janvier:{poids:57.8,yoyo:880,dc_3rm:37.5,squat_3rm:60,tirage_3rm:42.5,v10:1.88,v20:3.30,v30:4.68,v40:6.12,broad:190},
-  Mai:{yoyo:880,palier:15.8,dc_3rm:42.5,tirage_3rm:47.5,v10:1.88,v20:3.30,v30:4.68,v40:6.12,broad:190}
-}},
-"Maëlys": {poste:"Centre", stats:{
-  Septembre:{taille:163,poids:62.0,yoyo:1000,palier:16.5,dc_1rm:37.5,tirage_1rm:42.5,sdt_1rm:80,v10:2.02,v20:3.56,v25:4.35,v50:8.18,broad:188},
-  Novembre:{poids:61.5,yoyo:1000,dc_1rm:42.5,tirage_1rm:47.5,sdt_1rm:100,v10:1.90,v20:3.38,v25:4.12,v50:7.72},
-  Janvier:{poids:61.8,yoyo:840,dc_3rm:42.5,squat_3rm:70,tirage_3rm:47.5,v10:1.86,v20:3.28,v30:4.65,v40:6.08,broad:195},
-  Mai:{yoyo:840,palier:15.9,dc_3rm:47.5,tirage_3rm:52.5,v10:1.86,v20:3.28,v30:4.65,v40:6.08,broad:195}
-}},
-"Malia": {poste:"Centre", stats:{
-  Septembre:{taille:161,poids:64.5,yoyo:720,palier:15.5,dc_1rm:40,tirage_1rm:45,sdt_1rm:85,v10:2.08,v20:3.68,v25:4.50,v50:8.55,broad:175},
-  Novembre:{poids:64.0,yoyo:720,dc_1rm:45,tirage_1rm:50,sdt_1rm:100,v10:1.98,v20:3.52,v25:4.30,v50:8.18},
-  Janvier:{poids:64.2,yoyo:640,dc_3rm:45,squat_3rm:75,tirage_3rm:50,v10:1.94,v20:3.42,v30:4.88,v40:6.38,broad:180},
-  Mai:{yoyo:640,palier:14.6,dc_3rm:50,tirage_3rm:55,v10:1.94,v20:3.42,v30:4.88,v40:6.38,broad:180}
-}},
-"Manon": {poste:"2e Ligne", stats:{
-  Septembre:{taille:173,poids:66.5,yoyo:880,palier:16.5,dc_1rm:40,tirage_1rm:45,sdt_1rm:85,v10:2.06,v20:3.64,v25:4.45,v50:8.42,broad:183},
-  Novembre:{poids:66.2,yoyo:880,dc_1rm:45,tirage_1rm:50,sdt_1rm:100,v10:1.95,v20:3.48,v25:4.25,v50:8.05},
-  Janvier:{poids:65.8,yoyo:760,dc_3rm:45,squat_3rm:80,tirage_3rm:50,v10:1.90,v20:3.35,v30:4.76,v40:6.22,broad:188},
-  Mai:{yoyo:760,palier:15.2,dc_3rm:50,tirage_3rm:55,v10:1.90,v20:3.35,v30:4.76,v40:6.22,broad:188}
-}},
-"Marine": {poste:"Ailier/Arrière", stats:{
-  Septembre:{taille:160,poids:55.5,yoyo:1160,palier:17.5,dc_1rm:32.5,tirage_1rm:38.5,sdt_1rm:72.5,v10:1.96,v20:3.45,v25:4.22,v50:7.92,broad:192},
-  Novembre:{poids:55.2,yoyo:1160,dc_1rm:37.5,tirage_1rm:42.5,sdt_1rm:95,v10:1.84,v20:3.28,v25:3.98,v50:7.45},
-  Janvier:{poids:55.0,yoyo:880,dc_3rm:37.5,squat_3rm:55,tirage_3rm:42.5,v10:1.80,v20:3.18,v30:4.52,v40:5.92,broad:198},
-  Mai:{yoyo:880,palier:16.1,dc_3rm:42.5,tirage_3rm:47.5,v10:1.80,v20:3.18,v30:4.52,v40:5.92,broad:198}
-}},
-"Mathilde": {poste:"3e Ligne", stats:{
-  Septembre:{taille:167,poids:63.5,yoyo:920,palier:16.5,dc_1rm:37.5,tirage_1rm:42.5,sdt_1rm:80,v10:2.04,v20:3.60,v25:4.40,v50:8.32,broad:186},
-  Novembre:{poids:63.1,yoyo:920,dc_1rm:42.5,tirage_1rm:47.5,sdt_1rm:100,v10:1.92,v20:3.44,v25:4.18,v50:7.92},
-  Janvier:{poids:62.8,yoyo:800,dc_3rm:42.5,squat_3rm:75,tirage_3rm:47.5,v10:1.88,v20:3.32,v30:4.71,v40:6.16,broad:191},
-  Mai:{yoyo:800,palier:15.5,dc_3rm:47.5,tirage_3rm:52.5,v10:1.88,v20:3.32,v30:4.71,v40:6.16,broad:191}
-}},
-"Moïna": {poste:"1re Ligne", stats:{
-  Septembre:{taille:162,poids:74.0,yoyo:480,palier:14.5,dc_1rm:45,tirage_1rm:50,sdt_1rm:90,v10:2.22,v20:3.92,v25:4.78,v50:9.05,broad:162},
-  Novembre:{poids:73.8,yoyo:480,dc_1rm:50,tirage_1rm:55,sdt_1rm:100,v10:2.12,v20:3.78,v25:4.60,v50:8.72},
-  Janvier:{poids:73.5,yoyo:400,dc_3rm:52.5,squat_3rm:95,tirage_3rm:55,v10:2.08,v20:3.68,v30:5.25,v40:6.88,broad:158},
-  Mai:{yoyo:400,palier:13.8,dc_3rm:57.5,tirage_3rm:60,v10:2.08,v20:3.68,v30:5.25,v40:6.88,broad:158}
-}},
-"Nadia": {poste:"2e Ligne", stats:{
-  Septembre:{taille:171,poids:67.0,yoyo:720,palier:15.5,dc_1rm:40,tirage_1rm:45,sdt_1rm:85,v10:2.10,v20:3.72,v25:4.55,v50:8.62,broad:176},
-  Novembre:{poids:66.8,yoyo:720,dc_1rm:45,tirage_1rm:50,sdt_1rm:100,v10:1.98,v20:3.55,v25:4.32,v50:8.22},
-  Janvier:{poids:66.5,yoyo:600,dc_3rm:45,squat_3rm:80,tirage_3rm:50,v10:1.93,v20:3.40,v30:4.82,v40:6.30,broad:181},
-  Mai:{yoyo:600,palier:14.9,dc_3rm:50,tirage_3rm:55,v10:1.93,v20:3.40,v30:4.82,v40:6.30,broad:181}
-}},
-"Océane": {poste:"Ailier/Arrière", stats:{
-  Septembre:{taille:163,poids:56.5,yoyo:1240,palier:18,dc_1rm:32.5,tirage_1rm:37.5,sdt_1rm:72.5,v10:1.94,v20:3.40,v25:4.15,v50:7.82,broad:198},
-  Novembre:{poids:56.2,yoyo:1240,dc_1rm:37.5,tirage_1rm:42.5,sdt_1rm:95,v10:1.82,v20:3.24,v25:3.92,v50:7.35},
-  Janvier:{poids:56.0,yoyo:1000,dc_3rm:37.5,squat_3rm:52.5,tirage_3rm:42.5,v10:1.78,v20:3.12,v30:4.42,v40:5.78,broad:205},
-  Mai:{yoyo:1000,palier:16.8,dc_3rm:42.5,tirage_3rm:47.5,v10:1.78,v20:3.12,v30:4.42,v40:5.78,broad:205}
-}},
-"Pauline": {poste:"Demi-d'ouverture", stats:{
-  Septembre:{taille:160,poids:56.0,yoyo:1080,palier:17,dc_1rm:32.5,tirage_1rm:37.5,sdt_1rm:70,v10:2.02,v20:3.56,v25:4.35,v50:8.18,broad:185},
-  Novembre:{poids:55.8,yoyo:1080,dc_1rm:37.5,tirage_1rm:42.5,sdt_1rm:90,v10:1.90,v20:3.38,v25:4.12,v50:7.72},
-  Janvier:{poids:55.5,yoyo:880,dc_3rm:37.5,squat_3rm:57.5,tirage_3rm:42.5,v10:1.85,v20:3.25,v30:4.62,v40:6.05,broad:191},
-  Mai:{yoyo:880,palier:15.7,dc_3rm:42.5,tirage_3rm:47.5,v10:1.85,v20:3.25,v30:4.62,v40:6.05,broad:191}
-}},
-"Rébecca": {poste:"1re Ligne", stats:{
-  Septembre:{taille:164,poids:71.5,yoyo:480,palier:14.5,dc_1rm:42.5,tirage_1rm:47.5,sdt_1rm:85,v10:2.18,v20:3.85,v25:4.70,v50:8.92,broad:163},
-  Novembre:{poids:71.2,yoyo:480,dc_1rm:47.5,tirage_1rm:52.5,sdt_1rm:95,v10:2.08,v20:3.70,v25:4.52,v50:8.55},
-  Janvier:{poids:71.0,yoyo:400,dc_3rm:50,squat_3rm:90,tirage_3rm:52.5,v10:2.05,v20:3.62,v30:5.15,v40:6.75,broad:160},
-  Mai:{yoyo:400,palier:13.5,dc_3rm:55,tirage_3rm:57.5,v10:2.05,v20:3.62,v30:5.15,v40:6.75,broad:160}
-}},
-"Romane": {poste:"Centre", stats:{
-  Septembre:{taille:162,poids:61.0,yoyo:960,palier:16.5,dc_1rm:35,tirage_1rm:40,sdt_1rm:75,v10:2.00,v20:3.52,v25:4.30,v50:8.10,broad:188},
-  Novembre:{poids:60.7,yoyo:960,dc_1rm:40,tirage_1rm:45,sdt_1rm:95,v10:1.88,v20:3.34,v25:4.08,v50:7.65},
-  Janvier:{poids:60.5,yoyo:800,dc_3rm:40,squat_3rm:65,tirage_3rm:45,v10:1.84,v20:3.24,v30:4.60,v40:6.02,broad:193},
-  Mai:{yoyo:800,palier:15.6,dc_3rm:45,tirage_3rm:50,v10:1.84,v20:3.24,v30:4.60,v40:6.02,broad:193}
-}},
-"Sarah": {poste:"3e Ligne", stats:{
-  Septembre:{taille:165,poids:62.5,yoyo:880,palier:16,dc_1rm:37.5,tirage_1rm:42.5,sdt_1rm:80,v10:2.05,v20:3.62,v25:4.42,v50:8.35,broad:184},
-  Novembre:{poids:62.2,yoyo:880,dc_1rm:42.5,tirage_1rm:47.5,sdt_1rm:97.5,v10:1.93,v20:3.45,v25:4.20,v50:7.97},
-  Janvier:{poids:61.8,yoyo:760,dc_3rm:42.5,squat_3rm:72.5,tirage_3rm:47.5,v10:1.88,v20:3.31,v30:4.70,v40:6.14,broad:189},
-  Mai:{yoyo:760,palier:15.3,dc_3rm:47.5,tirage_3rm:52.5,v10:1.88,v20:3.31,v30:4.70,v40:6.14,broad:189}
-}},
-"Sixtine": {poste:"Demi-melée", stats:{
-  Septembre:{taille:159,poids:55.0,yoyo:1160,palier:17.5,dc_1rm:32.5,tirage_1rm:37.5,sdt_1rm:70,v10:1.98,v20:3.48,v25:4.25,v50:7.98,broad:194},
-  Novembre:{poids:54.8,yoyo:1160,dc_1rm:37.5,tirage_1rm:42.5,sdt_1rm:90,v10:1.86,v20:3.30,v25:4.02,v50:7.55},
-  Janvier:{poids:54.5,yoyo:960,dc_3rm:37.5,squat_3rm:55,tirage_3rm:42.5,v10:1.82,v20:3.20,v30:4.55,v40:5.95,broad:200},
-  Mai:{yoyo:960,palier:16.5,dc_3rm:42.5,tirage_3rm:47.5,v10:1.82,v20:3.20,v30:4.55,v40:5.95,broad:200}
-}},
-"Tess": {poste:"2e Ligne", stats:{
-  Septembre:{taille:172,poids:68.5,yoyo:760,palier:16,dc_1rm:42.5,tirage_1rm:47.5,sdt_1rm:87.5,v10:2.08,v20:3.68,v25:4.50,v50:8.55,broad:178},
-  Novembre:{poids:68.2,yoyo:760,dc_1rm:47.5,tirage_1rm:52.5,sdt_1rm:100,v10:1.97,v20:3.52,v25:4.28,v50:8.18},
-  Janvier:{poids:67.8,yoyo:640,dc_3rm:47.5,squat_3rm:87.5,tirage_3rm:52.5,v10:1.92,v20:3.38,v30:4.80,v40:6.28,broad:182},
-  Mai:{yoyo:640,palier:15.0,dc_3rm:52.5,tirage_3rm:57.5,v10:1.92,v20:3.38,v30:4.80,v40:6.28,broad:182}
-}},
-"Valentine": {poste:"Ailier/Arrière", stats:{
-  Septembre:{taille:164,poids:57.5,yoyo:1200,palier:17.5,dc_1rm:33.5,tirage_1rm:38.5,sdt_1rm:80,v10:2.19,v20:3.88,v25:null,broad:164},
-  Novembre:{poids:66.2,yoyo:640,palier:14,dc_1rm:40,tirage_1rm:50,sdt_1rm:110,v10:2.06,v20:3.75,v25:4.75,v50:8.50},
-  Janvier:{poids:68.05,dc_3rm:40,squat_3rm:80,v10:2.07,v20:3.62,v30:5.17,v40:6.75},
-  Mai:{yoyo:640,palier:14.5,dc_3rm:40,tirage_3rm:40,broad:187,v10:2.00,v20:3.52,v30:5.00,v40:6.51}
-}},
-"Zoé": {poste:"1re Ligne", stats:{
-  Septembre:{taille:163,poids:63.9,yoyo:920,palier:17,dc_1rm:50,tirage_1rm:40,sdt_1rm:100,v10:2.07,v20:3.65,v25:4.55,v50:8.64,broad:167},
-  Novembre:{poids:63.7,yoyo:920,palier:19.8,dc_1rm:55,tirage_1rm:60,sdt_1rm:125,v10:1.89,v20:3.37,v25:4.21,v50:7.93},
-  Janvier:{poids:68.15,yoyo:960,palier:15.5,dc_3rm:60,squat_3rm:90,v10:1.86,v20:3.26,v30:4.59,v40:6.02,broad:189},
-  Mai:{dc_3rm:62.5,tirage_3rm:60,broad:195,v10:1.86,v20:3.26,v30:4.59,v40:6.02}
-}}
+// ====== DONNÉES BRUTES — 4 SESSIONS ======
+const results_Septembre = {
+  "Alina":       { poste: "1re Ligne",       poids: 70.4,  yoyo: 560,  ift_30_15: 15,   dc_1rm: 37.5, tirage_1rm: 42.5, sdt_1rm: 85,  v10: 2.11, v20: 3.76, v25: 4.60, v50: 8.78, broad: 170 },
+  "Amaia":       { poste: "Demi-mêlée",      poids: 61.5,  yoyo: 1480, ift_30_15: 17,   dc_1rm: 37.5, tirage_1rm: 47.5, sdt_1rm: 75,  v10: 1.97, v20: 3.43, v25: 4.28, v50: 7.74, broad: 193 },
+  "Andréa":      { poste: "1re Ligne",       poids: 77.1,  yoyo: 560,  ift_30_15: null, dc_1rm: 52.5, tirage_1rm: null, sdt_1rm: null,v10: 2.02, v20: 3.52, v25: 4.30, v50: 8.11, broad: 193 },
+  "Annaelle":    { poste: "1re Ligne",       poids: 89.2,  yoyo: 440,  ift_30_15: 13.5, dc_1rm: 45,   tirage_1rm: 60,   sdt_1rm: 95,  v10: 2.23, v20: 3.90, v25: 4.88, v50: 9.39, broad: 170 },
+  "Augustine":   { poste: "3e Ligne",        poids: 64.0,  yoyo: 1400, ift_30_15: 18.5, dc_1rm: 50,   tirage_1rm: 50,   sdt_1rm: 105, v10: 1.94, v20: 3.32, v25: 4.07, v50: 7.50, broad: 202 },
+  "Calliopée":   { poste: "3e Ligne",        poids: 63.4,  yoyo: null, ift_30_15: 17.5, dc_1rm: 45,   tirage_1rm: 48,   sdt_1rm: 100, v10: 1.95, v20: 3.39, v25: 4.11, v50: 7.71, broad: null },
+  "Camille":     { poste: "1re Ligne",       poids: 72.5,  yoyo: 400,  ift_30_15: 12.5, dc_1rm: 35,   tirage_1rm: 40,   sdt_1rm: 80,  v10: null, v20: null, v25: null, v50: null, broad: null },
+  "Candice":     { poste: "Centre",          poids: 65.5,  yoyo: 560,  ift_30_15: null, dc_1rm: null, tirage_1rm: null, sdt_1rm: null,v10: 1.99, v20: 3.53, v25: 4.15, v50: 7.93, broad: 197 },
+  "Charlotte":   { poste: "Ailier/arrière",  poids: 59.3,  yoyo: 1400, ift_30_15: 18.5, dc_1rm: 37.5, tirage_1rm: 45,   sdt_1rm: 90,  v10: 1.92, v20: 3.32, v25: null, v50: null, broad: 187 },
+  "Ciara":       { poste: "3e Ligne",        poids: 59.0,  yoyo: 680,  ift_30_15: 16,   dc_1rm: 30,   tirage_1rm: 42.5, sdt_1rm: 70,  v10: 2.13, v20: 3.73, v25: 4.41, v50: 8.49, broad: 180 },
+  "Clara":       { poste: "Ailier/arrière",  poids: 65.9,  yoyo: 960,  ift_30_15: null, dc_1rm: 37.5, tirage_1rm: 37.5, sdt_1rm: 70,  v10: 1.71, v20: 3.10, v25: 3.73, v50: 6.94, broad: null },
+  "Danaé":       { poste: "2e Ligne",        poids: null,  yoyo: null, ift_30_15: 17,   dc_1rm: 42.5, tirage_1rm: 40,   sdt_1rm: 80,  v10: 2.13, v20: 3.72, v25: 4.43, v50: 8.36, broad: 178 },
+  "Elyna":       { poste: "1re Ligne",       poids: 80.1,  yoyo: 560,  ift_30_15: null, dc_1rm: null, tirage_1rm: null, sdt_1rm: null,v10: null, v20: null, v25: null, v50: null, broad: null },
+  "Emilie":      { poste: "3e Ligne",        poids: 71.4,  yoyo: 640,  ift_30_15: 16.5, dc_1rm: 45,   tirage_1rm: 45,   sdt_1rm: 95,  v10: 2.04, v20: 3.59, v25: 4.33, v50: 8.09, broad: 187 },
+  "Faustine":    { poste: "3e Ligne",        poids: 72.3,  yoyo: 440,  ift_30_15: 14,   dc_1rm: 40,   tirage_1rm: 50,   sdt_1rm: 90,  v10: 2.15, v20: 3.84, v25: 4.73, v50: 9.18, broad: 180 },
+  "Ines":        { poste: "2e Ligne",        poids: 61.1,  yoyo: null, ift_30_15: 13,   dc_1rm: 30,   tirage_1rm: 40,   sdt_1rm: 75,  v10: 2.19, v20: 3.88, v25: 4.67, v50: 9.66, broad: 153 },
+  "Ines R":      { poste: "Demi-mêlée",      poids: 54.55, yoyo: 1040, ift_30_15: 17,   dc_1rm: 40,   tirage_1rm: 35,   sdt_1rm: 75,  v10: 2.08, v20: 3.66, v25: 4.44, v50: 8.38, broad: 196 },
+  "Jade":        { poste: "3e Ligne",        poids: 54.5,  yoyo: 1000, ift_30_15: 15.5, dc_1rm: 32.5, tirage_1rm: 40,   sdt_1rm: 75,  v10: 2.19, v20: 3.92, v25: 4.68, v50: 8.92, broad: 160 },
+  "Kélia":       { poste: "Centre",          poids: 60.2,  yoyo: 960,  ift_30_15: 16.5, dc_1rm: 32.5, tirage_1rm: 35,   sdt_1rm: 70,  v10: 1.91, v20: 3.32, v25: 3.97, v50: 7.38, broad: 207 },
+  "Kira":        { poste: "1re Ligne",       poids: 83.7,  yoyo: 560,  ift_30_15: 15.5, dc_1rm: 50,   tirage_1rm: 55,   sdt_1rm: 70,  v10: 2.30, v20: 3.95, v25: 4.67, v50: 8.65, broad: 166 },
+  "Lily B":      { poste: "3e Ligne",        poids: 59.4,  yoyo: 1200, ift_30_15: 17.5, dc_1rm: 40,   tirage_1rm: 50,   sdt_1rm: 100, v10: 2.00, v20: 3.53, v25: 4.26, v50: 8.04, broad: 190 },
+  "Lily N":      { poste: "1re Ligne",       poids: 68.3,  yoyo: 760,  ift_30_15: 16.5, dc_1rm: 45,   tirage_1rm: 50,   sdt_1rm: 92.5,v10: 2.03, v20: 3.55, v25: 4.35, v50: 8.24, broad: 193 },
+  "Loréana":     { poste: "1re Ligne",       poids: 81.3,  yoyo: 440,  ift_30_15: 13.5, dc_1rm: 45,   tirage_1rm: 55,   sdt_1rm: 95,  v10: 2.04, v20: 3.59, v25: 4.38, v50: 8.18, broad: 180 },
+  "Louane D":    { poste: "Ailier/arrière",  poids: 55.6,  yoyo: null, ift_30_15: null, dc_1rm: 50,   tirage_1rm: 45,   sdt_1rm: 100, v10: 1.84, v20: 3.26, v25: 3.96, v50: 7.48, broad: 199 },
+  "Louanne Dom": { poste: "Centre",          poids: 69.2,  yoyo: 760,  ift_30_15: 15.5, dc_1rm: 55,   tirage_1rm: 55,   sdt_1rm: 90,  v10: 2.08, v20: 3.59, v25: 4.31, v50: 7.98, broad: 200 },
+  "Lylou":       { poste: "2e Ligne",        poids: 71.9,  yoyo: 440,  ift_30_15: 15.5, dc_1rm: 42.5, tirage_1rm: 49,   sdt_1rm: 80,  v10: 2.05, v20: 3.68, v25: 4.41, v50: 8.50, broad: 185 },
+  "Maëna":       { poste: "Ailier/arrière",  poids: 60.1,  yoyo: 880,  ift_30_15: 15.5, dc_1rm: 37.5, tirage_1rm: 50,   sdt_1rm: 80,  v10: 1.92, v20: 3.30, v25: 3.99, v50: 7.36, broad: 203 },
+  "Malaury":     { poste: "3e Ligne",        poids: 64.7,  yoyo: 1040, ift_30_15: 16.5, dc_1rm: 43,   tirage_1rm: 50,   sdt_1rm: 85,  v10: 2.02, v20: 3.52, v25: 4.41, v50: 8.47, broad: 183 },
+  "Margaux":     { poste: "Centre",          poids: 69.9,  yoyo: 560,  ift_30_15: null, dc_1rm: 42.5, tirage_1rm: 52.5, sdt_1rm: 100, v10: 1.94, v20: 3.39, v25: 4.07, v50: 7.62, broad: 202 },
+  "Mathilde":    { poste: null,              poids: 74.3,  yoyo: 360,  ift_30_15: null, dc_1rm: null, tirage_1rm: null, sdt_1rm: null,v10: null, v20: null, v25: null, v50: null, broad: null },
+  "Maylis":      { poste: "Ailier/arrière",  poids: 54.9,  yoyo: 1040, ift_30_15: 17,   dc_1rm: 37.5, tirage_1rm: 49,   sdt_1rm: 80,  v10: 1.97, v20: 3.47, v25: 4.28, v50: 8.02, broad: 175 },
+  "Méloée":      { poste: "Demi-Ouverture",  poids: 65.4,  yoyo: 760,  ift_30_15: 16.5, dc_1rm: 55,   tirage_1rm: 55,   sdt_1rm: 110, v10: 1.99, v20: 3.43, v25: 4.12, v50: 7.61, broad: 192 },
+  "Morgane":     { poste: "Ailier/arrière",  poids: 65.1,  yoyo: 1080, ift_30_15: 17,   dc_1rm: 35,   tirage_1rm: 55,   sdt_1rm: 90,  v10: 1.95, v20: 3.37, v25: 4.10, v50: 7.69, broad: 192 },
+  "Romane":      { poste: "Demi-Ouverture",  poids: 58.1,  yoyo: 720,  ift_30_15: 15.5, dc_1rm: 35,   tirage_1rm: 42.5, sdt_1rm: 75,  v10: 1.99, v20: 3.52, v25: 4.22, v50: 8.03, broad: 189 },
+  "Shayna":      { poste: "3e Ligne",        poids: 66.3,  yoyo: 640,  ift_30_15: 14,   dc_1rm: 38,   tirage_1rm: 38.5, sdt_1rm: 80,  v10: 2.19, v20: 3.88, v25: null, v50: null, broad: 164 },
+  "Zoé":         { poste: "2e Ligne",        poids: 63.9,  yoyo: 920,  ift_30_15: 17,   dc_1rm: 50,   tirage_1rm: 40,   sdt_1rm: 100, v10: 2.07, v20: 3.65, v25: 4.55, v50: 8.64, broad: 167 }
 };
+
+const results_Novembre = {
+  "Alina":       { poste: "1re Ligne",       poids: 70.7, yoyo: 560,  dc_1rm: 42.5, tirage_1rm: 50,   sdt_1rm: 95,    v10: 2.04, v20: 3.66, v25: 4.44, v50: 8.41, broad: null },
+  "Amaia":       { poste: "Demi-mêlée",      poids: 61.7, yoyo: 1480, dc_1rm: 45,   tirage_1rm: 50,   sdt_1rm: 125,   v10: 1.82, v20: 3.26, v25: 3.92, v50: 7.27, broad: 200 },
+  "Andréa":      { poste: "1re Ligne",       poids: 76.0, yoyo: 560,  dc_1rm: 60,   tirage_1rm: null, sdt_1rm: null,  v10: null, v20: null, v25: null, v50: null, broad: null },
+  "Annaelle":    { poste: "1re Ligne",       poids: 87.4, yoyo: 440,  dc_1rm: 50,   tirage_1rm: 60,   sdt_1rm: 125,   v10: 2.11, v20: 3.70, v25: 4.60, v50: 8.71, broad: null },
+  "Augustine":   { poste: "3e Ligne",        poids: 64.1, yoyo: 1400, dc_1rm: 58,   tirage_1rm: 55,   sdt_1rm: 130,   v10: 1.84, v20: 3.22, v25: 3.98, v50: 7.21, broad: 210 },
+  "Calliopée":   { poste: "3e Ligne",        poids: 65.0, yoyo: null, dc_1rm: 50,   tirage_1rm: 60,   sdt_1rm: 110,   v10: 1.96, v20: 3.46, v25: 4.24, v50: 7.90, broad: null },
+  "Camille":     { poste: "1re Ligne",       poids: null, yoyo: 400,  dc_1rm: null, tirage_1rm: null, sdt_1rm: null,  v10: null, v20: null, v25: null, v50: null, broad: null },
+  "Charlotte":   { poste: "Ailier/arrière",  poids: 59.6, yoyo: 1400, dc_1rm: 45,   tirage_1rm: 47.5, sdt_1rm: 125,   v10: 1.82, v20: 3.19, v25: 3.91, v50: 7.14, broad: null },
+  "Ciara":       { poste: "3e Ligne",        poids: 61.0, yoyo: 680,  dc_1rm: 35,   tirage_1rm: 45,   sdt_1rm: 110,   v10: 2.00, v20: 3.53, v25: 4.19, v50: 7.80, broad: 199 },
+  "Clara":       { poste: "Ailier/arrière",  poids: 68.0, yoyo: 960,  dc_1rm: 42.5, tirage_1rm: 50,   sdt_1rm: 90,    v10: 1.79, v20: 3.12, v25: 3.76, v50: 6.93, broad: 215 },
+  "Danaé":       { poste: "2e Ligne",        poids: 65.0, yoyo: null, dc_1rm: 45,   tirage_1rm: 45,   sdt_1rm: null,  v10: null, v20: null, v25: null, v50: null, broad: null },
+  "Elyna":       { poste: "1re Ligne",       poids: 79.5, yoyo: 560,  dc_1rm: null, tirage_1rm: null, sdt_1rm: null,  v10: 1.98, v20: 3.54, v25: 4.20, v50: 8.00, broad: null },
+  "Emilie":      { poste: "3e Ligne",        poids: 72.6, yoyo: 640,  dc_1rm: 50,   tirage_1rm: 55,   sdt_1rm: 130,   v10: 1.90, v20: 3.36, v25: 4.15, v50: 7.71, broad: null },
+  "Faustine":    { poste: "1re Ligne",       poids: 70.0, yoyo: 440,  dc_1rm: 45,   tirage_1rm: 52.5, sdt_1rm: 112.5, v10: 2.08, v20: 3.73, v25: 4.50, v50: 8.49, broad: 179 },
+  "Ines":        { poste: "2e Ligne",        poids: 64.0, yoyo: null, dc_1rm: null, tirage_1rm: null, sdt_1rm: null,  v10: null, v20: null, v25: null, v50: null, broad: 172 },
+  "Ines R":      { poste: "Demi-mêlée",      poids: 54.1, yoyo: 1040, dc_1rm: 40,   tirage_1rm: 45,   sdt_1rm: 90,    v10: 1.90, v20: 3.38, v25: 4.19, v50: 7.86, broad: null },
+  "Jade":        { poste: "3e Ligne",        poids: 55.0, yoyo: 1000, dc_1rm: 35,   tirage_1rm: 55,   sdt_1rm: 100,   v10: 2.01, v20: 3.58, v25: 4.30, v50: 8.17, broad: 190 },
+  "Kélia":       { poste: "Centre",          poids: 59.6, yoyo: 960,  dc_1rm: 35,   tirage_1rm: 42.5, sdt_1rm: 100,   v10: 1.77, v20: 3.14, v25: 3.82, v50: 7.08, broad: null },
+  "Kira":        { poste: "1re Ligne",       poids: 83.9, yoyo: 560,  dc_1rm: 60,   tirage_1rm: 55,   sdt_1rm: null,  v10: null, v20: null, v25: null, v50: null, broad: 187 },
+  "Lily B":      { poste: "3e Ligne",        poids: 62.6, yoyo: 1200, dc_1rm: 50,   tirage_1rm: 60,   sdt_1rm: 110,   v10: 1.89, v20: 3.31, v25: 3.96, v50: 7.28, broad: 202 },
+  "Lily N":      { poste: "1re Ligne",       poids: 67.0, yoyo: 760,  dc_1rm: 50,   tirage_1rm: 42.5, sdt_1rm: 100,   v10: 1.94, v20: 3.42, v25: 4.27, v50: 8.01, broad: 202 },
+  "Loréana":     { poste: "1re Ligne",       poids: 84.0, yoyo: 440,  dc_1rm: null, tirage_1rm: null, sdt_1rm: 125,   v10: null, v20: null, v25: null, v50: null, broad: null },
+  "Louane D":    { poste: "Ailier/arrière",  poids: 55.6, yoyo: null, dc_1rm: 50,   tirage_1rm: 55,   sdt_1rm: 122.5, v10: 1.80, v20: 3.18, v25: 3.80, v50: 7.09, broad: null },
+  "Louanne Dom": { poste: "Centre",          poids: 70.3, yoyo: 760,  dc_1rm: 60,   tirage_1rm: 55,   sdt_1rm: null,  v10: 1.91, v20: 3.37, v25: 4.10, v50: 7.48, broad: null },
+  "Lylou":       { poste: "2e Ligne",        poids: 74.5, yoyo: 440,  dc_1rm: 45,   tirage_1rm: 55,   sdt_1rm: 110,   v10: 1.96, v20: 3.50, v25: 4.34, v50: 8.10, broad: 200 },
+  "Maëna":       { poste: "Ailier/arrière",  poids: null, yoyo: 880,  dc_1rm: 52.5, tirage_1rm: null, sdt_1rm: null,  v10: null, v20: null, v25: null, v50: null, broad: null },
+  "Malaury":     { poste: "3e Ligne",        poids: 63.3, yoyo: 1040, dc_1rm: 50,   tirage_1rm: 50,   sdt_1rm: 105,   v10: 1.96, v20: 3.47, v25: 4.30, v50: 8.07, broad: null },
+  "Margaux":     { poste: "Centre",          poids: 70.0, yoyo: 560,  dc_1rm: null, tirage_1rm: null, sdt_1rm: null,  v10: 1.78, v20: 3.17, v25: 4.00, v50: 7.40, broad: null },
+  "Mathilde":    { poste: "Demi-Ouverture",  poids: 78.9, yoyo: 360,  dc_1rm: null, tirage_1rm: null, sdt_1rm: 130,   v10: null, v20: null, v25: null, v50: null, broad: null },
+  "Maylis":      { poste: "3e Ligne",        poids: 56.4, yoyo: 1040, dc_1rm: 42.5, tirage_1rm: 52.5, sdt_1rm: 110,   v10: 1.88, v20: 3.39, v25: 3.95, v50: 7.39, broad: null },
+  "Méloée":      { poste: "Demi-Ouverture",  poids: 67.4, yoyo: 760,  dc_1rm: 60,   tirage_1rm: 63,   sdt_1rm: 135,   v10: 1.87, v20: 3.27, v25: 4.01, v50: 7.34, broad: null },
+  "Morgane":     { poste: "Centre",          poids: 64.6, yoyo: 1080, dc_1rm: 47.5, tirage_1rm: 62.5, sdt_1rm: 145,   v10: 1.83, v20: 3.24, v25: 3.96, v50: 7.38, broad: null },
+  "Romane":      { poste: "Demi-Ouverture",  poids: 59.4, yoyo: 720,  dc_1rm: 42.5, tirage_1rm: 50,   sdt_1rm: 110,   v10: 1.83, v20: 3.26, v25: 3.97, v50: 7.37, broad: null },
+  "Shayna":      { poste: "3e Ligne",        poids: 66.2, yoyo: 640,  dc_1rm: 40,   tirage_1rm: 50,   sdt_1rm: 110,   v10: 2.06, v20: 3.75, v25: 4.75, v50: 8.50, broad: null },
+  "Zoé":         { poste: "1re Ligne",       poids: 63.7, yoyo: 920,  dc_1rm: 55,   tirage_1rm: 60,   sdt_1rm: 125,   v10: 1.89, v20: 3.37, v25: 4.21, v50: 7.93, broad: null }
+};
+
+const results_Janvier = {
+  "Alina":       { poste: "1re Ligne",       poids: 70.4,  palier: 14.4, yoyo: 480,  squat_3rm: 70,   v10: 2.15, v20: 3.75, v30: 5.38, v40: 7.05, broad: null },
+  "Amaia":       { poste: "Demi-mêlée",      poids: 62.8,  palier: 16.4, yoyo: 1240, dc_3rm: 50,   squat_3rm: 70,   v10: 1.81, v20: 3.17, v30: 4.49, v40: 5.87, broad: 191 },
+  "Andréa":      { poste: "1re Ligne",       poids: null,  palier: 13.3, yoyo: 400,  squat_3rm: 90,   v10: 1.97, v20: 3.41, v30: 4.78, v40: 6.06, broad: 166 },
+  "Annaelle":    { poste: "1re Ligne",       poids: 86.65, palier: 13.4, yoyo: 440,  dc_3rm: 53,   v10: 2.02, v20: 3.50, v30: 4.96, v40: 6.53, broad: 157 },
+  "Augustine":   { poste: "3e Ligne",        poids: 65.4,  palier: 15.8, yoyo: 1160, dc_3rm: 60,   squat_3rm: 85,   v10: 1.95, v20: 3.29, v30: 4.63, v40: 5.95, broad: 198 },
+  "Charlotte":   { poste: "Ailier/arrière",  poids: 61.25, dc_3rm: 45,   v10: 1.93, v20: 3.31, v30: 4.61, v40: 5.94 },
+  "Ciara":       { poste: "3e Ligne",        poids: 62.3,  palier: 15.5, yoyo: 960,  dc_3rm: 42.5, squat_3rm: 70,   v10: 1.85, v20: 3.24, v30: 4.62, v40: 6.05, broad: 184 },
+  "Clara":       { poste: "Ailier/arrière",  yoyo: 960,  v10: 1.73, v20: 2.99, v30: 4.20, v40: 5.47, broad: 214 },
+  "Danaé":       { poste: "2e Ligne",        poids: 65.4,  dc_3rm: 45 },
+  "Elyna":       { poste: "1re Ligne",       v10: 1.96, v20: 3.44, v30: 4.94, v40: 6.47 },
+  "Emilie":      { poste: "3e Ligne",        poids: 74.8,  palier: 15.1, yoyo: 840,  dc_3rm: 50,   squat_3rm: 80,   v10: 1.84, v20: 3.28, v30: 4.64, v40: 6.09, broad: 187 },
+  "Faustine":    { poste: "1re Ligne",       poids: 73.0 },
+  "Ines":        { poste: "2e Ligne",        poids: 68.25, yoyo: 400,  dc_3rm: 32.5, squat_3rm: 40,   v10: 2.11, v20: 3.66, v30: 5.19, v40: 6.79 },
+  "Ines R":      { poste: "Demi-mêlée",      yoyo: 1120, dc_3rm: 40,   squat_3rm: 60,   v10: 1.87, v20: 3.27, v30: 4.61, v40: 6.06, broad: 200 },
+  "Jade":        { poste: "3e Ligne",        poids: 51.25, palier: 15.5, yoyo: 960,  dc_3rm: 45,   squat_3rm: 75,   v10: 1.96, v20: 3.47, v30: 4.93, v40: 6.53, broad: 178 },
+  "Kélia":       { poste: "Centre",          yoyo: 1000, v10: 1.79, v20: 3.11, v30: 4.39, v40: 5.71, broad: 215 },
+  "Kira":        { poste: "1re Ligne",       poids: 85.4,  yoyo: 360,  dc_3rm: 57.5, squat_3rm: 90,   v10: 1.95, v20: 3.45, v30: 4.89, v40: 6.43, broad: 163 },
+  "Lily B":      { poste: "3e Ligne",        poids: 64.5,  palier: 15.5, yoyo: 960,  dc_3rm: 55,   v10: 1.90, v20: 3.30, v30: 4.63, v40: 5.95 },
+  "Lily N":      { poste: "1re Ligne",       poids: 67.8,  palier: 15.5, yoyo: 960,  dc_3rm: 55,   v10: 1.93, v20: 3.40, v30: 4.81, v40: 6.34, broad: 196 },
+  "Loréana":     { poste: "1re Ligne",       palier: 13.3, yoyo: 480,  dc_3rm: 55,   squat_3rm: 90,   v10: 1.93, v20: 3.39, v30: 4.81, v40: 6.34, broad: 202 },
+  "Louane D":    { poste: "Ailier/arrière",  poids: 58.25, dc_3rm: 53,   squat_3rm: 90,   v10: 1.77, v20: 3.09, v30: 4.35, v40: 5.66, broad: 202 },
+  "Louanne Dom": { poste: "Centre",          poids: 69.9,  palier: 15.1, yoyo: 800,  dc_3rm: 65,   squat_3rm: 90,   v10: 1.87, v20: 3.25, v30: 4.55, v40: 5.98, broad: 207 },
+  "Lylou":       { poste: "2e Ligne",        palier: 14.6, yoyo: 680,  dc_3rm: 50 },
+  "Maëna":       { poste: "Ailier/arrière",  poids: 58.6,  dc_3rm: 52.5, v10: 1.86, v20: 3.23, v30: 4.55, v40: 5.82 },
+  "Malaury":     { poste: "3e Ligne",        poids: 64.7,  palier: 15.5, yoyo: 960,  dc_3rm: 53,   squat_3rm: 85,   v10: 1.89, v20: 3.35, v30: 4.71, v40: 6.22, broad: 185 },
+  "Margaux":     { poste: "Centre",          v10: 1.74, v20: 3.06, v30: 4.33, v40: 5.74, broad: 210 },
+  "Mathilde":    { poste: "Demi-Ouverture",  yoyo: 240,  v10: 2.00, v20: 3.47, v30: 4.91, v40: 6.35 },
+  "Maylis":      { poste: "3e Ligne",        palier: 15.5, yoyo: 960,  dc_3rm: 45,   squat_3rm: 60,   v10: 1.79, v20: 3.14, v30: 4.41, v40: 5.82, broad: 185 },
+  "Méloée":      { poste: "Demi-Ouverture",  poids: 68.8,  palier: 15.1, yoyo: 800,  dc_3rm: 60,   squat_3rm: 100,  v10: 1.86, v20: 3.18, v30: 4.45, v40: 5.80, broad: 200 },
+  "Morgane":     { poste: "Centre",          poids: 66.5,  palier: 15.5, yoyo: 960,  squat_3rm: 80,   v10: 1.97, v20: 3.41, v30: 4.79, v40: 6.13 },
+  "Romane":      { poste: "Demi-Ouverture",  poids: 59.4,  dc_3rm: 42.5, squat_3rm: 70,   v10: 1.79, v20: 3.15, v30: 4.43, v40: 5.83, broad: 209 },
+  "Shayna":      { poste: "3e Ligne",        poids: 68.05, dc_3rm: 40,   squat_3rm: 80,   v10: 2.07, v20: 3.62, v30: 5.17, v40: 6.75 },
+  "Zoé":         { poste: "1re Ligne",       poids: 68.15, palier: 15.5, yoyo: 960,  dc_3rm: 60,   squat_3rm: 90,   v10: 1.86, v20: 3.26, v30: 4.59, v40: 6.02, broad: 189 }
+};
+
+const results_Mai = {
+  "Alina":       { poste: "1re Ligne",       palier: 14.1, yoyo: 480,  dc_3rm: 42.5, tirage_3rm: 50,   broad: 182, v10: 2.10, v20: 3.70, v30: 5.18, v40: 6.76 },
+  "Amaia":       { poste: "Demi-mêlée",      palier: 16.1, yoyo: 1120, dc_3rm: 52.5, tirage_3rm: 50,   broad: 200, v10: 1.88, v20: 3.26, v30: 4.56, v40: 5.88 },
+  "Annaelle":    { poste: "1re Ligne",       palier: 13.4, yoyo: 440,  dc_3rm: 55,   tirage_3rm: 60 },
+  "Augustine":   { poste: "3e Ligne",        palier: 15.8, yoyo: 1080, dc_3rm: 55,   tirage_3rm: 58,   broad: 195, v10: 1.91, v20: 3.26, v30: 4.59, v40: 5.87 },
+  "Calliopée":   { poste: "3e Ligne",        dc_3rm: 40,   tirage_3rm: 53,   broad: 205, v10: 1.94, v20: 3.44, v30: 4.87, v40: 6.27 },
+  "Camille":     { poste: "1re Ligne",       tirage_3rm: 50 },
+  "Charlotte":   { poste: "Ailier/arrière",  dc_3rm: 45,   tirage_3rm: 50,   broad: 209, v10: 1.80, v20: 3.13, v30: 4.39, v40: 5.60 },
+  "Ciara":       { poste: "3e Ligne",        dc_3rm: 42.5, tirage_3rm: 45 },
+  "Danaé":       { poste: "2e Ligne",        dc_3rm: 40,   tirage_3rm: 40 },
+  "Elyna":       { poste: "1re Ligne",       broad: 190, v10: 1.93, v20: 3.40, v30: 4.85, v40: 6.27 },
+  "Emilie":      { poste: "3e Ligne",        palier: 15.2, yoyo: 840,  dc_3rm: 53,   tirage_3rm: 60,   broad: 189, v10: 1.87, v20: 3.30, v30: 4.64, v40: 5.97 },
+  "Faustine":    { poste: "1re Ligne",       dc_3rm: 55,   tirage_3rm: 57.5 },
+  "Ines":        { poste: "2e Ligne",        dc_3rm: 35,   tirage_3rm: 45 },
+  "Ines R":      { poste: "Demi-mêlée",      palier: 15.3, yoyo: 880,  dc_3rm: 40,   tirage_3rm: 40,   broad: 193, v10: 1.95, v20: 3.48, v30: 4.86, v40: 6.31 },
+  "Jade":        { poste: "3e Ligne",        palier: 14.5, yoyo: 640,  dc_3rm: 42.5, tirage_3rm: 55,   broad: 184, v10: 1.95, v20: 3.45, v30: 4.89, v40: 6.37 },
+  "Kélia":       { poste: "Centre" },
+  "Kira":        { poste: "1re Ligne",       palier: 14.3, yoyo: 560,  dc_3rm: 60,   tirage_3rm: 60,   broad: 174, v10: 2.01, v20: 3.69, v30: 5.00, v40: 6.41 },
+  "Lily B":      { poste: "3e Ligne",        palier: 15.4, yoyo: 920,  dc_3rm: 62.5, tirage_3rm: 67.5, broad: 211, v10: 1.89, v20: 3.24, v30: 4.52, v40: 5.81 },
+  "Lily N":      { poste: "1re Ligne",       palier: 15.1, yoyo: 800,  dc_3rm: 55,   tirage_3rm: 55,   broad: 210, v10: 1.97, v20: 3.44, v30: 4.84, v40: 6.26 },
+  "Loréana":     { poste: "1re Ligne",       palier: 13.2, yoyo: 360,  dc_3rm: 50,   tirage_3rm: 55,   broad: 200, v10: 1.92, v20: 3.38, v30: 4.73, v40: 6.07 },
+  "Louane D":    { poste: "Ailier/arrière",  dc_3rm: 55,   tirage_3rm: 55,   broad: 208, v10: 1.85, v20: 3.22, v30: 4.53, v40: 5.84 },
+  "Louanne Dom": { poste: "Centre",          palier: 14.7, yoyo: 720,  dc_3rm: 67.5, tirage_3rm: 65 },
+  "Lylou":       { poste: "2e Ligne",        dc_3rm: 50,   tirage_3rm: 55 },
+  "Maëna":       { poste: "Ailier/arrière",  palier: 14.4, yoyo: 600,  dc_3rm: 55,   tirage_3rm: 57.5, broad: 223, v10: 1.87, v20: 3.31, v30: 4.42, v40: 5.63 },
+  "Malaury":     { poste: "3e Ligne",        palier: 15.3, yoyo: 880,  dc_3rm: 53,   tirage_3rm: 48,   broad: 197, v10: 1.94, v20: 3.54, v30: 4.80, v40: 6.20 },
+  "Mathilde":    { poste: "1re Ligne",       dc_3rm: 50,   tirage_3rm: 55,   v10: 1.96, v20: 3.43, v30: 4.79, v40: 6.13 },
+  "Maylis":      { poste: "3e Ligne",        palier: 15.2, yoyo: 840,  dc_3rm: 45,   broad: 191, v10: 1.81, v20: 3.22, v30: 4.51, v40: 5.87 },
+  "Méloée":      { poste: "Demi-Ouverture",  palier: 14.8, yoyo: 760,  dc_3rm: 60,   tirage_3rm: 63,   broad: 223, v10: 1.90, v20: 3.31, v30: 4.55, v40: 5.81 },
+  "Morgane":     { poste: "Centre",          palier: 14.8, yoyo: 760,  dc_3rm: 50,   broad: 198, v10: 1.88, v20: 3.28, v30: 4.61, v40: 5.91 },
+  "Romane":      { poste: "Demi-Ouverture",  palier: 14.6, yoyo: 680,  dc_3rm: 45,   tirage_3rm: 55,   broad: 207, v10: 1.83, v20: 3.29, v30: 4.60, v40: 5.97 },
+  "Shayna":      { poste: "3e Ligne",        palier: 14.5, yoyo: 640,  dc_3rm: 40,   tirage_3rm: 40,   broad: 187, v10: 2.00, v20: 3.52, v30: 5.00, v40: 6.51 },
+  "Zoé":         { poste: "1re Ligne",       palier: 15.2, yoyo: 840,  dc_3rm: 62.5, tirage_3rm: 60,   broad: 195, v10: 1.92, v20: 3.34, v30: 4.69, v40: 6.03 }
+};
+
+// ====== CONSOLIDATION ======
+const sessions = {
+  Septembre: results_Septembre,
+  Novembre:  results_Novembre,
+  Janvier:   results_Janvier,
+  Mai:       results_Mai
+};
+
+// ====== PIVOT auto vers structure DATA attendue par le dashboard ======
+const DATA = {};
+for (const [mois, players] of Object.entries(sessions)) {
+  for (const [nom, raw] of Object.entries(players)) {
+    if (!DATA[nom]) DATA[nom] = { poste: null, stats: {} };
+    if (raw.poste) DATA[nom].poste = raw.poste; // dernier poste connu (ordre Sept→Mai)
+    const { poste, note, ift_30_15, ...stats } = raw;
+    // ift_30_15 (Sept) → palier
+    if (ift_30_15 != null) stats.palier = ift_30_15;
+    DATA[nom].stats[mois] = stats;
+  }
+}
+
 
 // distances pour calcul m/s par sprint
 const DIST = {v10:10,v20:20,v25:25,v30:30,v40:40,v50:50};
