@@ -691,12 +691,13 @@ function renderLeader(){
       const kmh = ((DIST[move]/p.val)*3.6).toFixed(1);
       extra = ` <span style="color:var(--muted);font-size:.82rem">(${ms} m/s • ${kmh} km/h)</span>`;
     }
-    html += `<div class="rank ${cls}">
-      <div class="pos">${medal}</div>
-      <div class="nm">${p.nom}</div>
-      <div class="ps">${p.poste||''}</div>
-      <div class="vl">${p.val} ${UNITS[move]||''}${extra}</div>
-    </div>`;
+   html += `<div class="rank ${cls}">
+  <div class="pos">${medal}</div>
+  <img src="${photoUrl(p.nom)}" class="rank-photo" alt="" onerror="this.style.display='none'">
+  <div class="nm">${p.nom}</div>
+  <div class="ps">${p.poste||''}</div>
+  <div class="vl">${p.val} ${UNITS[move]||''}${extra}</div>
+</div>`;
   });
   html += `</div>`;
   content.innerHTML = html;
