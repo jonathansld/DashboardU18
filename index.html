@@ -61,6 +61,61 @@ tr:hover td{background:rgba(255,255,255,.02)}
 .cmpChip{padding:6px 12px;border:2px solid var(--border);border-radius:16px;cursor:pointer;font-size:.82rem;color:var(--muted);user-select:none;transition:all .2s}
 .cmpChip.active{border-color:var(--accent);color:var(--text);background:rgba(233,69,96,.15)}
 .cmpChip:hover{color:var(--text)}
+  /* ====== PHOTOS JOUEUSES ====== */
+.player-header{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  background:var(--card2);
+  padding:14px;
+  border-radius:10px;
+  margin-bottom:14px;
+  border-left:4px solid var(--accent);
+}
+.player-photo{
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  object-fit:cover;
+  border:3px solid var(--accent);
+  background:var(--card);
+  flex-shrink:0;
+}
+.player-photo-lg{
+  width:120px;
+  height:120px;
+}
+.player-info h2{
+  margin:0 0 4px 0;
+  font-size:1.3rem;
+}
+.player-info .ps-badge{
+  display:inline-block;
+  background:var(--accent);
+  color:#fff;
+  padding:3px 10px;
+  border-radius:12px;
+  font-size:.78rem;
+  font-weight:600;
+}
+.rank-photo{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid var(--border);
+  background:var(--card);
+  margin-right:8px;
+  vertical-align:middle;
+}
+.cmpChip img{
+  width:24px;
+  height:24px;
+  border-radius:50%;
+  object-fit:cover;
+  vertical-align:middle;
+  margin-right:4px;
+}
 </style>
 </head>
 <body>
@@ -127,6 +182,18 @@ const CATS = {
   explo:{ico:'🚀',name:'Explosivité',desc:'Broad Jump',keys:['broad']},
   anthro:{ico:'📏',name:'Anthropométrie',desc:'Taille / Poids',keys:['taille','poids']}
 };
+  // ====== PHOTOS ======
+const PHOTO_DIR = 'photos/';
+const PHOTO_FALLBACK = 'photos/default.jpg'; // photo générique si manquante
+
+function photoUrl(nom){
+  const slug = nom.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'') // retire accents
+    .replace(/\s+/g,'-')                              // espaces → tirets
+    .replace(/[^a-z0-9-]/g,'');                       // nettoie
+  return PHOTO_DIR + slug + '.jpg';
+}
+
 </script>
 <script>
 // ====== DONNÉES BRUTES — 4 SESSIONS ======
