@@ -378,8 +378,7 @@ const DIST = {v10:10,v20:20,v25:25,v30:30,v40:40,v50:50};
 let selectedPeriods = [...PERIODS];
 let selectedCat = null;
 let charts = [];
-</script>
-<script>
+
 // ====== INIT ======
 function initUI(){
   const sel = document.getElementById('selJ');
@@ -395,7 +394,7 @@ function initUI(){
       if(e.target.checked){selectedPeriods.push(p);lbl.classList.add('active');}
       else{selectedPeriods=selectedPeriods.filter(x=>x!==p);lbl.classList.remove('active');}
       selectedPeriods.sort((a,b)=>PERIODS.indexOf(a)-PERIODS.indexOf(b));
-      ();
+      render();
     });
     pc.appendChild(lbl);
   });
