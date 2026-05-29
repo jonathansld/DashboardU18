@@ -184,15 +184,20 @@ const CATS = {
 };
   // ====== PHOTOS ======
 const PHOTO_DIR = 'photos/';
-const PHOTO_FALLBACK = 'photos/default.jpg'; // photo générique si manquante
+const PHOTO_FALLBACK = 'photos/default.jpg';
 
 function photoUrl(nom){
   const slug = nom.toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g,'') // retire accents
-    .replace(/\s+/g,'-')                              // espaces → tirets
-    .replace(/[^a-z0-9-]/g,'');                       // nettoie
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/\s+/g,'-')
+    .replace(/[^a-z0-9-]/g,'');
   return PHOTO_DIR + slug + '.jpg';
 }
+
+function imgTag(nom, cls='player-photo'){
+  return `<img src="${photoUrl(nom)}" class="${cls}" onerror="this.src='${PHOTO_FALLBACK}'" alt="${nom}">`;
+}
+
 
 </script>
 <script>
@@ -390,7 +395,7 @@ function initUI(){
       if(e.target.checked){selectedPeriods.push(p);lbl.classList.add('active');}
       else{selectedPeriods=selectedPeriods.filter(x=>x!==p);lbl.classList.remove('active');}
       selectedPeriods.sort((a,b)=>PERIODS.indexOf(a)-PERIODS.indexOf(b));
-      render();
+      ();
     });
     pc.appendChild(lbl);
   });
@@ -426,14 +431,16 @@ function render(){
   if(selectedCat){renderCat(j); return;}
 
   // Vue d'ensemble : cartes catégories + évolution globale par unité
-  let html = `<div class="section"><h2>👤 ${j} — ${DATA[j].poste}</h2>
+  let html = `<div class="section">
+    <div class="player-header">
+      ${imgTag(j, 'player-photo player-photo-lg')}
+      <div class="player-info">
+        <h2>${j}</h2>
+        <span class="ps-badge">${DATA[j].poste}</span>
+      </div>
+    </div>
     <div class="cats">`;
-  Object.entries(CATS).forEach(([k,c])=>{
-    html += `<div class="cat" onclick="openCat('${k}')">
-      <div class="ico">${c.ico}</div>
-      <div class="name">${c.name}</div>
-      <div class="desc">${c.desc}</div></div>`;
-  });
+
   html += `</div></div>`;
 
   // Évolution globale — regroupée par unité
