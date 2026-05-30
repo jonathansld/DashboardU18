@@ -758,6 +758,16 @@ function renderCompare(){
     });
     html += `</tbody></table></div>`;
   });
+  
+    // ===== GRAPHIQUES D'ÉVOLUTION PAR MÉTRIQUE =====
+  html += `<h3>📈 Évolution des performances (toutes périodes)</h3>`;
+  const evoKeys = [...allKeys];
+  html += `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px">`;
+  evoKeys.forEach((k,i)=>{
+    html += `<div class="chart-wrap"><canvas id="evoCmp_${i}"></canvas></div>`;
+  });
+  html += `</div>`;
+
 
   // Graphique radar si >=2 joueuses et plusieurs métriques
   if(cmpSelected.length>=2 && allKeys.size>=3){
@@ -801,6 +811,38 @@ function renderCompare(){
       }
     });
     charts.push(c);
+      // ===== RENDU CHARTS ÉVOLUTION =====
+  const colorsEvo = ['#e94560','#f5a623','#2ea043','#58a6ff','#bc8cff','#ff7b72','#79c0ff','#ffa657'];
+  [...allKeys].forEach((k,i)=>{
+    const ctx = document.getElementById('evoCmp_'+i);
+    if(!ctx) return;
+    const datasets = cmpSelected.map((j,idx)=>({
+      label: j,
+      data: PERIODS.map(p=>getVal(j,p,k)),
+      borderColor: colorsEvo[idx%colorsEvo.length],
+      backgroundColor: colorsEvo[idx%colorsEvo.length]+'22',
+      tension:.3,
+      pointRadius:5,
+      spanGaps:true,
+      fill:false
+    }));
+    const c = new Chart(ctx,{
+      type:'line',
+      data:{labels:PERIODS,datasets},
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{
+          legend:{labels:{color:'#e6edf3',font:{size:11}}},
+          title:{display:true,text:LABELS[k]+(UNITS[k]?' ('+UNITS[k]+')':''),color:'#f5a623',font:{size:13}}
+        },
+        scales:{
+          x:{ticks:{color:'#8b949e'},grid:{color:'#30363d'}},
+          y:{ticks:{color:'#8b949e'},grid:{color:'#30363d'},reverse:INVERT.includes(k)}
+        }
+      }
+    });
+    charts.push(c);
+  });
   }
 }
 
